@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
 </head>
-<!--Hola mundoggwwg-->
+
 <body>
   <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
@@ -284,35 +284,228 @@
       
 
       <!-- CONTABILIDAD -->
-      <section id="vista-contabilidad" class="vista">
-        <div class="titulo-vista"><span class="etiqueta-seccion">MOVIMIENTOS CONTABLES</span><h2>Contabilidad</h2><p>Ganancias, gastos operativos y registro de operaciones.</p></div>
-        <div class="modulo-grid">
-          <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.3</span><h3>Registrar operación contable</h3></div></div>
-            <form id="formContable" style="padding:18px 22px;">
-              <div class="form-grid">
-                <div class="campo"><label>Tipo</label><select id="contableTipo"><option>Venta</option><option>Gasto operativo</option></select></div>
-                <div class="campo"><label>Valor</label><input id="contableValor" type="number" min="0" required></div>
-                <div class="campo form-full"><label>Descripción</label><input id="contableDescripcion" required placeholder="Descripción de la operación"></div>
-              </div>
-              <div class="acciones"><button class="boton-principal" type="submit">Registrar operación</button></div>
-              <div id="mensajeContable" class="mensaje"></div>
-            </form>
-          </article>
-          <article class="panel">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.1 / 5.2</span><h3>Resumen financiero</h3></div></div>
-            <div class="mini-estadisticas" style="padding:18px 18px 0;">
-              <div class="mini-card"><span>Ganancias por ventas</span><strong id="totalVentas">$0</strong></div>
-              <div class="mini-card"><span>Gastos operativos</span><strong id="totalGastos">$0</strong></div>
-              <div class="mini-card"><span>Balance</span><strong id="balance">$0</strong></div>
-            </div>
-          </article>
+      <<section id="vista-contabilidad" class="vista">
+
+    <div class="vista-header">
+        <div>
+            <h2>Ventas y mesas</h2>
+            <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
         </div>
-        <article class="panel" style="margin-top:20px;">
-          <div class="encabezado-panel"><div><span class="etiqueta-seccion">OPERACIONES</span><h3>Registro contable</h3></div></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor</th></tr></thead><tbody id="tablaContabilidad"></tbody></table></div>
-        </article>
-      </section>
+    </div>
+
+    <!-- MESAS -->
+    <div class="mesas-container">
+
+        <div class="mesa-card disponible" data-mesa="1">
+            <div class="mesa-icono">🪑</div>
+            <h3>Mesa 1</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+        <div class="mesa-card disponible" data-mesa="2">
+            <div class="mesa-icono">🪑</div>
+            <h3>Mesa 2</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+        <div class="mesa-card disponible" data-mesa="3">
+            <div class="mesa-icono">🪑</div>
+            <h3>Mesa 3</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+        <div class="mesa-card disponible" data-mesa="4">
+            <div class="mesa-icono">🪑</div>
+            <h3>Mesa 4</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+    </div>
+
+
+    <!-- PANEL DE ORDEN -->
+    <div class="orden-container">
+
+        <div class="orden-header">
+            <div>
+                <h3>Orden de la mesa</h3>
+                <span id="mesaSeleccionada">
+                    Selecciona una mesa para comenzar
+                </span>
+            </div>
+
+            <span id="estadoOrden" class="estado-orden">
+                Sin orden
+            </span>
+        </div>
+
+
+        <!-- AGREGAR PRODUCTO -->
+        <div class="orden-form">
+
+            <div class="campo">
+                <label for="productoOrden">
+                    Producto
+                </label>
+
+                <select id="productoOrden">
+                    <option value="">
+                        Seleccionar producto
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="campo campo-cantidad">
+                <label for="cantidadOrden">
+                    Cantidad
+                </label>
+
+                <input
+                    type="number"
+                    id="cantidadOrden"
+                    min="1"
+                    value="1"
+                >
+            </div>
+
+
+            <button
+                type="button"
+                id="btnAgregarProducto"
+                class="btn-principal"
+            >
+                + Agregar producto
+            </button>
+
+        </div>
+
+
+        <!-- PRODUCTOS DE LA ORDEN -->
+        <div class="orden-productos">
+
+            <div class="orden-productos-header">
+                <span>Producto</span>
+                <span>Cantidad</span>
+                <span>Precio</span>
+                <span>Total</span>
+                <span></span>
+            </div>
+
+            <div id="listaOrden">
+
+                <div class="orden-vacia">
+                    <span>🍽️</span>
+                    <p>
+                        No hay productos en esta orden.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL -->
+        <div class="orden-footer">
+
+            <div class="orden-total">
+                <span>Total de la orden</span>
+
+                <strong id="totalOrden">
+                    $0
+                </strong>
+            </div>
+
+
+            <div class="orden-acciones">
+
+                <button
+                    type="button"
+                    id="btnLiberarMesa"
+                    class="btn-secundario"
+                >
+                    Liberar mesa
+                </button>
+
+                <button
+                    type="button"
+                    id="btnRegistrarVenta"
+                    class="btn-principal"
+                >
+                    Registrar venta
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESUMEN CONTABLE -->
+    <div class="contabilidad-resumen">
+
+        <div class="resumen-card">
+            <span>Total ventas</span>
+            <strong id="totalVentas">$0</strong>
+        </div>
+
+        <div class="resumen-card">
+            <span>Total gastos</span>
+            <strong id="totalGastos">$0</strong>
+        </div>
+
+        <div class="resumen-card">
+            <span>Balance</span>
+            <strong id="balance">$0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- HISTORIAL DE OPERACIONES -->
+    <div class="tabla-contabilidad">
+
+        <div class="tabla-header">
+            <div>
+                <h3>Historial de operaciones</h3>
+                <p>
+                    Registro de ventas y gastos realizados.
+                </p>
+            </div>
+        </div>
+
+        <div class="tabla-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaContabilidad">
+
+                    <tr>
+                        <td colspan="4">
+                            No hay operaciones registradas.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
 
       <!-- REPORTES -->
       <section id="vista-reportes" class="vista">
