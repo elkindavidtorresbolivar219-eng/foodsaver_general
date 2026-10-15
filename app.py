@@ -8,9 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from conexion import Conexion
 
-# ==========================================
 # CONFIGURACIÓN DE LA APLICACIÓN
-# ==========================================
 app = Flask(__name__)
 app.secret_key = os.getenv("MERAKI_SECRET_KEY", "cambia-esta-clave-en-produccion")
 
