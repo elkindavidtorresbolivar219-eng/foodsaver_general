@@ -2,7 +2,10 @@ import os
 from contextlib import contextmanager
 
 import psycopg2
+from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
+
+load_dotenv()
 
 
 class Conexion:
@@ -10,10 +13,11 @@ class Conexion:
         self.config = {
             "host": os.getenv("PGHOST", "localhost"),
             "port": os.getenv("PGPORT", "5432"),
-            "dbname": os.getenv("PGDATABASE", "restaurante2"),
+            "dbname": os.getenv("PGDATABASE", "postgres"),
             "user": os.getenv("PGUSER", "postgres"),
-            "password": os.getenv("PGPASSWORD", "123"),
-            "options": "-c timezone=America/Bogota",
+            "password": os.getenv("PGPASSWORD", ""),
+            "sslmode": os.getenv("PGSSLMODE", "require"),
+            "connect_timeout": 10,
         }
 
     def _conectar(self):
@@ -25,6 +29,8 @@ class Conexion:
         try:
             with conexion:
                 with conexion.cursor(cursor_factory=RealDictCursor) as cur:
+                    # Funciona con Session pooler y Transaction pooler
+                    cur.execute("SET LOCAL TIME ZONE 'America/Bogota'")
                     yield cur
         finally:
             conexion.close()
