@@ -11,6 +11,10 @@ from conexion import Conexion
 # CONFIGURACIÓN DE LA APLICACIÓN
 app = Flask(__name__)
 app.secret_key = os.getenv("MERAKI_SECRET_KEY", "cambia-esta-clave-en-produccion")
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
 
 db = Conexion()
 
@@ -66,8 +70,11 @@ def inicializar():
             ("Contador", "Meraki", "contador", "contador", "1234", "Contador"),
         ]
         for nombre, apellido, usuario, login, clave, rol in iniciales:
+            # ON CONFLICT evita errores si dos procesos arrancan a la vez
             db.ejecutar(
-                "INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol) VALUES (%s, %s, %s, %s, %s, %s)",
+                """INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol)
+                   VALUES (%s, %s, %s, %s, %s, %s)
+                   ON CONFLICT DO NOTHING""",
                 (nombre, apellido, usuario, login, generate_password_hash(clave), rol),
             )
 
@@ -135,10 +142,10 @@ def usuarios_guardar():
     nombre = (d.get("nombre") or "").strip()
     apellido = (d.get("apellido") or "").strip()
     usuario = (d.get("usuario") or "").strip()
-    
+
     # Asigna automáticamente el usuario al login si no se especifica por separado
     login_ = (d.get("login") or usuario).strip()
-    
+
     clave = d.get("clave") or ""
     rol = d.get("rol")
 
@@ -156,7 +163,7 @@ def usuarios_guardar():
                     "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, clave=%s, rol=%s WHERE id=%s",
                     (nombre, apellido, usuario, login_, generate_password_hash(clave), rol, uid),
                 )
-            else:  
+            else:
                 db.ejecutar(
                     "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, rol=%s WHERE id=%s",
                     (nombre, apellido, usuario, login_, rol, uid),
@@ -329,4 +336,5 @@ def contabilidad_registrar():
 inicializar()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Debug solo si defines FLASK_DEBUG=1 en tu .env local
+    app.run(debug=os.getenv("FLASK_DEBUG") == "1")
