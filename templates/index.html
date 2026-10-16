@@ -81,8 +81,8 @@
           <span class="icono">◫</span><span>Inventario</span>
         </a>
 
-        <a href="#" class="elemento-menu" data-vista="contabilidad">
-          <span class="icono">$</span><span>Contabilidad</span>
+        <a href="#" class="elemento-menu" data-vista="ventas">
+          <span class="icono">$</span><span>Ventas</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="reportes">
           <span class="icono">▥</span><span>Reportes</span>
@@ -189,7 +189,7 @@
           <div class="cuadricula-accesos">
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('contabilidad');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
 
@@ -283,39 +283,38 @@
 
       
 
-      <!-- CONTABILIDAD -->
-      <<section id="vista-contabilidad" class="vista">
+      <!-- ventas -->
+      <section id="vista-ventas" class="vista">
 
-    <div class="vista-header">
-        <div>
-            <h2>Ventas y mesas</h2>
-            <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
-        </div>
+    <div class="titulo-vista">
+        <span class="etiqueta-seccion">VENTAS</span>
+        <h2>Ventas y mesas</h2>
+        <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
     </div>
 
     <!-- MESAS -->
     <div class="mesas-container">
 
         <div class="mesa-card disponible" data-mesa="1">
-            <div class="mesa-icono">🪑</div>
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 1</h3>
             <span class="mesa-estado">Disponible</span>
         </div>
 
         <div class="mesa-card disponible" data-mesa="2">
-            <div class="mesa-icono">🪑</div>
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 2</h3>
             <span class="mesa-estado">Disponible</span>
         </div>
 
         <div class="mesa-card disponible" data-mesa="3">
-            <div class="mesa-icono">🪑</div>
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 3</h3>
             <span class="mesa-estado">Disponible</span>
         </div>
 
         <div class="mesa-card disponible" data-mesa="4">
-            <div class="mesa-icono">🪑</div>
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 4</h3>
             <span class="mesa-estado">Disponible</span>
         </div>
@@ -373,9 +372,10 @@
             <button
                 type="button"
                 id="btnAgregarProducto"
-                class="btn-principal"
+                class="btn-agregar"
             >
-                + Agregar producto
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Agregar producto
             </button>
 
         </div>
@@ -395,10 +395,10 @@
             <div id="listaOrden">
 
                 <div class="orden-vacia">
-                    <span>🍽️</span>
-                    <p>
+                    
+                    <h4>
                         No hay productos en esta orden.
-                    </p>
+                    </h4>
                 </div>
 
             </div>
@@ -423,16 +423,18 @@
                 <button
                     type="button"
                     id="btnLiberarMesa"
-                    class="btn-secundario"
+                    class="btn-liberar"
                 >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     Liberar mesa
                 </button>
 
                 <button
                     type="button"
                     id="btnRegistrarVenta"
-                    class="btn-principal"
+                    class="btn-venta"
                 >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
                     Registrar venta
                 </button>
 
@@ -443,8 +445,8 @@
     </div>
 
 
-    <!-- RESUMEN CONTABLE -->
-    <div class="contabilidad-resumen">
+    <!-- RESUMEN DE VENTAS -->
+    <div class="ventas-resumen">
 
         <div class="resumen-card">
             <span>Total ventas</span>
@@ -465,7 +467,7 @@
 
 
     <!-- HISTORIAL DE OPERACIONES -->
-    <div class="tabla-contabilidad">
+    <div class="tabla-ventas">
 
         <div class="tabla-header">
             <div>
@@ -489,7 +491,7 @@
                     </tr>
                 </thead>
 
-                <tbody id="tablaContabilidad">
+                <tbody id="tablaventas">
 
                     <tr>
                         <td colspan="4">
