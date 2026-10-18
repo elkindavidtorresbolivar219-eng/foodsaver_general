@@ -197,7 +197,7 @@ def usuarios_eliminar(uid):
 @login_requerido
 def alimentos_listar():
     return jsonify(db.consultar(
-        """SELECT id, nombre, categoria, cantidad,
+        """SELECT id, nombre, categoria, cantidad, precio,
                   to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, sede
            FROM alimentos ORDER BY id"""
     ))
@@ -212,6 +212,7 @@ def alimentos_guardar():
     categoria = (d.get("categoria") or "").strip()
     sede = (d.get("sede") or "").strip()
     cantidad = entero(d.get("cantidad"), 0)
+    precio = entero(d.get("precio"), 0)
     try:
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
     except ValueError:
@@ -221,19 +222,21 @@ def alimentos_guardar():
         return error("Nombre, categoría y sede son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
+    if precio is None:
+        return error("El precio debe ser un número mayor o igual a 0.")
 
     if aid:
         db.ejecutar(
             """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      vencimiento=%s, sede=%s WHERE id=%s""",
-            (nombre, categoria, cantidad, vencimiento, sede, aid),
+                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
+            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
         )
         return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
 
     db.ejecutar(
-        """INSERT INTO alimentos (nombre, categoria, cantidad, vencimiento, sede)
-           VALUES (%s, %s, %s, %s, %s)""",
-        (nombre, categoria, cantidad, vencimiento, sede),
+        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
+           VALUES (%s, %s, %s, %s, %s, %s)""",
+        (nombre, categoria, cantidad, precio, vencimiento, sede),
     )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 

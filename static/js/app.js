@@ -275,6 +275,7 @@
         nombre: document.getElementById("alimentoNombre").value.trim(),
         categoria: document.getElementById("alimentoCategoria").value,
         cantidad: Number(document.getElementById("alimentoCantidad").value),
+        precio: Number(document.getElementById("alimentoPrecio").value),
         vencimiento: document.getElementById("alimentoVencimiento").value,
         sede: document.getElementById("alimentoSede").value
       });
@@ -299,6 +300,7 @@
     document.getElementById("alimentoNombre").value = a.nombre;
     document.getElementById("alimentoCategoria").value = a.categoria;
     document.getElementById("alimentoCantidad").value = a.cantidad;
+    document.getElementById("alimentoPrecio").value = a.precio;
     document.getElementById("alimentoVencimiento").value = a.vencimiento;
     document.getElementById("alimentoSede").value = a.sede;
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -409,8 +411,10 @@
       '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button></div></td></tr>'
     ).join(""));
  
+    // Alimentos: columnas Alimento, Categoría, Cantidad, Precio, Vence, Sede, Acciones
     setHTML("tablaAlimentos", datos.alimentos.map(a =>
       "<tr><td><strong>" + esc(a.nombre) + "</strong></td><td>" + esc(a.categoria) + "</td><td>" + a.cantidad +
+      "</td><td>" + formatoMoneda(a.precio) +
       "</td><td>" + fechaBonita(a.vencimiento) + "</td><td>" + esc(a.sede) +
       '</td><td><div class="acciones-tabla"><button onclick="editarAlimento(' + a.id + ')">Editar</button>' +
       '<button class="eliminar" onclick="eliminarAlimento(' + a.id + ')">Eliminar</button></div></td></tr>'
@@ -518,4 +522,3 @@
     .then(r => { if (r.usuario) return iniciarSesion(r.usuario); })
     .catch(err => console.error(err));
 })();
- 
