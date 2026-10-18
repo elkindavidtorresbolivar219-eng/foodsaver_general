@@ -721,6 +721,14 @@
                     .value
                 ),
 
+                precio:
+                Number(
+                  document
+                    .getElementById("alimentoPrecio")
+                    .value
+                ),
+
+
               vencimiento:
                 document
                   .getElementById("alimentoVencimiento")
@@ -788,6 +796,9 @@
     document
       .getElementById("alimentoCantidad")
       .value = a.cantidad;
+
+      document.getElementById("alimentoPrecio").value = a.precio;
+
 
     document
       .getElementById("alimentoVencimiento")
@@ -1740,6 +1751,10 @@
             "<td>" +
             a.cantidad +
             "</td>" +
+
+             "<td>" +                      
+            formatoMoneda(a.precio) +     
+            "</td>" +                     
 
             "<td>" +
             fechaBonita(
