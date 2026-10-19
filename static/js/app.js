@@ -1,4 +1,3 @@
-
 (() => {
   "use strict";
 
@@ -57,25 +56,10 @@
   let mesaSeleccionada = null;
 
   const mesas = {
-    1: {
-      estado: "disponible",
-      productos: []
-    },
-
-    2: {
-      estado: "disponible",
-      productos: []
-    },
-
-    3: {
-      estado: "disponible",
-      productos: []
-    },
-
-    4: {
-      estado: "disponible",
-      productos: []
-    }
+    1: { estado: "disponible", productos: [] },
+    2: { estado: "disponible", productos: [] },
+    3: { estado: "disponible", productos: [] },
+    4: { estado: "disponible", productos: [] }
   };
 
   /* FUNCIONES GENERALES */
@@ -211,50 +195,15 @@
       });
 
     const titulos = {
-      dashboard: [
-        "Inicio / Dashboard",
-        "Panel principal"
-      ],
-
-      usuarios: [
-        "Inicio / Usuarios",
-        "Gestión de usuarios"
-      ],
-
-      alimentos: [
-        "Inicio / Alimentos",
-        "Administración de alimentos"
-      ],
-
-      inventario: [
-        "Inicio / Inventario",
-        "Inventario en tiempo real"
-      ],
-
-      sincronizacion: [
-        "Inicio / Sincronización",
-        "Sincronización de inventario"
-      ],
-
-      ventas: [
-        "Inicio / Ventas",
-        "Gestión de mesas y ventas"
-      ],
-
-      reportes: [
-        "Inicio / Reportes",
-        "Generación de reportes"
-      ],
-
-      configuracion: [
-        "Inicio / Configuración",
-        "Configuración"
-      ],
-
-      ayuda: [
-        "Inicio / Ayuda",
-        "Ayuda"
-      ]
+      dashboard: ["Inicio / Dashboard", "Panel principal"],
+      usuarios: ["Inicio / Usuarios", "Gestión de usuarios"],
+      alimentos: ["Inicio / Alimentos", "Administración de alimentos"],
+      inventario: ["Inicio / Inventario", "Inventario en tiempo real"],
+      sincronizacion: ["Inicio / Sincronización", "Sincronización de inventario"],
+      ventas: ["Inicio / Ventas", "Gestión de mesas y ventas"],
+      reportes: ["Inicio / Reportes", "Generación de reportes"],
+      configuracion: ["Inicio / Configuración", "Configuración"],
+      ayuda: ["Inicio / Ayuda", "Ayuda"]
     };
 
     const t =
@@ -290,30 +239,11 @@
       .getElementById("aplicacion")
       .classList.remove("oculto");
 
-    setText(
-      "nombreSidebar",
-      sesion.nombre
-    );
-
-    setText(
-      "rolSidebar",
-      sesion.rol
-    );
-
-    setText(
-      "nombreTop",
-      sesion.nombre
-    );
-
-    setText(
-      "avatarSidebar",
-      iniciales(sesion.nombre)
-    );
-
-    setText(
-      "avatarTop",
-      iniciales(sesion.nombre)
-    );
+    setText("nombreSidebar", sesion.nombre);
+    setText("rolSidebar", sesion.rol);
+    setText("nombreTop", sesion.nombre);
+    setText("avatarSidebar", iniciales(sesion.nombre));
+    setText("avatarTop", iniciales(sesion.nombre));
 
     aplicarPermisos();
 
@@ -721,13 +651,12 @@
                     .value
                 ),
 
-                precio:
+              precio:
                 Number(
                   document
                     .getElementById("alimentoPrecio")
                     .value
                 ),
-
 
               vencimiento:
                 document
@@ -797,8 +726,9 @@
       .getElementById("alimentoCantidad")
       .value = a.cantidad;
 
-      document.getElementById("alimentoPrecio").value = a.precio;
-
+    document
+      .getElementById("alimentoPrecio")
+      .value = a.precio;
 
     document
       .getElementById("alimentoVencimiento")
@@ -1561,30 +1491,18 @@
 
   function estadoAlimento(a) {
     if (a.cantidad <= 15) {
-      return [
-        "Crítico",
-        "bad"
-      ];
+      return ["Crítico", "bad"];
     }
 
     if (diasParaVencer(a) <= 3) {
-      return [
-        "Por vencer",
-        "bad"
-      ];
+      return ["Por vencer", "bad"];
     }
 
     if (a.cantidad <= 30) {
-      return [
-        "Stock bajo",
-        "warn"
-      ];
+      return ["Stock bajo", "warn"];
     }
 
-    return [
-      "Disponible",
-      "ok"
-    ];
+    return ["Disponible", "ok"];
   }
 
   /* RENDERIZADO GENERAL */
@@ -1637,57 +1555,16 @@
           0
         );
 
-    setText(
-      "statProductos",
-      datos.alimentos.length
-    );
-
-    setText(
-      "statInventario",
-      totalUnidades
-    );
-
-    setText(
-      "statVencer",
-      porVencer
-    );
-
-    setText(
-      "statVentas",
-      formatoMoneda(ventas)
-    );
-
-    setText(
-      "invTotal",
-      datos.alimentos.length
-    );
-
-    setText(
-      "invUnidades",
-      totalUnidades
-    );
-
-    setText(
-      "invCriticos",
-      criticos
-    );
-
-    setText(
-      "totalVentas",
-      formatoMoneda(ventas)
-    );
-
-    setText(
-      "totalGastos",
-      formatoMoneda(gastos)
-    );
-
-    setText(
-      "balance",
-      formatoMoneda(
-        ventas - gastos
-      )
-    );
+    setText("statProductos", datos.alimentos.length);
+    setText("statInventario", totalUnidades);
+    setText("statVencer", porVencer);
+    setText("statVentas", formatoMoneda(ventas));
+    setText("invTotal", datos.alimentos.length);
+    setText("invUnidades", totalUnidades);
+    setText("invCriticos", criticos);
+    setText("totalVentas", formatoMoneda(ventas));
+    setText("totalGastos", formatoMoneda(gastos));
+    setText("balance", formatoMoneda(ventas - gastos));
 
     /* USUARIOS */
 
@@ -1731,7 +1608,7 @@
         .join("")
     );
 
-    /* ALIMENTOS */
+    /* ALIMENTOS (Alimento, Categoría, Cantidad, Precio, Vence, Sede, Acciones) */
 
     setHTML(
       "tablaAlimentos",
@@ -1752,9 +1629,9 @@
             a.cantidad +
             "</td>" +
 
-             "<td>" +                      
-            formatoMoneda(a.precio) +     
-            "</td>" +                     
+            "<td>" +
+            formatoMoneda(a.precio) +
+            "</td>" +
 
             "<td>" +
             fechaBonita(
@@ -2101,15 +1978,7 @@
 
     /* GRÁFICA */
 
-    const alturas = [
-      45,
-      68,
-      54,
-      82,
-      61,
-      90,
-      72
-    ];
+    const alturas = [45, 68, 54, 82, 61, 90, 72];
 
     const dias = [
       "Lun",
@@ -2334,3 +2203,5 @@
     );
 
 })();
+
+/* Jose */

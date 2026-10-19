@@ -341,3 +341,5 @@ inicializar()
 if __name__ == "__main__":
     # Debug solo si defines FLASK_DEBUG=1 en tu .env local
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")
+
+    #JOse
