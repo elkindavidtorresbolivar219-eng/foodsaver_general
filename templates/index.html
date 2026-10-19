@@ -6,10 +6,13 @@
   <title>Meraki | Sistema de Gestión Alimentaria</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='meta.css') }}">
+<script src="{{ url_for('static', filename='js/meta.js') }}"></script>
 </head>
-<!--Hola mundoggg-->
+
 <body>
-  <!-- PRUEBA DE COMMIT ISRAEL EN LA LINAE 12 DE INDEX HTML  -->
+  <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
     <div class="login-caja">
       <img src="{{ url_for('static', filename='img/logo3.png') }}" alt="Logo Meraki" class="login-logo">
@@ -81,8 +84,8 @@
           <span class="icono">◫</span><span>Inventario</span>
         </a>
 
-        <a href="#" class="elemento-menu" data-vista="contabilidad">
-          <span class="icono">$</span><span>Contabilidad</span>
+        <a href="#" class="elemento-menu" data-vista="ventas">
+          <span class="icono">$</span><span>Ventas</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="reportes">
           <span class="icono">▥</span><span>Reportes</span>
@@ -189,7 +192,7 @@
           <div class="cuadricula-accesos">
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('contabilidad');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
 
@@ -239,6 +242,7 @@
                 <div class="campo"><label>Nombre del alimento</label><input id="alimentoNombre" required></div>
                 <div class="campo"><label>Categoría</label><select id="alimentoCategoria"><option>Lácteos</option><option>Granos</option><option>Verduras</option><option>Frutas</option><option>Cárnicos</option><option>Otros</option></select></div>
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
+                <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
                 <div class="campo"><label>Sede</label><select id="alimentoSede"><option>Sede principal</option><option>Sede norte</option><option>Sede sur</option></select></div>
               </div>
@@ -263,7 +267,7 @@
         </div>
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
         </article>
       </section>
 
@@ -283,36 +287,260 @@
 
       
 
-      <!-- CONTABILIDAD -->
-      <section id="vista-contabilidad" class="vista">
-        <div class="titulo-vista"><span class="etiqueta-seccion">MOVIMIENTOS CONTABLES</span><h2>Contabilidad</h2><p>Ganancias, gastos operativos y registro de operaciones.</p></div>
-        <div class="modulo-grid">
-          <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.3</span><h3>Registrar operación contable</h3></div></div>
-            <form id="formContable" style="padding:18px 22px;">
-              <div class="form-grid">
-                <div class="campo"><label>Tipo</label><select id="contableTipo"><option>Venta</option><option>Gasto operativo</option></select></div>
-                <div class="campo"><label>Valor</label><input id="contableValor" type="number" min="0" required></div>
-                <div class="campo form-full"><label>Descripción</label><input id="contableDescripcion" required placeholder="Descripción de la operación"></div>
-              </div>
-              <div class="acciones"><button class="boton-principal" type="submit">Registrar operación</button></div>
-              <div id="mensajeContable" class="mensaje"></div>
-            </form>
-          </article>
-          <article class="panel">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">5.1 / 5.2</span><h3>Resumen financiero</h3></div></div>
-            <div class="mini-estadisticas" style="padding:18px 18px 0;">
-              <div class="mini-card"><span>Ganancias por ventas</span><strong id="totalVentas">$0</strong></div>
-              <div class="mini-card"><span>Gastos operativos</span><strong id="totalGastos">$0</strong></div>
-              <div class="mini-card"><span>Balance</span><strong id="balance">$0</strong></div>
-            </div>
-          </article>
+      <!-- ventas -->
+      <section id="vista-ventas" class="vista">
+
+    <div class="titulo-vista">
+        <span class="etiqueta-seccion">VENTAS</span>
+        <h2>Ventas y mesas</h2>
+        <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
+    </div>
+    <!-- META DE VENTAS -->
+<div class="meta-container">
+  <div class="meta-header">
+    <div>
+      <h3>Meta de ventas</h3>
+      <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+    </div>
+    <span id="metaEstado" class="meta-estado">Sin meta definida</span>
+  </div>
+
+  <form id="formMeta" class="meta-form">
+    <div class="campo">
+      <label for="metaInput">Meta de dinero</label>
+      <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
+    </div>
+    <button class="boton-principal" type="submit">Guardar meta</button>
+    <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
+  </form>
+
+  <div class="meta-progreso">
+    <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
+    <div class="meta-datos">
+      <div><span>Meta</span><strong id="metaValor">$0</strong></div>
+      <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
+      <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
+      <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
+    </div>
+  </div>
+</div>
+
+    <!-- MESAS -->
+    <div class="mesas-container">
+
+        <div class="mesa-card disponible" data-mesa="1">
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+            <h3>Mesa 1</h3>
+            <span class="mesa-estado">Disponible</span>
         </div>
-        <article class="panel" style="margin-top:20px;">
-          <div class="encabezado-panel"><div><span class="etiqueta-seccion">OPERACIONES</span><h3>Registro contable</h3></div></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor</th></tr></thead><tbody id="tablaContabilidad"></tbody></table></div>
-        </article>
-      </section>
+
+        <div class="mesa-card disponible" data-mesa="2">
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+            <h3>Mesa 2</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+        <div class="mesa-card disponible" data-mesa="3">
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+            <h3>Mesa 3</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+        <div class="mesa-card disponible" data-mesa="4">
+            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+            <h3>Mesa 4</h3>
+            <span class="mesa-estado">Disponible</span>
+        </div>
+
+    </div>
+
+
+    <!-- PANEL DE ORDEN -->
+    <div class="orden-container">
+
+        <div class="orden-header">
+            <div>
+                <h3>Orden de la mesa</h3>
+                <span id="mesaSeleccionada">
+                    Selecciona una mesa para comenzar
+                </span>
+            </div>
+
+            <span id="estadoOrden" class="estado-orden">
+                Sin orden
+            </span>
+        </div>
+
+
+        <!-- AGREGAR PRODUCTO -->
+        <div class="orden-form">
+
+            <div class="campo">
+                <label for="productoOrden">
+                    Producto
+                </label>
+
+                <select id="productoOrden">
+                    <option value="">
+                        Seleccionar producto
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="campo campo-cantidad">
+                <label for="cantidadOrden">
+                    Cantidad
+                </label>
+
+                <input
+                    type="number"
+                    id="cantidadOrden"
+                    min="1"
+                    value="1"
+                >
+            </div>
+
+
+            <button
+                type="button"
+                id="btnAgregarProducto"
+                class="btn-agregar"
+            >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Agregar producto
+            </button>
+
+        </div>
+
+
+        <!-- PRODUCTOS DE LA ORDEN -->
+        <div class="orden-productos">
+
+            <div class="orden-productos-header">
+                <span>Producto</span>
+                <span>Cantidad</span>
+                <span>Precio</span>
+                <span>Total</span>
+                <span></span>
+            </div>
+
+            <div id="listaOrden">
+
+                <div class="orden-vacia">
+                    
+                    <h4>
+                        No hay productos en esta orden.
+                    </h4>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL -->
+        <div class="orden-footer">
+
+            <div class="orden-total">
+                <span>Total de la orden</span>
+
+                <strong id="totalOrden">
+                    $0
+                </strong>
+            </div>
+
+
+            <div class="orden-acciones">
+
+                <button
+                    type="button"
+                    id="btnLiberarMesa"
+                    class="btn-liberar"
+                >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    Liberar mesa
+                </button>
+
+                <button
+                    type="button"
+                    id="btnRegistrarVenta"
+                    class="btn-venta"
+                >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                    Registrar venta
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESUMEN DE VENTAS -->
+    <div class="ventas-resumen">
+
+        <div class="resumen-card">
+            <span>Total ventas</span>
+            <strong id="totalVentas">$0</strong>
+        </div>
+
+        <div class="resumen-card">
+            <span>Total gastos</span>
+            <strong id="totalGastos">$0</strong>
+        </div>
+
+        <div class="resumen-card">
+            <span>Balance</span>
+            <strong id="balance">$0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- HISTORIAL DE OPERACIONES -->
+    <div class="tabla-ventas">
+
+        <div class="tabla-header">
+            <div>
+                <h3>Historial de operaciones</h3>
+                <p>
+                    Registro de ventas y gastos realizados.
+                </p>
+            </div>
+        </div>
+
+        <div class="tabla-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaventas">
+
+                    <tr>
+                        <td colspan="4">
+                            No hay operaciones registradas.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
 
       <!-- REPORTES -->
       <section id="vista-reportes" class="vista">
@@ -359,7 +587,7 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
       </footer>
     </main>
   </div>
-
+<!-- JOSELIN PINGUIN -->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
 </body>
