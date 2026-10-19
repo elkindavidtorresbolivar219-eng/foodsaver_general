@@ -446,6 +446,37 @@
     </div>
 
 
+    <!-- META DE VENTAS -->
+    <div class="meta-container">
+      <div class="meta-header">
+        <div>
+          <h3>Meta de ventas</h3>
+          <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+        </div>
+        <span id="metaEstado" class="meta-estado">Sin meta definida</span>
+      </div>
+
+      <form id="formMeta" class="meta-form">
+        <div class="campo">
+          <label for="metaInput">Meta de dinero</label>
+          <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
+        </div>
+        <button class="boton-principal" type="submit">Guardar meta</button>
+        <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
+      </form>
+
+      <div class="meta-progreso">
+        <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
+        <div class="meta-datos">
+          <div><span>Meta</span><strong id="metaValor">$0</strong></div>
+          <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
+          <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
+          <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- RESUMEN DE VENTAS -->
     <div class="ventas-resumen">
 
@@ -557,6 +588,7 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
   </div>
 <!-- JOSELIN PINGUIN -->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/meta.js') }}"></script>
 
 </body>
 </html>
