@@ -1,5 +1,3 @@
-
-
 :root {
   --dark: #11101D;
   --dark-2: #181725;
@@ -1404,6 +1402,7 @@ footer {
     padding: 22px;
   }
 }
+
 /* Meta de ventas */
 .meta-container {
   background: var(--card-bg, #22212e);
