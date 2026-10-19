@@ -17,7 +17,7 @@
       <p>Sistema de Gestión Alimentaria</p>
 
       <form id="formLogin">
-
+       
         <div class="campo">
           <label for="loginUsuario">Usuario</label>
           <input id="loginUsuario" type="text" autocomplete="username" required placeholder="Ingrese su usuario">
@@ -95,6 +95,9 @@
         <a href="#" class="elemento-menu" data-vista="ayuda">
           <span class="icono">?</span><span>Ayuda</span>
         </a>
+            <a href="#" class="elemento-menu" data-vista="inversiones">
+      <span class="icono">$</span><span>Inversiones</span>
+    </a>
       </nav>
 
       <div class="usuario-barra-lateral">
@@ -166,6 +169,95 @@
             </div>
           </article>
         </section>
+
+ <!-- INVERSIONES DEL NEGOCIO -->
+    <section class="panel panel-inversiones-dashboard">
+
+      <div class="encabezado-panel">
+        <div>
+          <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
+          <h3>Inversiones del negocio</h3>
+          <p>Controla el dinero invertido y las ganancias generadas.</p>
+        </div>
+
+        <button
+          type="button"
+          class="boton-principal"
+          onclick="mostrarVista('ventas')">
+          + Registrar movimiento
+        </button>
+      </div>
+
+      <div class="cuadricula-estadisticas">
+
+        <!-- DINERO INVERTIDO -->
+        <article class="tarjeta-estadistica">
+          <div class="icono-estadistica dorado">$</div>
+          <div class="informacion-estadistica">
+            <span>Total invertido</span>
+            <strong id="dashboardInversion">$0</strong>
+            <small>Inversión registrada en insumos</small>
+          </div>
+        </article>
+
+        <!-- INGRESOS POR VENTAS -->
+        <article class="tarjeta-estadistica">
+          <div class="icono-estadistica verde">$</div>
+          <div class="informacion-estadistica">
+            <span>Ingresos por ventas</span>
+            <strong id="dashboardIngresos">$0</strong>
+            <small>Ventas registradas</small>
+          </div>
+        </article>
+
+        <!-- GANANCIA NETA -->
+        <article class="tarjeta-estadistica">
+          <div class="icono-estadistica morado">$</div>
+          <div class="informacion-estadistica">
+            <span>Ganancia neta</span>
+            <strong id="dashboardGanancia">$0</strong>
+            <small>Después de costos y gastos</small>
+          </div>
+        </article>
+
+        <!-- RENTABILIDAD -->
+        <article class="tarjeta-estadistica">
+          <div class="icono-estadistica verde">%</div>
+          <div class="informacion-estadistica">
+            <span>Rentabilidad</span>
+            <strong id="dashboardRentabilidad">0%</strong>
+            <small>Retorno sobre la inversión</small>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- DETALLE FINANCIERO -->
+      <div class="reporte-box">
+        <h4>Resumen financiero</h4>
+
+        <div class="lista-inventario">
+
+          <div class="elemento-inventario">
+            <span>Inversión en insumos</span>
+            <strong id="dashboardCostoInsumos">$0</strong>
+          </div>
+
+          <div class="elemento-inventario">
+            <span>Otros gastos</span>
+            <strong id="dashboardGastos">$0</strong>
+          </div>
+
+          <div class="elemento-inventario">
+            <span>Resultado del negocio</span>
+            <strong id="dashboardBalance">$0</strong>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+    <!-- FIN INVERSIONES DEL NEGOCIO -->
 
         <section class="cuadricula-contenido">
           <article class="panel panel-inventario">
