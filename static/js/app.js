@@ -1747,9 +1747,7 @@
             ) +
             "</td>" +
 
-            "<td>" +
-            esc(a.sede) +
-            "</td>" +
+
 
             '<td><div class="acciones-tabla">' +
 
@@ -1798,9 +1796,7 @@
             ) +
             "</td>" +
 
-            "<td>" +
-            esc(a.sede) +
-            "</td>" +
+
 
             '<td><span class="estado-demo ' +
             est[1] +

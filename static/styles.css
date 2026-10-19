@@ -75,7 +75,7 @@ a {
   display: flex;
   flex-direction: column;
   background: #0D0C16;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var( --gold);
   z-index: 10;
 }
 
@@ -85,7 +85,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgb(223, 10, 10);
+  border-bottom: 1px solid var(--border);
 }
 
 .marca img {
