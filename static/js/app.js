@@ -57,7 +57,8 @@
     alimentos: [],
     perdidas: [],
     contabilidad: [],
-    sedes: []
+    sedes: [],
+    proveedores: []
   };
 
   /* =========================================
@@ -67,22 +68,10 @@
   let mesaSeleccionada = null;
 
   const mesas = {
-    1: {
-      estado: "disponible",
-      productos: []
-    },
-    2: {
-      estado: "disponible",
-      productos: []
-    },
-    3: {
-      estado: "disponible",
-      productos: []
-    },
-    4: {
-      estado: "disponible",
-      productos: []
-    }
+    1: { estado: "disponible", productos: [] },
+    2: { estado: "disponible", productos: [] },
+    3: { estado: "disponible", productos: [] },
+    4: { estado: "disponible", productos: [] }
   };
 
   /* =========================================
@@ -182,7 +171,8 @@
       GET("/api/alimentos"),
       GET("/api/perdidas"),
       GET("/api/contabilidad"),
-      GET("/api/sedes")
+      GET("/api/sedes"),
+      GET("/api/proveedores")
     ];
 
     if (sesion.rol === "Administrador") {
@@ -196,7 +186,8 @@
       perdidas: Array.isArray(r[1]) ? r[1] : [],
       contabilidad: Array.isArray(r[2]) ? r[2] : [],
       sedes: Array.isArray(r[3]) ? r[3] : [],
-      usuarios: Array.isArray(r[4]) ? r[4] : []
+      proveedores: Array.isArray(r[4]) ? r[4] : [],
+      usuarios: Array.isArray(r[5]) ? r[5] : []
     };
 
     renderizarTodo();
@@ -234,42 +225,17 @@
     });
 
     const titulos = {
-      dashboard: [
-        "Inicio / Dashboard",
-        "Panel principal"
-      ],
-      usuarios: [
-        "Inicio / Usuarios",
-        "Gestión de usuarios"
-      ],
-      alimentos: [
-        "Inicio / Alimentos",
-        "Administración de alimentos"
-      ],
-      inventario: [
-        "Inicio / Inventario",
-        "Inventario en tiempo real"
-      ],
-      sincronizacion: [
-        "Inicio / Sincronización",
-        "Sincronización de inventario"
-      ],
-      ventas: [
-        "Inicio / Ventas",
-        "Gestión de mesas y ventas"
-      ],
-      reportes: [
-        "Inicio / Reportes",
-        "Generación de reportes"
-      ],
-      configuracion: [
-        "Inicio / Configuración",
-        "Configuración"
-      ],
-      ayuda: [
-        "Inicio / Ayuda",
-        "Ayuda"
-      ]
+      dashboard: ["Inicio / Dashboard", "Panel principal"],
+      usuarios: ["Inicio / Usuarios", "Gestión de usuarios"],
+      proveedores: ["Inicio / Proveedores", "Gestión de proveedores"],
+      alimentos: ["Inicio / Alimentos", "Administración de alimentos"],
+      inventario: ["Inicio / Inventario", "Inventario en tiempo real"],
+      sincronizacion: ["Inicio / Sincronización", "Sincronización de inventario"],
+      ventas: ["Inicio / Ventas", "Gestión de mesas y ventas"],
+      saldos: ["Inicio / Saldos", "Gestión de saldos y cuentas"],
+      reportes: ["Inicio / Reportes", "Generación de reportes"],
+      configuracion: ["Inicio / Configuración", "Configuración"],
+      ayuda: ["Inicio / Ayuda", "Ayuda"]
     };
 
     const t = titulos[nombre] || ["Inicio", "Meraki"];
@@ -330,7 +296,8 @@
       alimentos: [],
       perdidas: [],
       contabilidad: [],
-      sedes: []
+      sedes: [],
+      proveedores: []
     };
 
     document.getElementById("aplicacion")?.classList.add("oculto");
@@ -369,13 +336,8 @@
 
       try {
         const usuario = await POST("/api/login", {
-          usuario: document
-            .getElementById("loginUsuario")
-            .value.trim(),
-
-          clave: document
-            .getElementById("loginClave")
-            .value
+          usuario: document.getElementById("loginUsuario").value.trim(),
+          clave: document.getElementById("loginClave").value
         });
 
         await iniciarSesion(usuario);
@@ -403,13 +365,8 @@
 
       try {
         await POST("/api/restablecer", {
-          usuario: document
-            .getElementById("recUsuario")
-            .value.trim(),
-
-          clave: document
-            .getElementById("recNuevaClave")
-            .value
+          usuario: document.getElementById("recUsuario").value.trim(),
+          clave: document.getElementById("recNuevaClave").value
         });
 
         mensaje(
@@ -444,25 +401,11 @@
           document.getElementById("usuarioId").value
         ) || null;
 
-        const nombre = document
-          .getElementById("usuarioNombre")
-          .value.trim();
-
-        const apellido = document
-          .getElementById("usuarioApellido")
-          .value.trim();
-
-        const usuario = document
-          .getElementById("usuarioLogin")
-          .value.trim();
-
-        const clave = document
-          .getElementById("usuarioClave")
-          .value;
-
-        const rol = document
-          .getElementById("usuarioRol")
-          .value;
+        const nombre = document.getElementById("usuarioNombre").value.trim();
+        const apellido = document.getElementById("usuarioApellido").value.trim();
+        const usuario = document.getElementById("usuarioLogin").value.trim();
+        const clave = document.getElementById("usuarioClave").value;
+        const rol = document.getElementById("usuarioRol").value;
 
         if (!nombre || !apellido || !usuario || !rol) {
           mensaje(
@@ -508,7 +451,6 @@
 
   function limpiarUsuario() {
     document.getElementById("formUsuario")?.reset();
-    setText("usuarioId", "");
 
     const id = document.getElementById("usuarioId");
 
@@ -538,18 +480,12 @@
     document.getElementById("usuarioId").value = u.id || "";
     document.getElementById("usuarioNombre").value = u.nombre || "";
     document.getElementById("usuarioApellido").value = u.apellido || "";
-
-    document.getElementById("usuarioLogin").value =
-      u.login || u.usuario || "";
-
+    document.getElementById("usuarioLogin").value = u.login || u.usuario || "";
     document.getElementById("usuarioClave").value = "";
     document.getElementById("usuarioClave").required = false;
     document.getElementById("usuarioRol").value = u.rol || "";
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   window.editarUsuario = editarUsuario;
@@ -576,6 +512,129 @@
 
   window.eliminarUsuario = eliminarUsuario;
 
+  function generarInformeUsuarios() {
+    const lista = datos.usuarios;
+
+    const porRol = lista.reduce((acc, u) => {
+      acc[u.rol] = (acc[u.rol] || 0) + 1;
+      return acc;
+    }, {});
+
+    setHTML(
+      "informeUsuarios",
+      "<p><strong>Total de usuarios:</strong> " + lista.length + "</p>" +
+      (Object.keys(porRol).length
+        ? "<ul>" + Object.entries(porRol).map(([rol, n]) =>
+            "<li>" + esc(rol) + ": " + n + "</li>"
+          ).join("") + "</ul>"
+        : "<p>No hay usuarios registrados.</p>")
+    );
+  }
+
+  window.generarInformeUsuarios = generarInformeUsuarios;
+
+  /* =========================================
+     PROVEEDORES
+  ========================================= */
+
+  document.getElementById("formProveedor")?.addEventListener(
+    "submit",
+    async e => {
+      e.preventDefault();
+
+      try {
+        const r = await POST("/api/proveedores", {
+          id: Number(document.getElementById("proveedorId").value) || null,
+          nombre: document.getElementById("proveedorNombre").value.trim(),
+          contacto: document.getElementById("proveedorContacto").value.trim(),
+          telefono: document.getElementById("proveedorTelefono").value.trim()
+        });
+
+        mensaje(
+          "mensajeProveedor",
+          r.mensaje || "Proveedor guardado correctamente.",
+          "ok"
+        );
+
+        limpiarProveedor();
+        await recargar();
+      } catch (err) {
+        mensaje("mensajeProveedor", err.message, "error");
+      }
+    }
+  );
+
+  function limpiarProveedor() {
+    document.getElementById("formProveedor")?.reset();
+
+    const id = document.getElementById("proveedorId");
+
+    if (id) {
+      id.value = "";
+    }
+  }
+
+  window.limpiarProveedor = limpiarProveedor;
+
+  function editarProveedor(id) {
+    const p = datos.proveedores.find(
+      x => Number(x.id) === Number(id)
+    );
+
+    if (!p) {
+      mensaje("mensajeProveedor", "No se encontró el proveedor.", "error");
+      return;
+    }
+
+    document.getElementById("proveedorId").value = p.id ?? "";
+    document.getElementById("proveedorNombre").value = p.nombre ?? "";
+    document.getElementById("proveedorContacto").value = p.contacto ?? "";
+    document.getElementById("proveedorTelefono").value = p.telefono ?? "";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  window.editarProveedor = editarProveedor;
+
+  async function eliminarProveedor(id) {
+    if (!confirm("¿Deseas eliminar este proveedor?")) {
+      return;
+    }
+
+    try {
+      await POST("/api/proveedores/" + id + "/eliminar");
+
+      mensaje(
+        "mensajeProveedor",
+        "Proveedor eliminado correctamente.",
+        "ok"
+      );
+
+      await recargar();
+    } catch (err) {
+      mensaje("mensajeProveedor", err.message, "error");
+    }
+  }
+
+  window.eliminarProveedor = eliminarProveedor;
+
+  function generarInformeProveedores() {
+    const lista = datos.proveedores;
+
+    setHTML(
+      "informeProveedores",
+      "<p><strong>Total de proveedores:</strong> " + lista.length + "</p>" +
+      (lista.length
+        ? "<ul>" + lista.map(p =>
+            "<li>" + esc(p.nombre) + " — " + esc(p.contacto) +
+            " (" + esc(p.telefono) + ")</li>"
+          ).join("") + "</ul>"
+        : "<p>No hay proveedores registrados.</p>")
+    );
+  }
+
+  window.generarInformeProveedores = generarInformeProveedores;
+
   /* =========================================
      ALIMENTOS
   ========================================= */
@@ -587,33 +646,13 @@
 
       try {
         const r = await POST("/api/alimentos", {
-          id: Number(
-            document.getElementById("alimentoId").value
-          ) || null,
-
-          nombre: document
-            .getElementById("alimentoNombre")
-            .value.trim(),
-
-          categoria: document
-            .getElementById("alimentoCategoria")
-            .value,
-
-          cantidad: Number(
-            document.getElementById("alimentoCantidad").value
-          ),
-
-          precio: Number(
-            document.getElementById("alimentoPrecio").value
-          ),
-
-          vencimiento: document
-            .getElementById("alimentoVencimiento")
-            .value,
-
-          sede: document
-            .getElementById("alimentoSede")
-            .value
+          id: Number(document.getElementById("alimentoId").value) || null,
+          nombre: document.getElementById("alimentoNombre").value.trim(),
+          categoria: document.getElementById("alimentoCategoria").value,
+          cantidad: Number(document.getElementById("alimentoCantidad").value),
+          precio: Number(document.getElementById("alimentoPrecio").value),
+          vencimiento: document.getElementById("alimentoVencimiento").value,
+          sede: document.getElementById("alimentoSede").value
         });
 
         mensaje(
@@ -660,10 +699,7 @@
     document.getElementById("alimentoVencimiento").value = a.vencimiento ?? "";
     document.getElementById("alimentoSede").value = a.sede ?? "";
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   window.editarAlimento = editarAlimento;
@@ -703,21 +739,10 @@
 
       try {
         const r = await POST("/api/perdidas", {
-          alimento_id: Number(
-            document.getElementById("perdidaAlimento").value
-          ),
-
-          cantidad: Number(
-            document.getElementById("perdidaCantidad").value
-          ),
-
-          motivo: document
-            .getElementById("perdidaMotivo")
-            .value,
-
-          observacion: document
-            .getElementById("perdidaObservacion")
-            .value
+          alimento_id: Number(document.getElementById("perdidaAlimento").value),
+          cantidad: Number(document.getElementById("perdidaCantidad").value),
+          motivo: document.getElementById("perdidaMotivo").value,
+          observacion: document.getElementById("perdidaObservacion").value
         });
 
         formulario.reset();
@@ -794,12 +819,7 @@
 
       if (!mesa) return;
 
-      card.classList.remove(
-        "disponible",
-        "ocupada",
-        "seleccionada"
-      );
-
+      card.classList.remove("disponible", "ocupada", "seleccionada");
       card.classList.add(mesa.estado);
 
       if (numero === mesaSeleccionada) {
@@ -810,9 +830,7 @@
 
       if (estado) {
         estado.textContent =
-          mesa.estado === "ocupada"
-            ? "Ocupada"
-            : "Disponible";
+          mesa.estado === "ocupada" ? "Ocupada" : "Disponible";
       }
     });
   }
@@ -834,12 +852,8 @@
         const precio = obtenerPrecioProducto(a);
 
         return (
-          '<option value="' +
-          esc(a.id) +
-          '">' +
-          esc(a.nombre) +
-          " — " +
-          formatoMoneda(precio) +
+          '<option value="' + esc(a.id) + '">' +
+          esc(a.nombre) + " — " + formatoMoneda(precio) +
           "</option>"
         );
       }).join("");
@@ -963,23 +977,15 @@
 
         return `
           <div class="orden-producto">
-            <span>
-              <strong>${esc(producto.nombre)}</strong>
-            </span>
-
+            <span><strong>${esc(producto.nombre)}</strong></span>
             <span>${producto.cantidad}</span>
-
             <span>${formatoMoneda(producto.precio)}</span>
-
             <strong>${formatoMoneda(subtotal)}</strong>
-
             <button
               type="button"
               class="btn-eliminar-producto"
               onclick="eliminarProductoOrden(${indice})"
-            >
-              ×
-            </button>
+            >×</button>
           </div>
         `;
       }
@@ -1071,11 +1077,7 @@
 
       mesaSeleccionada = null;
 
-      setText(
-        "mesaSeleccionada",
-        "Selecciona una mesa para comenzar"
-      );
-
+      setText("mesaSeleccionada", "Selecciona una mesa para comenzar");
       setText("estadoOrden", "Sin orden");
 
       renderizarOrden();
@@ -1171,9 +1173,7 @@
       return Infinity;
     }
 
-    const vencimiento = new Date(
-      a.vencimiento + "T23:59:59"
-    );
+    const vencimiento = new Date(a.vencimiento + "T23:59:59");
 
     if (Number.isNaN(vencimiento.getTime())) {
       return Infinity;
@@ -1225,17 +1225,11 @@
 
     const ventas = datos.contabilidad
       .filter(x => x.tipo === "Venta")
-      .reduce(
-        (s, x) => s + (Number(x.valor) || 0),
-        0
-      );
+      .reduce((s, x) => s + (Number(x.valor) || 0), 0);
 
     const gastos = datos.contabilidad
       .filter(x => x.tipo === "Gasto operativo")
-      .reduce(
-        (s, x) => s + (Number(x.valor) || 0),
-        0
-      );
+      .reduce((s, x) => s + (Number(x.valor) || 0), 0);
 
     /* ESTADÍSTICAS */
 
@@ -1268,6 +1262,25 @@
           "</div></td>" +
         "</tr>"
       ).join("")
+    );
+
+    /* PROVEEDORES */
+
+    setHTML(
+      "tablaProveedores",
+      datos.proveedores.length
+        ? datos.proveedores.map(p =>
+            "<tr>" +
+              "<td><strong>" + esc(p.nombre) + "</strong></td>" +
+              "<td>" + esc(p.contacto) + "</td>" +
+              "<td>" + esc(p.telefono) + "</td>" +
+              '<td><div class="acciones-tabla">' +
+                '<button onclick="editarProveedor(' + Number(p.id) + ')">Editar</button>' +
+                '<button class="eliminar" onclick="eliminarProveedor(' + Number(p.id) + ')">Eliminar</button>' +
+              "</div></td>" +
+            "</tr>"
+          ).join("")
+        : '<tr><td colspan="4">No hay proveedores registrados.</td></tr>'
     );
 
     /* ALIMENTOS */
@@ -1354,9 +1367,7 @@
       datos.sedes.map(s =>
         "<tr>" +
           "<td><strong>" + esc(s.nombre) + "</strong></td>" +
-          '<td><span class="estado-demo ok">' +
-            esc(s.estado) +
-          "</span></td>" +
+          '<td><span class="estado-demo ok">' + esc(s.estado) + "</span></td>" +
           "<td>" + esc(s.actualizacion) + "</td>" +
         "</tr>"
       ).join("")
@@ -1379,8 +1390,7 @@
               "<strong>" + esc(a.nombre) + "</strong>" +
               "<p>" + esc(estado) + ": " +
                 (Number(a.cantidad) || 0) +
-                " unidades disponibles." +
-              "</p>" +
+                " unidades disponibles.</p>" +
               "<small>Actualizado ahora</small>" +
             "</div>" +
           "</div>"
@@ -1410,10 +1420,7 @@
       "dashboardInventario",
       datos.alimentos.slice(0, 5).map(a => {
         const cantidad = Number(a.cantidad) || 0;
-        const porcentaje = Math.min(
-          100,
-          Math.max(5, cantidad)
-        );
+        const porcentaje = Math.min(100, Math.max(5, cantidad));
 
         const est = estadoAlimento(a);
         const clase = est[1];
@@ -1462,16 +1469,7 @@
     /* GRÁFICA */
 
     const alturas = [45, 68, 54, 82, 61, 90, 72];
-
-    const dias = [
-      "Lun",
-      "Mar",
-      "Mié",
-      "Jue",
-      "Vie",
-      "Sáb",
-      "Dom"
-    ];
+    const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
     setHTML(
       "graficaBarras",
@@ -1506,13 +1504,9 @@
   ========================================= */
 
   function generarReporte() {
-    const tipo = document
-      .getElementById("tipoReporte")
-      .value;
+    const tipo = document.getElementById("tipoReporte").value;
 
-    const fecha = document
-      .getElementById("fechaReporte")
-      .value || hoyISO();
+    const fecha = document.getElementById("fechaReporte").value || hoyISO();
 
     let texto = "";
 

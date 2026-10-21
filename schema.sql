@@ -8,6 +8,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     rol      VARCHAR(20)  NOT NULL
              CHECK (rol IN ('Administrador', 'Operador', 'Contador', 'Consulta'))
 );
+CREATE TABLE IF NOT EXISTS proveedores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    contacto VARCHAR(100),
+    telefono VARCHAR(30)
+);
 
 -- Migración por si la tabla ya existía sin "login"
 ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS login VARCHAR(50);
