@@ -225,7 +225,7 @@
     });
 
     const titulos = {
-<<<<<<< HEAD
+
       dashboard: [
         "Inicio / Dashboard",
         "Panel principal"
@@ -268,7 +268,7 @@
   "Control de inversiones"
 ],
 
-=======
+
       dashboard: ["Inicio / Dashboard", "Panel principal"],
       usuarios: ["Inicio / Usuarios", "Gestión de usuarios"],
       proveedores: ["Inicio / Proveedores", "Gestión de proveedores"],
@@ -280,7 +280,7 @@
       reportes: ["Inicio / Reportes", "Generación de reportes"],
       configuracion: ["Inicio / Configuración", "Configuración"],
       ayuda: ["Inicio / Ayuda", "Ayuda"]
->>>>>>> 26bb8dc61ff1d71637cdec09120ec2016267d4e2
+
     };
 
     const t = titulos[nombre] || ["Inicio", "Meraki"];
