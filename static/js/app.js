@@ -1,9 +1,9 @@
 (() => {
   "use strict";
 
-  /* =========================================
+  /* 
      COMUNICACIÓN CON EL SERVIDOR
-  ========================================= */
+   */
 
   async function api(url, opciones) {
     const resp = await fetch(
@@ -46,9 +46,9 @@
       body: JSON.stringify(cuerpo || {})
     });
 
-  /* =========================================
+  /* 
      DATOS
-  ========================================= */
+  */
 
   let sesion = null;
 
@@ -60,9 +60,9 @@
     sedes: []
   };
 
-  /* =========================================
+  /*
      SISTEMA DE MESAS
-  ========================================= */
+   */
 
   let mesaSeleccionada = null;
 
@@ -85,9 +85,9 @@
     }
   };
 
-  /* =========================================
+  /* 
      FUNCIONES GENERALES
-  ========================================= */
+ */
 
   const hoyISO = () => {
     const fecha = new Date();
@@ -171,9 +171,9 @@
     return `${d}/${m}/${y}`;
   }
 
-  /* =========================================
+  /* 
      CARGA DE DATOS
-  ========================================= */
+   */
 
   async function cargarDatos() {
     if (!sesion) return;
@@ -209,9 +209,9 @@
     });
   }
 
-  /* =========================================
+  /* 
      VISTAS Y SESIÓN
-  ========================================= */
+   */
 
   function mostrarVista(nombre) {
     if (!sesion) return;
@@ -358,9 +358,9 @@
     });
   });
 
-  /* =========================================
+  /* 
      LOGIN
-  ========================================= */
+   */
 
   document.getElementById("formLogin")?.addEventListener(
     "submit",
@@ -430,9 +430,9 @@
     () => mostrarVista("configuracion")
   );
 
-  /* =========================================
+  /* 
      USUARIOS
-  ========================================= */
+ */
 
   document.getElementById("formUsuario")?.addEventListener(
     "submit",
@@ -576,9 +576,9 @@
 
   window.eliminarUsuario = eliminarUsuario;
 
-  /* =========================================
+  /*
      ALIMENTOS
-  ========================================= */
+   */
 
   document.getElementById("formAlimento")?.addEventListener(
     "submit",
@@ -690,9 +690,9 @@
 
   window.eliminarAlimento = eliminarAlimento;
 
-  /* =========================================
+  /* 
      PÉRDIDAS
-  ========================================= */
+   */
 
   document.getElementById("formPerdida")?.addEventListener(
     "submit",
@@ -735,9 +735,9 @@
     }
   );
 
-  /* =========================================
+  /* 
      MESAS
-  ========================================= */
+ */
 
   function inicializarMesas() {
     document.querySelectorAll(".mesa-card").forEach(mesa => {
@@ -817,9 +817,9 @@
     });
   }
 
-  /* =========================================
+  /* 
      PRODUCTOS PARA LAS ÓRDENES
-  ========================================= */
+ */
 
   function actualizarProductosOrden() {
     const select = document.getElementById("productoOrden");
@@ -858,9 +858,9 @@
     );
   }
 
-  /* =========================================
+  /* 
      AGREGAR PRODUCTOS A UNA ORDEN
-  ========================================= */
+ */
 
   function agregarProductoOrden() {
     if (!mesaSeleccionada) {
@@ -922,9 +922,9 @@
     actualizarVisualMesas();
   }
 
-  /* =========================================
+  /* 
      RENDERIZAR ORDEN
-  ========================================= */
+   */
 
   function renderizarOrden() {
     const lista = document.getElementById("listaOrden");
@@ -1017,9 +1017,9 @@
 
   window.eliminarProductoOrden = eliminarProductoOrden;
 
-  /* =========================================
+  /* 
      REGISTRAR VENTA
-  ========================================= */
+   */
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
@@ -1092,9 +1092,9 @@
     }
   }
 
-  /* =========================================
+  /* 
      LIBERAR MESA
-  ========================================= */
+  */
 
   function liberarMesa() {
     if (!mesaSeleccionada) {
@@ -1120,9 +1120,9 @@
     seleccionarMesa(numero);
   }
 
-  /* =========================================
+  /* 
      SINCRONIZACIÓN
-  ========================================= */
+   */
 
   async function sincronizar() {
     setText("estadoSync", "Sincronizando información...");
@@ -1162,9 +1162,9 @@
 
   window.sincronizar = sincronizar;
 
-  /* =========================================
+  /* 
      ESTADOS DE LOS ALIMENTOS
-  ========================================= */
+  */
 
   function diasParaVencer(a) {
     if (!a.vencimiento) {
@@ -1203,9 +1203,9 @@
     return ["Disponible", "ok"];
   }
 
-  /* =========================================
+  /* 
      RENDERIZADO GENERAL
-  ========================================= */
+   */
 
   function renderizarTodo() {
     if (!sesion) return;
@@ -1501,9 +1501,9 @@
     renderizarOrden();
   }
 
-  /* =========================================
+  /* 
      REPORTES
-  ========================================= */
+   */
 
   function generarReporte() {
     const tipo = document
@@ -1574,15 +1574,14 @@
 
   window.generarReporte = generarReporte;
 
-  /* =========================================
+  /* 
      INICIALIZACIÓN
-  ========================================= */
+  */
 
   inicializarMesas();
-
-  /* =========================================
+  /* 
      RESTAURAR SESIÓN
-  ========================================= */
+  */
 
   GET("/api/sesion")
     .then(r => {
