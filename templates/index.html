@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=2">
   <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
 </head>
 
@@ -95,6 +95,9 @@
         <a href="#" class="elemento-menu" data-vista="ayuda">
           <span class="icono">?</span><span>Ayuda</span>
         </a>
+        <a href="#" class="elemento-menu" data-vista="inversiones">
+          <span class="icono">$</span><span>Inversiones</span>
+        </a>
       </nav>
 
       <div class="usuario-barra-lateral">
@@ -167,6 +170,95 @@
           </article>
         </section>
 
+        <!-- INVERSIONES DEL NEGOCIO -->
+        <section class="panel panel-inversiones-dashboard">
+
+          <div class="encabezado-panel">
+            <div>
+              <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
+              <h3>Inversiones del negocio</h3>
+              <p>Controla el dinero invertido y las ganancias generadas.</p>
+            </div>
+
+            <button
+              type="button"
+              class="boton-principal"
+              onclick="mostrarVista('ventas')">
+              + Registrar movimiento
+            </button>
+          </div>
+
+          <div class="cuadricula-estadisticas">
+
+            <!-- DINERO INVERTIDO -->
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica dorado">$</div>
+              <div class="informacion-estadistica">
+                <span>Total invertido</span>
+                <strong id="dashboardInversion">$0</strong>
+                <small>Inversión registrada en insumos</small>
+              </div>
+            </article>
+
+            <!-- INGRESOS POR VENTAS -->
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica verde">$</div>
+              <div class="informacion-estadistica">
+                <span>Ingresos por ventas</span>
+                <strong id="dashboardIngresos">$0</strong>
+                <small>Ventas registradas</small>
+              </div>
+            </article>
+
+            <!-- GANANCIA NETA -->
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica morado">$</div>
+              <div class="informacion-estadistica">
+                <span>Ganancia neta</span>
+                <strong id="dashboardGanancia">$0</strong>
+                <small>Después de costos y gastos</small>
+              </div>
+            </article>
+
+            <!-- RENTABILIDAD -->
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica verde">%</div>
+              <div class="informacion-estadistica">
+                <span>Rentabilidad</span>
+                <strong id="dashboardRentabilidad">0%</strong>
+                <small>Retorno sobre la inversión</small>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- DETALLE FINANCIERO -->
+          <div class="reporte-box">
+            <h4>Resumen financiero</h4>
+
+            <div class="lista-inventario">
+
+              <div class="elemento-inventario">
+                <span>Inversión en insumos</span>
+                <strong id="dashboardCostoInsumos">$0</strong>
+              </div>
+
+              <div class="elemento-inventario">
+                <span>Otros gastos</span>
+                <strong id="dashboardGastos">$0</strong>
+              </div>
+
+              <div class="elemento-inventario">
+                <span>Resultado del negocio</span>
+                <strong id="dashboardBalance">$0</strong>
+              </div>
+
+            </div>
+          </div>
+
+        </section>
+        <!-- FIN INVERSIONES DEL NEGOCIO -->
+
         <section class="cuadricula-contenido">
           <article class="panel panel-inventario">
             <div class="encabezado-panel">
@@ -176,10 +268,7 @@
             <div class="lista-inventario" id="dashboardInventario"></div>
           </article>
 
-          
         </section>
-
-        
 
         <section class="seccion-accesos-rapidos">
           <div class="encabezado-seccion">
@@ -264,7 +353,9 @@
         </div>
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
+
           <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
+
         </article>
       </section>
 
@@ -278,268 +369,270 @@
         </div>
         <article class="panel">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div><button class="boton-secundario" onclick="mostrarVista('sincronizacion')">Sincronizar →</button></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Sede</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
         </article>
       </section>
 
-      
-
-      <!-- ventas -->
+      <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
-    <div class="titulo-vista">
-        <span class="etiqueta-seccion">VENTAS</span>
-        <h2>Ventas y mesas</h2>
-        <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
-    </div>
-
-    <!-- MESAS -->
-    <div class="mesas-container">
-
-        <div class="mesa-card disponible" data-mesa="1">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 1</h3>
-            <span class="mesa-estado">Disponible</span>
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">VENTAS</span>
+          <h2>Ventas y mesas</h2>
+          <p>Gestiona las órdenes de las mesas y registra las ventas. Pasa el mouse sobre las mesas para ver la meta de ventas.</p>
         </div>
 
-        <div class="mesa-card disponible" data-mesa="2">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 2</h3>
-            <span class="mesa-estado">Disponible</span>
+       
+        <div class="mesas-zona">
+
+          <!-- MESAS -->
+          <div class="mesas-container">
+
+            <div class="mesa-card disponible" data-mesa="1">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 1</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="2">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 2</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="3">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 3</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="4">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 4</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+          </div>
+
+          <!-- META DE VENTAS -->
+          <div class="meta-container">
+            <div class="meta-header">
+              <div>
+                <h3>Meta de ventas</h3>
+                <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+              </div>
+              <span id="metaEstado" class="meta-estado">Sin meta definida</span>
+            </div>
+
+            <form id="formMeta" class="meta-form">
+              <div class="campo">
+                <label for="metaInput">Meta de dinero</label>
+                <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
+              </div>
+              <button class="boton-principal" type="submit">Guardar meta</button>
+              <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
+            </form>
+
+            <div class="meta-progreso">
+              <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
+              <div class="meta-datos">
+                <div><span>Meta</span><strong id="metaValor">$0</strong></div>
+                <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
+                <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
+                <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="mesa-card disponible" data-mesa="3">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 3</h3>
-            <span class="mesa-estado">Disponible</span>
-        </div>
 
-        <div class="mesa-card disponible" data-mesa="4">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 4</h3>
-            <span class="mesa-estado">Disponible</span>
-        </div>
+        <!-- PANEL DE ORDEN -->
+        <div class="orden-container">
 
-    </div>
-
-
-    <!-- PANEL DE ORDEN -->
-    <div class="orden-container">
-
-        <div class="orden-header">
+          <div class="orden-header">
             <div>
-                <h3>Orden de la mesa</h3>
-                <span id="mesaSeleccionada">
-                    Selecciona una mesa para comenzar
-                </span>
+              <h3>Orden de la mesa</h3>
+              <span id="mesaSeleccionada">
+                Selecciona una mesa para comenzar
+              </span>
             </div>
 
             <span id="estadoOrden" class="estado-orden">
-                Sin orden
+              Sin orden
             </span>
-        </div>
+          </div>
 
 
-        <!-- AGREGAR PRODUCTO -->
-        <div class="orden-form">
+          <!-- AGREGAR PRODUCTO -->
+          <div class="orden-form">
 
             <div class="campo">
-                <label for="productoOrden">
-                    Producto
-                </label>
+              <label for="productoOrden">
+                Producto
+              </label>
 
-                <select id="productoOrden">
-                    <option value="">
-                        Seleccionar producto
-                    </option>
-                </select>
+              <select id="productoOrden">
+                <option value="">
+                  Seleccionar producto
+                </option>
+              </select>
             </div>
 
 
             <div class="campo campo-cantidad">
-                <label for="cantidadOrden">
-                    Cantidad
-                </label>
+              <label for="cantidadOrden">
+                Cantidad
+              </label>
 
-                <input
-                    type="number"
-                    id="cantidadOrden"
-                    min="1"
-                    value="1"
-                >
+              <input
+                type="number"
+                id="cantidadOrden"
+                min="1"
+                value="1"
+              >
             </div>
 
 
             <button
-                type="button"
-                id="btnAgregarProducto"
-                class="btn-agregar"
+              type="button"
+              id="btnAgregarProducto"
+              class="btn-agregar"
             >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                Agregar producto
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Agregar producto
             </button>
 
-        </div>
+          </div>
 
 
-        <!-- PRODUCTOS DE LA ORDEN -->
-        <div class="orden-productos">
+          <!-- PRODUCTOS DE LA ORDEN -->
+          <div class="orden-productos">
 
             <div class="orden-productos-header">
-                <span>Producto</span>
-                <span>Cantidad</span>
-                <span>Precio</span>
-                <span>Total</span>
-                <span></span>
+              <span>Producto</span>
+              <span>Cantidad</span>
+              <span>Precio</span>
+              <span>Total</span>
+              <span></span>
             </div>
 
             <div id="listaOrden">
 
-                <div class="orden-vacia">
-                    
-                    <h4>
-                        No hay productos en esta orden.
-                    </h4>
-                </div>
+              <div class="orden-vacia">
+
+                <h4>
+                  No hay productos en esta orden.
+                </h4>
+              </div>
 
             </div>
 
-        </div>
+          </div>
 
 
-        <!-- TOTAL -->
-        <div class="orden-footer">
+          <!-- TOTAL -->
+          <div class="orden-footer">
 
             <div class="orden-total">
-                <span>Total de la orden</span>
+              <span>Total de la orden</span>
 
-                <strong id="totalOrden">
-                    $0
-                </strong>
+              <strong id="totalOrden">
+                $0
+              </strong>
             </div>
 
 
             <div class="orden-acciones">
 
-                <button
-                    type="button"
-                    id="btnLiberarMesa"
-                    class="btn-liberar"
-                >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                    Liberar mesa
-                </button>
+              <button
+                type="button"
+                id="btnLiberarMesa"
+                class="btn-liberar"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Liberar mesa
+              </button>
 
-                <button
-                    type="button"
-                    id="btnRegistrarVenta"
-                    class="btn-venta"
-                >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                    Registrar venta
-                </button>
+              <button
+                type="button"
+                id="btnRegistrarVenta"
+                class="btn-venta"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                Registrar venta
+              </button>
 
             </div>
 
+          </div>
+
         </div>
 
-    </div>
 
+        <!-- RESUMEN DE VENTAS -->
+        <div class="ventas-resumen">
 
-    <!-- META DE VENTAS -->
-    <div class="meta-container">
-      <div class="meta-header">
-        <div>
-          <h3>Meta de ventas</h3>
-          <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
-        </div>
-        <span id="metaEstado" class="meta-estado">Sin meta definida</span>
-      </div>
-
-      <form id="formMeta" class="meta-form">
-        <div class="campo">
-          <label for="metaInput">Meta de dinero</label>
-          <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
-        </div>
-        <button class="boton-principal" type="submit">Guardar meta</button>
-        <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
-      </form>
-
-      <div class="meta-progreso">
-        <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
-        <div class="meta-datos">
-          <div><span>Meta</span><strong id="metaValor">$0</strong></div>
-          <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
-          <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
-          <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- RESUMEN DE VENTAS -->
-    <div class="ventas-resumen">
-
-        <div class="resumen-card">
+          <div class="resumen-card">
             <span>Total ventas</span>
             <strong id="totalVentas">$0</strong>
-        </div>
+          </div>
 
-        <div class="resumen-card">
+          <div class="resumen-card">
             <span>Total gastos</span>
             <strong id="totalGastos">$0</strong>
-        </div>
+          </div>
 
-        <div class="resumen-card">
+          <div class="resumen-card">
             <span>Balance</span>
             <strong id="balance">$0</strong>
+          </div>
+
         </div>
 
-    </div>
 
+        <!-- HISTORIAL DE OPERACIONES -->
+        <div class="tabla-ventas">
 
-    <!-- HISTORIAL DE OPERACIONES -->
-    <div class="tabla-ventas">
-
-        <div class="tabla-header">
+          <div class="tabla-header">
             <div>
-                <h3>Historial de operaciones</h3>
-                <p>
-                    Registro de ventas y gastos realizados.
-                </p>
+              <h3>Historial de operaciones</h3>
+              <p>
+                Registro de ventas y gastos realizados.
+              </p>
             </div>
-        </div>
+          </div>
 
-        <div class="tabla-wrapper">
+          <div class="tabla-wrapper">
 
             <table>
 
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Descripción</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Descripción</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
 
-                <tbody id="tablaventas">
+              <tbody id="tablaventas">
 
-                    <tr>
-                        <td colspan="4">
-                            No hay operaciones registradas.
-                        </td>
-                    </tr>
+                <tr>
+                  <td colspan="4">
+                    No hay operaciones registradas.
+                  </td>
+                </tr>
 
-                </tbody>
+              </tbody>
 
             </table>
 
+          </div>
+
         </div>
 
-    </div>
-
-</section>
+      </section>
 
       <!-- REPORTES -->
       <section id="vista-reportes" class="vista">
@@ -586,7 +679,8 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
       </footer>
     </main>
   </div>
-<!-- JOSELIN PINGUIN -->
+
+<!-- conexion con js -->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
 
