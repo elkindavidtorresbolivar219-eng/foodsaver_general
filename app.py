@@ -62,6 +62,17 @@ def inicializar():
     """Crea las tablas y los usuarios iniciales si la base está vacía."""
     ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
     db.ejecutar_archivo(ruta)
+
+    # Tabla de proveedores (no afecta si ya existe)
+    db.ejecutar(
+        """CREATE TABLE IF NOT EXISTS proveedores (
+               id SERIAL PRIMARY KEY,
+               nombre VARCHAR(100) NOT NULL,
+               contacto VARCHAR(100),
+               telefono VARCHAR(30)
+           )"""
+    )
+
     total = db.consultar_uno("SELECT COUNT(*) AS total FROM usuarios")["total"]
     if total == 0:
         iniciales = [
@@ -190,6 +201,48 @@ def usuarios_eliminar(uid):
     return jsonify({"ok": True})
 
 
+# RUTAS DE PROVEEDORES
+@app.get("/api/proveedores")
+@login_requerido
+def proveedores_listar():
+    return jsonify(db.consultar(
+        "SELECT id, nombre, contacto, telefono FROM proveedores ORDER BY id"
+    ))
+
+
+@app.post("/api/proveedores")
+@login_requerido
+def proveedores_guardar():
+    d = datos_json()
+    pid = entero(d.get("id"), 1)
+    nombre = (d.get("nombre") or "").strip()
+    contacto = (d.get("contacto") or "").strip()
+    telefono = (d.get("telefono") or "").strip()
+
+    if not nombre or not contacto or not telefono:
+        return error("Nombre, contacto y teléfono son obligatorios.")
+
+    if pid:
+        db.ejecutar(
+            "UPDATE proveedores SET nombre=%s, contacto=%s, telefono=%s WHERE id=%s",
+            (nombre, contacto, telefono, pid),
+        )
+        return jsonify({"ok": True, "mensaje": "Proveedor modificado correctamente."})
+
+    db.ejecutar(
+        "INSERT INTO proveedores (nombre, contacto, telefono) VALUES (%s, %s, %s)",
+        (nombre, contacto, telefono),
+    )
+    return jsonify({"ok": True, "mensaje": "Proveedor creado correctamente."})
+
+
+@app.post("/api/proveedores/<int:pid>/eliminar")
+@login_requerido
+def proveedores_eliminar(pid):
+    db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
+    return jsonify({"ok": True})
+
+
 # RUTAS DE ALIMENTOS E INVENTARIO (RF 3)
 @app.get("/api/alimentos")
 @login_requerido
@@ -210,7 +263,7 @@ def alimentos_guardar():
     categoria = (d.get("categoria") or "").strip()
     sede = (d.get("sede") or "").strip()
     cantidad = entero(d.get("cantidad"), 0)
-    precio = entero(d.get("precio"), 0)                      # NUEVO
+    precio = entero(d.get("precio"), 0)
     try:
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
     except ValueError:
@@ -220,20 +273,20 @@ def alimentos_guardar():
         return error("Nombre, categoría y sede son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
-    if precio is None:                                       # NUEVO
+    if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
 
     if aid:
         db.ejecutar(
             """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",   # precio añadido
-            (nombre, categoria, cantidad, precio, vencimiento, sede, aid), # precio en el mismo orden
+                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
+            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
         )
         return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
 
     db.ejecutar(
         """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
-           VALUES (%s, %s, %s, %s, %s, %s)""",                             # un %s más
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (nombre, categoria, cantidad, precio, vencimiento, sede),
     )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
@@ -340,9 +393,6 @@ inicializar()
 
 if __name__ == "__main__":
     # Debug solo si defines FLASK_DEBUG=1 en tu .env local
-
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")
 
-    app.run(debug=os.getenv("FLASK_DEBUG") == "1")
-
-    
+    #joselin
