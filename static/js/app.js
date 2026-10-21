@@ -269,7 +269,13 @@
       ayuda: [
         "Inicio / Ayuda",
         "Ayuda"
-      ]
+      ],
+
+   inversiones: [
+  "Inicio / Inversiones",
+  "Control de inversiones"
+],
+
     };
 
     const t = titulos[nombre] || ["Inicio", "Meraki"];
@@ -731,6 +737,42 @@
         await recargar();
       } catch (err) {
         mensaje("mensajePerdida", err.message, "error");
+      }
+    }
+  );
+
+  /* 
+     INVERSIONES (formulario)
+   */
+
+  document.getElementById("formInversion")?.addEventListener(
+    "submit",
+    async e => {
+      e.preventDefault();
+
+      const formulario = e.target;
+      const valor = Number(document.getElementById("inversionValor").value);
+      const descripcion = document
+        .getElementById("inversionDescripcion")
+        .value.trim();
+
+      if (!valor || valor <= 0) {
+        mensaje("mensajeInversion", "Ingresa un valor mayor a 0.", "error");
+        return;
+      }
+
+      try {
+        await POST("/api/contabilidad", {
+          tipo: "Inversión en insumos",
+          descripcion: descripcion || "Inversión en insumos",
+          valor
+        });
+
+        formulario.reset();
+        mensaje("mensajeInversion", "Inversión registrada correctamente.", "ok");
+        await recargar();
+      } catch (err) {
+        mensaje("mensajeInversion", err.message, "error");
       }
     }
   );
@@ -1252,6 +1294,44 @@
     setText("totalGastos", formatoMoneda(gastos));
     setText("balance", formatoMoneda(ventas - gastos));
 
+/* INVERSIONES */
+
+const insumos = datos.contabilidad
+  .filter(x => /insumo|inversi/i.test(x.tipo))
+  .reduce((s, x) => s + (Number(x.valor) || 0), 0);
+
+const aRecuperar = insumos + gastos;
+const resultado = ventas - aRecuperar;
+const ganancia = Math.max(0, resultado);
+const recuperado = Math.min(ventas, aRecuperar);
+const porRecuperar = Math.max(0, aRecuperar - ventas);
+const rentabilidad = insumos > 0 ? (ganancia / insumos) * 100 : 0;
+const progreso = aRecuperar > 0
+  ? Math.min(100, (ventas / aRecuperar) * 100)
+  : 0;
+
+setText("dashboardInversion", formatoMoneda(insumos));
+setText("dashboardIngresos", formatoMoneda(ventas));
+setText("dashboardGanancia", formatoMoneda(ganancia));
+setText("dashboardRentabilidad", rentabilidad.toFixed(1) + "%");
+setText("dashboardCostoInsumos", formatoMoneda(insumos));
+setText("dashboardGastos", formatoMoneda(gastos));
+setText("dashboardBalance", formatoMoneda(resultado));
+
+setText("invPorRecuperar", formatoMoneda(porRecuperar));
+setText("invRecuperado", formatoMoneda(recuperado));
+setText(
+  "invEstadoTexto",
+  insumos === 0
+    ? "Sin inversión"
+    : porRecuperar > 0
+      ? "Recuperando"
+      : "En ganancias"
+);
+
+const barra = document.getElementById("invBarra");
+if (barra) barra.style.width = progreso + "%";
+
     /* USUARIOS */
 
     setHTML(
@@ -1493,6 +1573,9 @@
         ? "Última sincronización: " + primera.actualizacion
         : "Aún no se ha ejecutado una sincronización."
     );
+
+
+
 
     /* MESAS */
 
