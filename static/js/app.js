@@ -589,7 +589,6 @@
         const r = await POST("/api/proveedores", {
           id: Number(document.getElementById("proveedorId").value) || null,
           nombre: document.getElementById("proveedorNombre").value.trim(),
-          contacto: document.getElementById("proveedorContacto").value.trim(),
           telefono: document.getElementById("proveedorTelefono").value.trim()
         });
 
@@ -631,7 +630,6 @@
 
     document.getElementById("proveedorId").value = p.id ?? "";
     document.getElementById("proveedorNombre").value = p.nombre ?? "";
-    document.getElementById("proveedorContacto").value = p.contacto ?? "";
     document.getElementById("proveedorTelefono").value = p.telefono ?? "";
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -669,8 +667,7 @@
       "<p><strong>Total de proveedores:</strong> " + lista.length + "</p>" +
       (lista.length
         ? "<ul>" + lista.map(p =>
-            "<li>" + esc(p.nombre) + " — " + esc(p.contacto) +
-            " (" + esc(p.telefono) + ")</li>"
+            "<li>" + esc(p.nombre) +" (" + esc(p.telefono) + ")</li>"
           ).join("") + "</ul>"
         : "<p>No hay proveedores registrados.</p>")
     );
@@ -1392,7 +1389,6 @@ if (barra) barra.style.width = progreso + "%";
         ? datos.proveedores.map(p =>
             "<tr>" +
               "<td><strong>" + esc(p.nombre) + "</strong></td>" +
-              "<td>" + esc(p.contacto) + "</td>" +
               "<td>" + esc(p.telefono) + "</td>" +
               '<td><div class="acciones-tabla">' +
                 '<button onclick="editarProveedor(' + Number(p.id) + ')">Editar</button>' +
