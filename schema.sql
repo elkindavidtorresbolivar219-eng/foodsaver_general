@@ -1,12 +1,25 @@
 CREATE TABLE IF NOT EXISTS usuarios (
-    id      SERIAL PRIMARY KEY,
-    nombre  VARCHAR(100) NOT NULL,
-    apellido varchar(100) NOT NULL,
-    usuario varchar(50) NOT NULL UNIQUE,
-    clave   VARCHAR(255) NOT NULL,
-    rol     VARCHAR(20)  NOT NULL
-            CHECK (rol IN ('Administrador', 'Operador', 'Contador', 'Consulta'))
+    id       SERIAL PRIMARY KEY,
+    nombre   VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    usuario  VARCHAR(50)  NOT NULL UNIQUE,
+    login    VARCHAR(50)  NOT NULL UNIQUE,
+    clave    VARCHAR(255) NOT NULL,
+    rol      VARCHAR(20)  NOT NULL
+             CHECK (rol IN ('Administrador', 'Operador', 'Contador', 'Consulta'))
 );
+CREATE TABLE IF NOT EXISTS proveedores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    contacto VARCHAR(100),
+    telefono VARCHAR(30)
+);
+
+-- Migración por si la tabla ya existía sin "login"
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS login VARCHAR(50);
+UPDATE usuarios SET login = usuario WHERE login IS NULL;
+ALTER TABLE usuarios ALTER COLUMN login SET NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS usuarios_login_key ON usuarios (login);
 
 CREATE TABLE IF NOT EXISTS alimentos (
     id          SERIAL PRIMARY KEY,
@@ -42,7 +55,13 @@ CREATE TABLE IF NOT EXISTS sedes (
     actualizacion TIMESTAMPTZ
 );
 
-
-
 INSERT INTO sedes (nombre) VALUES ('Sede principal'), ('Sede norte'), ('Sede sur')
 ON CONFLICT (nombre) DO NOTHING;
+
+-- Seguridad: bloquea el acceso por la API pública de Supabase.
+-- Tu backend (rol postgres) no se ve afectado.
+ALTER TABLE usuarios     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alimentos    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE perdidas     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contabilidad ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sedes        ENABLE ROW LEVEL SECURITY;
