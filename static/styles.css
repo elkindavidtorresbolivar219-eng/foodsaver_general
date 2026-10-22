@@ -96,7 +96,7 @@ a {
 }
 
 .menu {
-
+  
   padding: 24px 14px;
   flex: 1;
 }
@@ -798,7 +798,7 @@ footer {
   border-top: 1px solid var(--border);
 }
 
-/*
+/* 
    RESPONSIVE
     */
 
@@ -894,7 +894,7 @@ footer {
   .fila-inventario {
     grid-template-columns: 1fr;
     gap: 10px;
-
+    
   }
 
   .estado {
@@ -1894,9 +1894,6 @@ footer {
 }
 
 
-/* =========================================================
-   META FLOTANTE: aparece al pasar el mouse sobre las mesas
-   ========================================================= */
 
 .mesas-zona {
   position: relative;

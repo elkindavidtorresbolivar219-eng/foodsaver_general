@@ -1,6 +1,4 @@
-/* Meta de ventas - Meraki
-   Se conecta solo con #totalVentas: cada vez que ese valor cambia
-   (al registrar una venta), la barra de progreso se actualiza. */
+
 (function () {
   const CLAVE = "meraki_meta_ventas";
 

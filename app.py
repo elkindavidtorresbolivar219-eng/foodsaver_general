@@ -11,6 +11,10 @@ from conexion import Conexion
 # CONFIGURACIÓN DE LA APLICACIÓN
 app = Flask(__name__)
 app.secret_key = os.getenv("MERAKI_SECRET_KEY", "cambia-esta-clave-en-produccion")
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
 
 db = Conexion()
 
@@ -58,6 +62,17 @@ def inicializar():
     """Crea las tablas y los usuarios iniciales si la base está vacía."""
     ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
     db.ejecutar_archivo(ruta)
+
+    # Tabla de proveedores (no afecta si ya existe)
+    db.ejecutar(
+        """CREATE TABLE IF NOT EXISTS proveedores (
+               id SERIAL PRIMARY KEY,
+               nombre VARCHAR(100) NOT NULL,
+               contacto VARCHAR(100),
+               telefono VARCHAR(30)
+           )"""
+    )
+
     total = db.consultar_uno("SELECT COUNT(*) AS total FROM usuarios")["total"]
     if total == 0:
         iniciales = [
@@ -66,8 +81,11 @@ def inicializar():
             ("Contador", "Meraki", "contador", "contador", "1234", "Contador"),
         ]
         for nombre, apellido, usuario, login, clave, rol in iniciales:
+            # ON CONFLICT evita errores si dos procesos arrancan a la vez
             db.ejecutar(
-                "INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol) VALUES (%s, %s, %s, %s, %s, %s)",
+                """INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol)
+                   VALUES (%s, %s, %s, %s, %s, %s)
+                   ON CONFLICT DO NOTHING""",
                 (nombre, apellido, usuario, login, generate_password_hash(clave), rol),
             )
 
@@ -135,10 +153,10 @@ def usuarios_guardar():
     nombre = (d.get("nombre") or "").strip()
     apellido = (d.get("apellido") or "").strip()
     usuario = (d.get("usuario") or "").strip()
-    
+
     # Asigna automáticamente el usuario al login si no se especifica por separado
     login_ = (d.get("login") or usuario).strip()
-    
+
     clave = d.get("clave") or ""
     rol = d.get("rol")
 
@@ -156,7 +174,7 @@ def usuarios_guardar():
                     "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, clave=%s, rol=%s WHERE id=%s",
                     (nombre, apellido, usuario, login_, generate_password_hash(clave), rol, uid),
                 )
-            else:  
+            else:
                 db.ejecutar(
                     "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, rol=%s WHERE id=%s",
                     (nombre, apellido, usuario, login_, rol, uid),
@@ -183,12 +201,54 @@ def usuarios_eliminar(uid):
     return jsonify({"ok": True})
 
 
+# RUTAS DE PROVEEDORES
+@app.get("/api/proveedores")
+@login_requerido
+def proveedores_listar():
+    return jsonify(db.consultar(
+        "SELECT id, nombre, contacto, telefono FROM proveedores ORDER BY id"
+    ))
+
+
+@app.post("/api/proveedores")
+@login_requerido
+def proveedores_guardar():
+    d = datos_json()
+    pid = entero(d.get("id"), 1)
+    nombre = (d.get("nombre") or "").strip()
+    contacto = (d.get("contacto") or "").strip()
+    telefono = (d.get("telefono") or "").strip()
+
+    if not nombre or not contacto or not telefono:
+        return error("Nombre, contacto y teléfono son obligatorios.")
+
+    if pid:
+        db.ejecutar(
+            "UPDATE proveedores SET nombre=%s, contacto=%s, telefono=%s WHERE id=%s",
+            (nombre, contacto, telefono, pid),
+        )
+        return jsonify({"ok": True, "mensaje": "Proveedor modificado correctamente."})
+
+    db.ejecutar(
+        "INSERT INTO proveedores (nombre, contacto, telefono) VALUES (%s, %s, %s)",
+        (nombre, contacto, telefono),
+    )
+    return jsonify({"ok": True, "mensaje": "Proveedor creado correctamente."})
+
+
+@app.post("/api/proveedores/<int:pid>/eliminar")
+@login_requerido
+def proveedores_eliminar(pid):
+    db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
+    return jsonify({"ok": True})
+
+
 # RUTAS DE ALIMENTOS E INVENTARIO (RF 3)
 @app.get("/api/alimentos")
 @login_requerido
 def alimentos_listar():
     return jsonify(db.consultar(
-        """SELECT id, nombre, categoria, cantidad,
+        """SELECT id, nombre, categoria, cantidad, precio,
                   to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, sede
            FROM alimentos ORDER BY id"""
     ))
@@ -203,6 +263,7 @@ def alimentos_guardar():
     categoria = (d.get("categoria") or "").strip()
     sede = (d.get("sede") or "").strip()
     cantidad = entero(d.get("cantidad"), 0)
+    precio = entero(d.get("precio"), 0)
     try:
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
     except ValueError:
@@ -212,19 +273,21 @@ def alimentos_guardar():
         return error("Nombre, categoría y sede son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
+    if precio is None:
+        return error("El precio debe ser un número mayor o igual a 0.")
 
     if aid:
         db.ejecutar(
             """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      vencimiento=%s, sede=%s WHERE id=%s""",
-            (nombre, categoria, cantidad, vencimiento, sede, aid),
+                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
+            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
         )
         return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
 
     db.ejecutar(
-        """INSERT INTO alimentos (nombre, categoria, cantidad, vencimiento, sede)
-           VALUES (%s, %s, %s, %s, %s)""",
-        (nombre, categoria, cantidad, vencimiento, sede),
+        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
+           VALUES (%s, %s, %s, %s, %s, %s)""",
+        (nombre, categoria, cantidad, precio, vencimiento, sede),
     )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 
@@ -329,4 +392,7 @@ def contabilidad_registrar():
 inicializar()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Debug solo si defines FLASK_DEBUG=1 en tu .env local
+    app.run(debug=os.getenv("FLASK_DEBUG") == "1")
+
+    #joselin
