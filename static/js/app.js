@@ -678,13 +678,7 @@
 
   window.generarInformeProveedores = generarInformeProveedores;
 
-  /* =========================================
-=======
-  /*
->>>>>>> cf1685ee371f032be7a2fa9b6343ef24b0570db0
-     ALIMENTOS
-   */
-
+   
   document.getElementById("formAlimento")?.addEventListener(
     "submit",
     async e => {
@@ -1030,7 +1024,7 @@
     if (!mesaSeleccionada) {
       lista.innerHTML = `
         <div class="orden-vacia">
-          <span>🍽️</span>
+          <span></span>
           <p>Selecciona una mesa para comenzar.</p>
         </div>
       `;
@@ -1044,7 +1038,7 @@
     if (!orden || !orden.productos.length) {
       lista.innerHTML = `
         <div class="orden-vacia">
-          <span>🍽️</span>
+          <span></span>
           <p>No hay productos en esta orden.</p>
         </div>
       `;
