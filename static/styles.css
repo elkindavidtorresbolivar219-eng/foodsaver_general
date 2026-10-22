@@ -1252,62 +1252,107 @@ footer {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: var(--dark);
   background:
     linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .35)),  
-    url("img/fondo-login.jpg") center / cover no-repeat; 
+    url("img/fondogif.gif") center / cover no-repeat;     
 }
 
 .login-caja {
   width: min(430px, 100%);
   padding: 30px;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, .60);          
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  
+  backdrop-filter: blur(3px);              
+  -webkit-backdrop-filter: blur(3px);
 }
 
 .login-logo {
   display: block;
-  width: 170px;
-  height: 82px;
+  width: 110px;
+  height: 110px;
   margin: 0 auto 15px;
   object-fit: contain;
+  border-radius: 50%;
 }
 
 .login-caja h1 {
   text-align: center;
   font-family: var(--font-title);
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 800;
 }
 
 .login-caja > p {
-  margin: 7px 0 22px;
-  color: var(--text-secondary);
+  margin: 7px 0 24px;
+  color: var(--white);
   text-align: center;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .login-caja .campo {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.login-caja .campo label {
+  color: var(--white);
+  font-size: 12px;
+}
+
+/* Inputs oscuros y translúcidos */
+.login-caja .campo input {
+  padding: 14px 16px;
+  color: var(--white);
+  background: rgba(0, 0, 0, .45);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-caja .campo input::placeholder {
+  color: rgba(255, 255, 255, .45);
+}
+
+.login-caja .campo input:focus {
+  border-color: var(--gold);
+}
+
+/* Botón negro redondeado */
+.login-caja button[type="submit"],
+.login-caja .boton-principal {
+  display: block;
+  width: 80%;
+  margin: 18px auto 0;
+  padding: 12px;
+  color: var(--white);
+  background: #000;
+  border: 0;
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login-caja button[type="submit"]:hover,
+.login-caja .boton-principal:hover {
+  background: var(--gold);
+  color: var(--dark);
 }
 
 .login-ayuda {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .enlace-boton {
   border: 0;
   padding: 0;
-  color: var(--gold);
+  color: var(--white);
   background: transparent;
   cursor: pointer;
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .enlace-boton:hover {
@@ -1840,7 +1885,7 @@ Dilan
   .btn-venta {
     width: 100%;
   }
-=======
+ }
 /* Meta de ventas */
 .meta-container {
   background: var(--card-bg, #22212e);
@@ -1888,8 +1933,3 @@ Dilan
 }
 .meta-datos span { display: block; color: var(--text-secondary, #a09cae); font-size: 9px; }
 .meta-datos strong { font-size: 15px; }
-
-@media (max-width: 700px) {
-  .meta-datos { grid-template-columns: repeat(2, 1fr); }
-  main
-}
