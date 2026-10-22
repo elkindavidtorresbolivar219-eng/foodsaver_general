@@ -1246,12 +1246,16 @@ footer {
 
 /* Login */
 .login-pantalla {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   background: var(--dark);
+  background:
+    linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .35)),  
+    url("img/fondo-login.jpg") center / cover no-repeat; 
 }
 
 .login-caja {
@@ -1261,6 +1265,7 @@ footer {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  
 }
 
 .login-logo {
