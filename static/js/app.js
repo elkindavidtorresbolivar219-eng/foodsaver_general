@@ -1688,7 +1688,7 @@ if (barra) barra.style.width = progreso + "%";
   window.generarReporte = generarReporte;
 
   /* 
-     INICIALIZACIÓN
+     INICIALIZACIÓN joselin
   */
 
   inicializarMesas();

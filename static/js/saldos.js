@@ -139,5 +139,5 @@ document.getElementById('formAjusteSaldo').addEventListener('submit', function (
     actualizarSaldosUI();
 });
 
-// Inicialización
+// Inicialización joselin
 actualizarSaldosUI();
