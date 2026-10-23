@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=3">
   <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
 </head>
 
@@ -17,7 +17,7 @@
       <p>Sistema de Gestión Alimentaria</p>
 
       <form id="formLogin">
-       
+
         <div class="campo">
           <label for="loginUsuario">Usuario</label>
           <input id="loginUsuario" type="text" autocomplete="username" required placeholder="Ingrese su usuario">
@@ -74,16 +74,28 @@
         <a href="#" class="elemento-menu" data-vista="usuarios">
           <span class="icono">▣</span><span>Usuarios</span>
         </a>
+        <a href="#" class="elemento-menu" data-vista="proveedores">
+          <span class="icono">▦</span><span>Proveedores</span>
+        </a>
         <a href="#" class="elemento-menu" data-vista="alimentos">
           <span class="icono">▤</span><span>Alimentos</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="inventario">
           <span class="icono">◫</span><span>Inventario</span>
         </a>
-
+          <a href="#" class="elemento-menu" data-vista="inversiones">
+      <span class="icono">$</span><span>Inversiones</span>
+    </a>
         <a href="#" class="elemento-menu" data-vista="ventas">
           <span class="icono">$</span><span>Ventas</span>
         </a>
+
+   
+
+        <a href="#" class="elemento-menu" data-vista="saldos">
+          <span class="icono">🏦</span><span>Saldos</span>
+        </a>
+
         <a href="#" class="elemento-menu" data-vista="reportes">
           <span class="icono">▥</span><span>Reportes</span>
         </a>
@@ -95,9 +107,11 @@
         <a href="#" class="elemento-menu" data-vista="ayuda">
           <span class="icono">?</span><span>Ayuda</span>
         </a>
-            <a href="#" class="elemento-menu" data-vista="inversiones">
-      <span class="icono">$</span><span>Inversiones</span>
-    </a>
+
+     
+
+     
+
       </nav>
 
       <div class="usuario-barra-lateral">
@@ -169,96 +183,15 @@
             </div>
           </article>
         </section>
+<<<<<<< HEAD
 
- <!-- INVERSIONES DEL NEGOCIO -->
-    <section class="panel panel-inversiones-dashboard">
 
-      <div class="encabezado-panel">
-        <div>
-          <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
-          <h3>Inversiones del negocio</h3>
-          <p>Controla el dinero invertido y las ganancias generadas.</p>
-        </div>
 
-        <button
-          type="button"
-          class="boton-principal"
-          onclick="mostrarVista('ventas')">
-          + Registrar movimiento
-        </button>
-      </div>
+        
 
-      <div class="cuadricula-estadisticas">
-
-        <!-- DINERO INVERTIDO -->
-        <article class="tarjeta-estadistica">
-          <div class="icono-estadistica dorado">$</div>
-          <div class="informacion-estadistica">
-            <span>Total invertido</span>
-            <strong id="dashboardInversion">$0</strong>
-            <small>Inversión registrada en insumos</small>
-          </div>
-        </article>
-
-        <!-- INGRESOS POR VENTAS -->
-        <article class="tarjeta-estadistica">
-          <div class="icono-estadistica verde">$</div>
-          <div class="informacion-estadistica">
-            <span>Ingresos por ventas</span>
-            <strong id="dashboardIngresos">$0</strong>
-            <small>Ventas registradas</small>
-          </div>
-        </article>
-
-        <!-- GANANCIA NETA -->
-        <article class="tarjeta-estadistica">
-          <div class="icono-estadistica morado">$</div>
-          <div class="informacion-estadistica">
-            <span>Ganancia neta</span>
-            <strong id="dashboardGanancia">$0</strong>
-            <small>Después de costos y gastos</small>
-          </div>
-        </article>
-
-        <!-- RENTABILIDAD -->
-        <article class="tarjeta-estadistica">
-          <div class="icono-estadistica verde">%</div>
-          <div class="informacion-estadistica">
-            <span>Rentabilidad</span>
-            <strong id="dashboardRentabilidad">0%</strong>
-            <small>Retorno sobre la inversión</small>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- DETALLE FINANCIERO -->
-      <div class="reporte-box">
-        <h4>Resumen financiero</h4>
-
-        <div class="lista-inventario">
-
-          <div class="elemento-inventario">
-            <span>Inversión en insumos</span>
-            <strong id="dashboardCostoInsumos">$0</strong>
-          </div>
-
-          <div class="elemento-inventario">
-            <span>Otros gastos</span>
-            <strong id="dashboardGastos">$0</strong>
-          </div>
-
-          <div class="elemento-inventario">
-            <span>Resultado del negocio</span>
-            <strong id="dashboardBalance">$0</strong>
-          </div>
-
-        </div>
-      </div>
-
-    </section>
-    <!-- FIN INVERSIONES DEL NEGOCIO -->
-
+=======
+        
+>>>>>>> main
         <section class="cuadricula-contenido">
           <article class="panel panel-inventario">
             <div class="encabezado-panel">
@@ -267,11 +200,7 @@
             </div>
             <div class="lista-inventario" id="dashboardInventario"></div>
           </article>
-
-          
         </section>
-
-        
 
         <section class="seccion-accesos-rapidos">
           <div class="encabezado-seccion">
@@ -281,6 +210,7 @@
           <div class="cuadricula-accesos">
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('proveedores');return false;"><span class="icono-acceso">▦</span><strong>Gestionar proveedores</strong><small>Registrar, modificar y eliminar proveedores</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
@@ -316,6 +246,51 @@
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
           <div id="informeUsuarios" class="panel-form"></div>
+        </article>
+      </section>
+
+      <!-- PROVEEDORES -->
+      <section id="vista-proveedores" class="vista">
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">GESTIÓN DE PROVEEDORES</span>
+          <h2>Proveedores</h2>
+          <p>Creación, modificación, eliminación e informes de proveedores.</p>
+        </div>
+
+        <div class="modulo-grid">
+          <article class="panel panel-form">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.1 / 4.2</span><h3>Crear o modificar proveedor</h3></div></div>
+            <form id="formProveedor" style="padding-top:18px;">
+              <input type="hidden" id="proveedorId">
+              <div class="form-grid">
+                <div class="campo"><label>Nombre del local</label><input id="proveedorNombre" required></div>
+                <div class="campo"><label>Teléfono</label><input id="proveedorTelefono" type="tel" required></div>
+              </div>
+              <div class="acciones">
+                <button class="boton-principal" type="submit">Guardar proveedor</button>
+                <button class="boton-secundario" type="button" onclick="limpiarProveedor()">Limpiar</button>
+              </div>
+              <div id="mensajeProveedor" class="mensaje"></div>
+            </form>
+          </article>
+
+          <article class="panel">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.3</span><h3>Proveedores registrados</h3></div></div>
+            <div class="tabla-contenedor">
+              <table class="tabla">
+                <thead><tr><th>Nombre<th>Teléfono</th><th>Acciones</th></tr></thead>
+                <tbody id="tablaProveedores"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel" style="margin-top:20px;">
+          <div class="encabezado-panel">
+            <div><span class="etiqueta-seccion">4.4</span><h3>Informe de proveedores</h3></div>
+            <button class="boton-secundario" onclick="generarInformeProveedores()">Generar informe</button>
+          </div>
+          <div id="informeProveedores" class="panel-form"></div>
         </article>
       </section>
 
@@ -357,8 +332,6 @@
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
 
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Vence</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
-
           <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
 
         </article>
@@ -374,195 +347,251 @@
         </div>
         <article class="panel">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div><button class="boton-secundario" onclick="mostrarVista('sincronizacion')">Sincronizar →</button></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Sede</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
         </article>
       </section>
 
-      
-
-      <!-- ventas -->
+      <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
-    <div class="titulo-vista">
-        <span class="etiqueta-seccion">VENTAS</span>
-        <h2>Ventas y mesas</h2>
-        <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
-    </div>
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">VENTAS</span>
+          <h2>Ventas y mesas</h2>
+<<<<<<< HEAD
+          <p>Gestiona las órdenes de las mesas y registra las ventas. Pasa el mouse sobre las mesas para ver la meta de ventas.</p>
+        </div>
 
-    <!-- MESAS -->
-    <div class="mesas-container">
+        <!-- MESAS + META DE VENTAS (la meta aparece al pasar el mouse) -->
+        <div class="mesas-zona">
 
-        <div class="mesa-card disponible" data-mesa="1">
+          <!-- MESAS -->
+          <div class="mesas-container">
+
+            <div class="mesa-card disponible" data-mesa="1">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 1</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="2">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 2</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="3">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 3</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+            <div class="mesa-card disponible" data-mesa="4">
+              <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
+              <h3>Mesa 4</h3>
+              <span class="mesa-estado">Disponible</span>
+            </div>
+
+          </div>
+
+          <!-- META DE VENTAS -->
+          <div class="meta-container">
+            <div class="meta-header">
+              <div>
+                <h3>Meta de ventas</h3>
+                <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+              </div>
+              <span id="metaEstado" class="meta-estado">Sin meta definida</span>
+            </div>
+
+            <form id="formMeta" class="meta-form">
+              <div class="campo">
+                <label for="metaInput">Meta de dinero</label>
+                <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
+              </div>
+              <button class="boton-principal" type="submit">Guardar meta</button>
+              <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
+            </form>
+
+            <div class="meta-progreso">
+              <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
+              <div class="meta-datos">
+                <div><span>Meta</span><strong id="metaValor">$0</strong></div>
+                <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
+                <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
+                <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANEL DE ORDEN -->
+        <div class="orden-container">
+
+          <div class="orden-header">
+            <div>
+              <h3>Orden de la mesa</h3>
+              <span id="mesaSeleccionada">Selecciona una mesa para comenzar</span>
+            </div>
+
+            <span id="estadoOrden" class="estado-orden">Sin orden</span>
+          </div>
+
+=======
+          <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
+        </div>
+
+        <!-- MESAS -->
+        <div class="mesas-container">
+
+          <div class="mesa-card disponible" data-mesa="1">
             <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 1</h3>
             <span class="mesa-estado">Disponible</span>
-        </div>
+          </div>
 
-        <div class="mesa-card disponible" data-mesa="2">
+          <div class="mesa-card disponible" data-mesa="2">
             <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 2</h3>
             <span class="mesa-estado">Disponible</span>
-        </div>
+          </div>
 
-        <div class="mesa-card disponible" data-mesa="3">
+          <div class="mesa-card disponible" data-mesa="3">
             <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 3</h3>
             <span class="mesa-estado">Disponible</span>
-        </div>
+          </div>
 
-        <div class="mesa-card disponible" data-mesa="4">
+          <div class="mesa-card disponible" data-mesa="4">
             <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
             <h3>Mesa 4</h3>
             <span class="mesa-estado">Disponible</span>
+          </div>
+
         </div>
 
-    </div>
+        <!-- PANEL DE ORDEN -->
+        <div class="orden-container">
 
-
-    <!-- PANEL DE ORDEN -->
-    <div class="orden-container">
-
-        <div class="orden-header">
+          <div class="orden-header">
             <div>
-                <h3>Orden de la mesa</h3>
-                <span id="mesaSeleccionada">
-                    Selecciona una mesa para comenzar
-                </span>
+              <h3>Orden de la mesa</h3>
+              <span id="mesaSeleccionada">Selecciona una mesa para comenzar</span>
             </div>
 
-            <span id="estadoOrden" class="estado-orden">
-                Sin orden
-            </span>
-        </div>
+            <span id="estadoOrden" class="estado-orden">Sin orden</span>
+          </div>
 
-
-        <!-- AGREGAR PRODUCTO -->
-        <div class="orden-form">
+>>>>>>> main
+          <!-- AGREGAR PRODUCTO -->
+          <div class="orden-form">
 
             <div class="campo">
-                <label for="productoOrden">
-                    Producto
-                </label>
+              <label for="productoOrden">Producto</label>
 
-                <select id="productoOrden">
-                    <option value="">
-                        Seleccionar producto
-                    </option>
-                </select>
+              <select id="productoOrden">
+                <option value="">Seleccionar producto</option>
+              </select>
             </div>
-
 
             <div class="campo campo-cantidad">
-                <label for="cantidadOrden">
-                    Cantidad
-                </label>
+              <label for="cantidadOrden">Cantidad</label>
 
-                <input
-                    type="number"
-                    id="cantidadOrden"
-                    min="1"
-                    value="1"
-                >
+              <input type="number" id="cantidadOrden" min="1" value="1">
             </div>
 
-
-            <button
-                type="button"
-                id="btnAgregarProducto"
-                class="btn-agregar"
-            >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                Agregar producto
+            <button type="button" id="btnAgregarProducto" class="btn-agregar">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Agregar producto
             </button>
 
-        </div>
+          </div>
 
-
-        <!-- PRODUCTOS DE LA ORDEN -->
-        <div class="orden-productos">
+          <!-- PRODUCTOS DE LA ORDEN -->
+          <div class="orden-productos">
 
             <div class="orden-productos-header">
-                <span>Producto</span>
-                <span>Cantidad</span>
-                <span>Precio</span>
-                <span>Total</span>
-                <span></span>
+              <span>Producto</span>
+              <span>Cantidad</span>
+              <span>Precio</span>
+              <span>Total</span>
+              <span></span>
             </div>
 
             <div id="listaOrden">
-
-                <div class="orden-vacia">
-                    
-                    <h4>
-                        No hay productos en esta orden.
-                    </h4>
-                </div>
-
+              <div class="orden-vacia">
+                <h4>No hay productos en esta orden.</h4>
+              </div>
             </div>
 
-        </div>
+          </div>
 
-
-        <!-- TOTAL -->
-        <div class="orden-footer">
+          <!-- TOTAL -->
+          <div class="orden-footer">
 
             <div class="orden-total">
-                <span>Total de la orden</span>
-
-                <strong id="totalOrden">
-                    $0
-                </strong>
+              <span>Total de la orden</span>
+              <strong id="totalOrden">$0</strong>
             </div>
-
 
             <div class="orden-acciones">
 
-                <button
-                    type="button"
-                    id="btnLiberarMesa"
-                    class="btn-liberar"
-                >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                    Liberar mesa
-                </button>
+              <button type="button" id="btnLiberarMesa" class="btn-liberar">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Liberar mesa
+              </button>
 
-                <button
-                    type="button"
-                    id="btnRegistrarVenta"
-                    class="btn-venta"
-                >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                    Registrar venta
-                </button>
+              <button type="button" id="btnRegistrarVenta" class="btn-venta">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                Registrar venta
+              </button>
 
             </div>
 
+          </div>
+
         </div>
 
-    </div>
+<<<<<<< HEAD
+        <!-- RESUMEN DE VENTAS -->
+        <div class="ventas-resumen">
 
+          <div class="resumen-card">
+=======
+        <!-- META DE VENTAS -->
+        <div class="meta-container">
+          <div class="meta-header">
+            <div>
+              <h3>Meta de ventas</h3>
+              <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+            </div>
+            <span id="metaEstado" class="meta-estado">Sin meta definida</span>
+          </div>
 
-Dilan
+          <form id="formMeta" class="meta-form">
+            <div class="campo">
+              <label for="metaInput">Meta de dinero</label>
+              <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
+            </div>
+            <button class="boton-principal" type="submit">Guardar meta</button>
+            <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
+          </form>
 
-    <!-- META DE VENTAS -->
-    <div class="meta-container">
-      <div class="meta-header">
-        <div>
-          <h3>Meta de ventas</h3>
-          <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
+          <div class="meta-progreso">
+            <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
+            <div class="meta-datos">
+              <div><span>Meta</span><strong id="metaValor">$0</strong></div>
+              <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
+              <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
+              <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
+            </div>
+          </div>
         </div>
-        <span id="metaEstado" class="meta-estado">Sin meta definida</span>
-      </div>
 
-      <form id="formMeta" class="meta-form">
-        <div class="campo">
-          <label for="metaInput">Meta de dinero</label>
-          <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
-        </div>
-        <button class="boton-principal" type="submit">Guardar meta</button>
-        <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
-      </form>
+        <!-- RESUMEN DE VENTAS -->
+        <div class="ventas-resumen">
 
+<<<<<<< HEAD
       <div class="meta-progreso">
         <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
         <div class="meta-datos">
@@ -575,70 +604,222 @@ Dilan
     </div>
 
 
-main
+
     <!-- RESUMEN DE VENTAS -->
     <div class="ventas-resumen">
 
         <div class="resumen-card">
+
+          <div class="resumen-card">
+
+>>>>>>> main
             <span>Total ventas</span>
             <strong id="totalVentas">$0</strong>
-        </div>
+          </div>
 
-        <div class="resumen-card">
+          <div class="resumen-card">
             <span>Total gastos</span>
             <strong id="totalGastos">$0</strong>
-        </div>
+          </div>
 
-        <div class="resumen-card">
+          <div class="resumen-card">
             <span>Balance</span>
             <strong id="balance">$0</strong>
+          </div>
+
         </div>
 
-    </div>
+        <!-- HISTORIAL DE OPERACIONES -->
+        <div class="tabla-ventas">
 
-
-    <!-- HISTORIAL DE OPERACIONES -->
-    <div class="tabla-ventas">
-
-        <div class="tabla-header">
+          <div class="tabla-header">
             <div>
-                <h3>Historial de operaciones</h3>
-                <p>
-                    Registro de ventas y gastos realizados.
-                </p>
+              <h3>Historial de operaciones</h3>
+              <p>Registro de ventas y gastos realizados.</p>
             </div>
-        </div>
+          </div>
 
-        <div class="tabla-wrapper">
+          <div class="tabla-wrapper">
 
             <table>
 
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Descripción</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Descripción</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
 
-                <tbody id="tablaventas">
-
-                    <tr>
-                        <td colspan="4">
-                            No hay operaciones registradas.
-                        </td>
-                    </tr>
-
-                </tbody>
+              <tbody id="tablaventas">
+                <tr>
+                  <td colspan="4">No hay operaciones registradas.</td>
+                </tr>
+              </tbody>
 
             </table>
 
+          </div>
+
         </div>
 
-    </div>
+      </section>
 
-</section>
+      <!-- SECCIÓN DE SALDOS Y PROVEEDORES -->
+      <section id="vista-saldos" class="vista">
+
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">FINANZAS</span>
+          <h2>Gestión de Saldos y Cuentas</h2>
+          <p>Controla los saldos del administrador, trabajador y las deudas con proveedores.</p>
+        </div>
+
+        <!-- CARDS RESUMEN DE SALDOS -->
+        <div class="ventas-resumen">
+
+          <div class="resumen-card">
+            <span>Saldo Administrador</span>
+            <strong id="saldoAdmin">$0</strong>
+          </div>
+
+          <div class="resumen-card">
+            <span>Saldo Trabajador</span>
+            <strong id="saldoTrabajador">$0</strong>
+          </div>
+
+          <div class="resumen-card">
+            <span>Deuda Proveedores</span>
+            <strong id="saldoProveedores" style="color: #e53935;">$0</strong>
+            <small style="font-size: 0.75rem; color: #888;">(Prestado)</small>
+          </div>
+
+        </div>
+
+        <!-- PANEL 1: REGISTRAR COMPRA A CRÉDITO -->
+        <div class="orden-container" style="margin-bottom: 25px;">
+          <div class="orden-header">
+            <div>
+              <h3>Pedir Prestado al Proveedor</h3>
+              <span>Aumenta la deuda con el proveedor por insumos o productos recibidos.</span>
+            </div>
+          </div>
+
+          <form id="formCompraProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
+            <div class="campo" style="flex: 2; min-width: 200px;">
+              <label for="descCompraProveedor">Detalle / Proveedor</label>
+              <input type="text" id="descCompraProveedor" placeholder="Escoge tu provedor" required>
+            </div>
+
+            <div class="campo campo-cantidad" style="flex: 1; min-width: 130px;">
+              <label for="montoCompraProveedor">Monto ($)</label>
+              <input type="number" id="montoCompraProveedor" min="1" placeholder="Ej: 100000" required>
+            </div>
+
+            <div class="campo" style="display: flex; align-items: flex-end;">
+              <button type="submit" class="btn-agregar" style="height: 42px; background-color: #e65100; color: #fff;">
+                Registrar Deuda
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PANEL 2: PAGAR DEUDA DE PROVEEDOR -->
+        <div class="orden-container" style="margin-bottom: 25px;">
+          <div class="orden-header">
+            <div>
+              <h3>Pagar a Proveedor</h3>
+              <span>Saca dinero del Saldo del Administrador para abonar o cancelar la deuda.</span>
+            </div>
+          </div>
+
+          <form id="formPagoProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
+            <div class="campo campo-cantidad" style="flex: 1; min-width: 180px;">
+              <label for="montoPagoProveedor">Monto a pagar ($)</label>
+              <input type="number" id="montoPagoProveedor" min="1" placeholder="Ej: 50000" required>
+              <label for="descPagoProveedor">Proveedor</label>
+              <input type="text" id="descPagoProveedor" placeholder="Escoge tu provedor" required>
+            </div>
+
+            <div class="campo" style="display: flex; align-items: flex-end;">
+              <button type="submit" class="btn-venta" style="height: 42px;">
+                Abonar a Deuda
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PANEL 3: AJUSTE MANUAL DE SALDOS -->
+        <div class="orden-container" style="margin-bottom: 25px;">
+          <div class="orden-header">
+            <div>
+              <h3>Ajuste Manual de Saldos</h3>
+              <span>Ingresa o retira dinero directamente del Admin o Trabajador.</span>
+            </div>
+          </div>
+
+          <form id="formAjusteSaldo" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
+            <div class="campo" style="flex: 1; min-width: 160px;">
+              <label for="cuentaAjuste">Cuenta</label>
+              <select id="cuentaAjuste" required>
+                <option value="">Seleccionar cuenta</option>
+                <option value="admin">Administrador</option>
+                <option value="trabajador">Trabajador</option>
+              </select>
+            </div>
+
+            <div class="campo" style="flex: 1; min-width: 140px;">
+              <label for="tipoAjuste">Operación</label>
+              <select id="tipoAjuste" required>
+                <option value="aumentar">Aumentar (+)</option>
+                <option value="rebajar">Rebajar (-)</option>
+              </select>
+            </div>
+
+            <div class="campo campo-cantidad" style="flex: 1; min-width: 130px;">
+              <label for="montoAjuste">Monto ($)</label>
+              <input type="number" id="montoAjuste" min="1" placeholder="Ej: 20000" required>
+            </div>
+
+            <div class="campo" style="display: flex; align-items: flex-end;">
+              <button type="submit" class="btn-agregar" style="height: 42px;">
+                Aplicar Ajuste
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- HISTORIAL DE MOVIMIENTOS -->
+        <div class="tabla-ventas">
+          <div class="tabla-header">
+            <div>
+              <h3>Historial de Movimientos de Saldos</h3>
+              <p>Registro completo de préstamos, pagos y ajustes realizados.</p>
+            </div>
+          </div>
+          <!-- Joselin pinguin -->
+
+          <div class="tabla-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Concepto</th>
+                  <th>Cuenta Afectada</th>
+                  <th>Tipo</th>
+                  <th>Monto</th>
+                </tr>
+              </thead>
+              <tbody id="tablaHistorialSaldos">
+                <tr>
+                  <td colspan="5" style="text-align: center;">No hay movimientos registrados.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
 
       <!-- REPORTES -->
       <section id="vista-reportes" class="vista">
@@ -656,6 +837,118 @@ main
         </article>
       </section>
 
+<!-- INVERSIONES -->
+<section id="vista-inversiones" class="vista">
+  <div class="titulo-vista">
+    <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
+    <h2>Inversiones del negocio</h2>
+    <p>Controla el dinero invertido y las ganancias generadas.</p>
+  </div>
+
+<!-- REGISTRAR INVERSIÓN -->
+<article class="panel panel-form" style="margin-bottom:20px;">
+  <div class="encabezado-panel">
+    <div>
+      <span class="etiqueta-seccion">REGISTRAR</span>
+      <h3>Inversión en insumos</h3>
+    </div>
+  </div>
+
+  <form id="formInversion" style="padding-top:18px;">
+    <div class="form-grid">
+      <div class="campo">
+        <label for="inversionDescripcion">Descripción</label>
+        <input id="inversionDescripcion" placeholder="Ej: Compra de verduras" required>
+      </div>
+      <div class="campo">
+        <label for="inversionValor">Valor invertido</label>
+        <input id="inversionValor" type="number" min="1" placeholder="Ej: 200000" required>
+      </div>
+    </div>
+    <div class="acciones">
+      <button class="boton-principal" type="submit">Guardar inversión</button>
+    </div>
+    <div id="mensajeInversion" class="mensaje"></div>
+  </form>
+
+  <div class="meta-progreso" style="margin-top:20px;">
+    <div class="meta-barra-fondo"><div id="invBarra" class="meta-barra"></div></div>
+    <div class="meta-datos">
+      <div><span>Por recuperar</span><strong id="invPorRecuperar">$0</strong></div>
+      <div><span>Recuperado</span><strong id="invRecuperado">$0</strong></div>
+      <div><span>Estado</span><strong id="invEstadoTexto">Sin inversión</strong></div>
+    </div>
+  </div>
+</article>
+
+  <section class="panel panel-inversiones-dashboard">
+    <div class="encabezado-panel">
+      <div>
+        <span class="etiqueta-seccion">RESUMEN</span>
+        <h3>Estado financiero</h3>
+      </div>
+      <button type="button" class="boton-principal" onclick="document.getElementById('inversionValor').focus()">
+  + Registrar inversión
+</button>
+    </div>
+
+    <div class="cuadricula-estadisticas">
+      <article class="tarjeta-estadistica">
+        <div class="icono-estadistica dorado">$</div>
+        <div class="informacion-estadistica">
+          <span>Total invertido</span>
+          <strong id="dashboardInversion">$0</strong>
+          <small>Inversión registrada en insumos</small>
+        </div>
+      </article>
+
+      <article class="tarjeta-estadistica">
+        <div class="icono-estadistica verde">$</div>
+        <div class="informacion-estadistica">
+          <span>Ingresos por ventas</span>
+          <strong id="dashboardIngresos">$0</strong>
+          <small>Ventas registradas</small>
+        </div>
+      </article>
+
+      <article class="tarjeta-estadistica">
+        <div class="icono-estadistica morado">$</div>
+        <div class="informacion-estadistica">
+          <span>Ganancia neta</span>
+          <strong id="dashboardGanancia">$0</strong>
+          <small>Después de costos y gastos</small>
+        </div>
+      </article>
+
+      <article class="tarjeta-estadistica">
+        <div class="icono-estadistica verde">%</div>
+        <div class="informacion-estadistica">
+          <span>Rentabilidad</span>
+          <strong id="dashboardRentabilidad">0%</strong>
+          <small>Retorno sobre la inversión</small>
+        </div>
+      </article>
+    </div>
+
+    <div class="reporte-box">
+      <h4>Resumen financiero</h4>
+      <div class="lista-inventario">
+        <div class="elemento-inventario">
+          <span>Inversión en insumos</span>
+          <strong id="dashboardCostoInsumos">$0</strong>
+        </div>
+        <div class="elemento-inventario">
+          <span>Otros gastos</span>
+          <strong id="dashboardGastos">$0</strong>
+        </div>
+        <div class="elemento-inventario">
+          <span>Resultado del negocio</span>
+          <strong id="dashboardBalance">$0</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
       <!-- CONFIGURACIÓN / AYUDA -->
       <section id="vista-configuracion" class="vista">
         <div class="titulo-vista"><span class="etiqueta-seccion">SISTEMA</span><h2>Configuración</h2><p>Opciones generales de la sesión actual.</p></div>
@@ -673,6 +966,7 @@ main
             <h4>Autenticación</h4><p>Inicio de sesión, validación de credenciales, verificación de rol, restablecimiento de contraseña y cierre de sesión.</p>
           </div>
           <div class="reporte-box"><h4>Gestión</h4><p>Usuarios: crear, modificar, eliminar e informar.
+Proveedores: crear, modificar, eliminar e informar.
 Alimentos: registrar, modificar, eliminar y registrar pérdidas.
 Inventario: consulta de existencias y actualización de cantidades.</p></div>
           <div class="reporte-box"><h4>Operación</h4><p>Sincronización, sedes, ventas, gastos, operaciones contables y reportes alimentarios.</p></div>
@@ -685,9 +979,12 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
       </footer>
     </main>
   </div>
-<!-- JOSELIN PINGUIN -->
+
+<!-- conexion con js  de joselin-->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
+<script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
 
 </body>
 </html>

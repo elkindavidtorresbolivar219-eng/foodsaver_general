@@ -8,6 +8,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
     rol      VARCHAR(20)  NOT NULL
              CHECK (rol IN ('Administrador', 'Operador', 'Contador', 'Consulta'))
 );
+CREATE TABLE IF NOT EXISTS proveedores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    telefono VARCHAR(30)
+);
 
 -- Migración por si la tabla ya existía sin "login"
 ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS login VARCHAR(50);
@@ -42,15 +47,17 @@ CREATE TABLE IF NOT EXISTS contabilidad (
     valor       BIGINT       NOT NULL CHECK (valor >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS sedes (
-    id            SERIAL PRIMARY KEY,
-    nombre        VARCHAR(50) NOT NULL UNIQUE,
-    estado        VARCHAR(20) NOT NULL DEFAULT 'Conectada',
-    actualizacion TIMESTAMPTZ
+CREATE TABLE IF NOT EXISTS movimientos_proveedor (
+    id SERIAL PRIMARY KEY,
+    proveedor_id INTEGER NOT NULL REFERENCES proveedores(id) ON DELETE CASCADE,
+    tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('Compra', 'Pago')),
+    monto BIGINT NOT NULL CHECK (monto > 0),
+    concepto VARCHAR(200),
+    fecha TIMESTAMP NOT NULL DEFAULT now()
 );
 
-INSERT INTO sedes (nombre) VALUES ('Sede principal'), ('Sede norte'), ('Sede sur')
-ON CONFLICT (nombre) DO NOTHING;
+
+
 
 -- Seguridad: bloquea el acceso por la API pública de Supabase.
 -- Tu backend (rol postgres) no se ve afectado.

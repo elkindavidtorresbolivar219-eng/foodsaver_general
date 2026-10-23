@@ -62,6 +62,16 @@ def inicializar():
     """Crea las tablas y los usuarios iniciales si la base está vacía."""
     ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
     db.ejecutar_archivo(ruta)
+
+    # Tabla de proveedores (no afecta si ya existe)
+    db.ejecutar(
+        """CREATE TABLE IF NOT EXISTS proveedores (
+               id SERIAL PRIMARY KEY,
+               nombre VARCHAR(100) NOT NULL,
+               telefono VARCHAR(30)
+           )"""
+    )
+
     total = db.consultar_uno("SELECT COUNT(*) AS total FROM usuarios")["total"]
     if total == 0:
         iniciales = [
@@ -190,6 +200,48 @@ def usuarios_eliminar(uid):
     return jsonify({"ok": True})
 
 
+# RUTAS DE PROVEEDORES
+@app.get("/api/proveedores")
+@login_requerido
+def proveedores_listar():
+    return jsonify(db.consultar(
+        "SELECT id, nombre,telefono FROM proveedores ORDER BY id"
+    ))
+
+
+@app.post("/api/proveedores")
+@login_requerido
+def proveedores_guardar():
+    d = datos_json()
+    pid = entero(d.get("id"), 1)
+    nombre = (d.get("nombre") or "").strip()
+    telefono = (d.get("telefono") or "").strip()
+
+    if not nombre or not telefono:
+        return error("Nombre y teléfono son obligatorios.")
+
+    if not telefono.isdigit():
+        return error("El teléfono solo puede contener números.")
+
+    if pid:
+        db.ejecutar(
+            "UPDATE proveedores SET nombre=%s,telefono=%s WHERE id=%s",
+            (nombre, telefono, pid),
+        )
+        return jsonify({"ok": True, "mensaje": "Proveedor modificado correctamente."})
+
+    db.ejecutar(
+        "INSERT INTO proveedores (nombre,  telefono) VALUES (%s, %s)",
+        (nombre, telefono),
+    )
+    return jsonify({"ok": True, "mensaje": "Proveedor creado correctamente."})
+@app.post("/api/proveedores/<int:pid>/eliminar")
+@login_requerido
+def proveedores_eliminar(pid):
+    db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
+    return jsonify({"ok": True})
+
+
 # RUTAS DE ALIMENTOS E INVENTARIO (RF 3)
 @app.get("/api/alimentos")
 @login_requerido
@@ -210,7 +262,7 @@ def alimentos_guardar():
     categoria = (d.get("categoria") or "").strip()
     sede = (d.get("sede") or "").strip()
     cantidad = entero(d.get("cantidad"), 0)
-    precio = entero(d.get("precio"), 0)                      # NUEVO
+    precio = entero(d.get("precio"), 0)
     try:
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
     except ValueError:
@@ -220,20 +272,20 @@ def alimentos_guardar():
         return error("Nombre, categoría y sede son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
-    if precio is None:                                       # NUEVO
+    if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
 
     if aid:
         db.ejecutar(
             """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",   # precio añadido
-            (nombre, categoria, cantidad, precio, vencimiento, sede, aid), # precio en el mismo orden
+                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
+            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
         )
         return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
 
     db.ejecutar(
         """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
-           VALUES (%s, %s, %s, %s, %s, %s)""",                             # un %s más
+           VALUES (%s, %s, %s, %s, %s, %s)""",
         (nombre, categoria, cantidad, precio, vencimiento, sede),
     )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
@@ -333,6 +385,67 @@ def contabilidad_registrar():
         (tipo, descripcion, valor),
     )
     return jsonify({"ok": True, "mensaje": "Operación contable registrada correctamente."})
+# RUTAS DE BILLETERAS DE PROVEEDORES
+@app.get("/api/saldos-proveedores")
+@login_requerido
+def saldos_proveedores_listar():
+    return jsonify(db.consultar(
+        """SELECT p.id, p.nombre,
+                  COALESCE(SUM(CASE WHEN m.tipo = 'Compra' THEN m.monto END), 0)::BIGINT AS compras,
+                  COALESCE(SUM(CASE WHEN m.tipo = 'Pago' THEN m.monto END), 0)::BIGINT AS pagos
+           FROM proveedores p
+           LEFT JOIN movimientos_proveedor m ON m.proveedor_id = p.id
+           GROUP BY p.id
+           ORDER BY p.id"""
+    ))
+
+
+@app.get("/api/saldos-proveedores/movimientos")
+@login_requerido
+def saldos_proveedores_movimientos():
+    return jsonify(db.consultar(
+        """SELECT m.id, to_char(m.fecha, 'DD/MM/YYYY HH24:MI') AS fecha,
+                  p.nombre AS proveedor, m.tipo, m.monto, m.concepto
+           FROM movimientos_proveedor m
+           JOIN proveedores p ON p.id = m.proveedor_id
+           ORDER BY m.id DESC
+           LIMIT 100"""
+    ))
+
+
+@app.post("/api/saldos-proveedores")
+@login_requerido
+def saldos_proveedores_registrar():
+    d = datos_json()
+    pid = entero(d.get("proveedor_id"), 1)
+    monto = entero(d.get("monto"), 1)
+    tipo = d.get("tipo")
+    concepto = (d.get("concepto") or "").strip()
+
+    if not pid or not monto:
+        return error("Proveedor y monto (mayor a 0) son obligatorios.")
+    if tipo not in ("Compra", "Pago"):
+        return error("Tipo de movimiento no válido.")
+
+    with db.cursor() as cur:
+        cur.execute("SELECT id FROM proveedores WHERE id = %s FOR UPDATE", (pid,))
+        if not cur.fetchone():
+            return error("El proveedor no existe.", 404)
+
+        if tipo == "Pago":
+            cur.execute(
+                """SELECT COALESCE(SUM(CASE WHEN tipo = 'Compra' THEN monto ELSE -monto END), 0) AS deuda
+                   FROM movimientos_proveedor WHERE proveedor_id = %s""",
+                (pid,),
+            )
+            if monto > cur.fetchone()["deuda"]:
+                return error("El pago supera la deuda actual con este proveedor.")
+
+        cur.execute(
+            "INSERT INTO movimientos_proveedor (proveedor_id, tipo, monto, concepto) VALUES (%s, %s, %s, %s)",
+            (pid, tipo, monto, concepto or ("Compra a crédito" if tipo == "Compra" else "Pago de deuda")),
+        )
+    return jsonify({"ok": True, "mensaje": "Movimiento registrado correctamente."})
 
 
 # EJECUCIÓN DE LA APLICACIÓN
@@ -340,10 +453,6 @@ inicializar()
 
 if __name__ == "__main__":
     # Debug solo si defines FLASK_DEBUG=1 en tu .env local
-Dilan
-    app.run(debug=os.getenv("FLASK_DEBUG") == "1")
-=======
     app.run(debug=os.getenv("FLASK_DEBUG") == "1")
 
-    #JOse
-main
+    #joselin
