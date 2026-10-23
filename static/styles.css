@@ -1403,10 +1403,7 @@ footer {
   }
 }
 
-<<<<<<< HEAD
-=======
-Dilan
->>>>>>> main
+
 
 /* =========================================================
    CONTABILIDAD: VENTAS Y MESAS
@@ -1450,8 +1447,7 @@ Dilan
   place-items: center;
   font-size: 24px;
   background: rgba(255, 185, 20, .10);
-<<<<<<< HEAD
-=======
+
   border-radius: 12px;
 }
 
@@ -1840,12 +1836,12 @@ Dilan
   .btn-venta {
     width: 100%;
   }
-=======
+
 /* Meta de ventas */
 .meta-container {
   background: var(--card-bg, #22212e);
   border: 1px solid rgba(255, 255, 255, 0.08);
->>>>>>> main
+
   border-radius: 12px;
 }
 
@@ -2291,7 +2287,7 @@ Dilan
 
 @media (max-width: 700px) {
   .meta-datos { grid-template-columns: repeat(2, 1fr); }
-<<<<<<< HEAD
+
 }
 
 
@@ -2324,7 +2320,5 @@ Dilan
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
-=======
-  main
->>>>>>> main
-}
+
+}}
