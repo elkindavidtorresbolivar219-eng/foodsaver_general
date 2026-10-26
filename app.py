@@ -19,7 +19,7 @@ app.config.update(
 db = Conexion()
 
 ROLES = ("Administrador", "Operador", "Contador", "Consulta")
-TIPOS_CONTABLES = ("Venta", "Gasto operativo")
+TIPOS_CONTABLES = ("Venta", "Gasto operativo", "Inversión en insumos")
 
 
 # UTILIDADES Y DECORADORES
@@ -235,6 +235,8 @@ def proveedores_guardar():
         (nombre, telefono),
     )
     return jsonify({"ok": True, "mensaje": "Proveedor creado correctamente."})
+
+
 @app.post("/api/proveedores/<int:pid>/eliminar")
 @login_requerido
 def proveedores_eliminar(pid):
@@ -247,9 +249,13 @@ def proveedores_eliminar(pid):
 @login_requerido
 def alimentos_listar():
     return jsonify(db.consultar(
-        """SELECT id, nombre, categoria, cantidad, precio,
-                  to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, 
-           FROM alimentos ORDER BY id"""
+        """SELECT a.id, a.nombre, a.categoria, a.cantidad, a.precio,
+                  to_char(a.vencimiento, 'YYYY-MM-DD') AS vencimiento,
+                  a.proveedor_id,
+                  p.nombre AS proveedor
+           FROM alimentos a
+           LEFT JOIN proveedores p ON p.id = a.proveedor_id
+           ORDER BY a.id"""
     ))
 
 
@@ -260,7 +266,8 @@ def alimentos_guardar():
     aid = entero(d.get("id"), 1)
     nombre = (d.get("nombre") or "").strip()
     categoria = (d.get("categoria") or "").strip()
-    
+    proveedor_id = entero(d.get("proveedor_id"), 1)
+
     cantidad = entero(d.get("cantidad"), 0)
     precio = entero(d.get("precio"), 0)
     try:
@@ -268,26 +275,32 @@ def alimentos_guardar():
     except ValueError:
         return error("La fecha de vencimiento no es válida.")
 
-    if not nombre or not categoria or not cantidad or not precio:
-        return error("Nombre, categoría, cantidad y precio son obligatorios.")
+    if not nombre or not categoria:
+        return error("Nombre y categoría son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
     if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
+    if not proveedor_id:
+        return error("Selecciona el proveedor de origen.")
 
-    if aid:
+    try:
+        if aid:
+            db.ejecutar(
+                """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
+                          precio=%s, vencimiento=%s, proveedor_id=%s WHERE id=%s""",
+                (nombre, categoria, cantidad, precio, vencimiento, proveedor_id, aid),
+            )
+            return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
+
         db.ejecutar(
-            """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      precio=%s, vencimiento=%s WHERE id=%s""",
-            (nombre, categoria, cantidad, precio, vencimiento,  aid),
+            """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, proveedor_id)
+               VALUES (%s, %s, %s, %s, %s, %s)""",
+            (nombre, categoria, cantidad, precio, vencimiento, proveedor_id),
         )
-        return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
+    except pg_errors.ForeignKeyViolation:
+        return error("El proveedor seleccionado no existe.", 404)
 
-    db.ejecutar(
-        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, )
-           VALUES (%s, %s, %s, %s, %s, %s)""",
-        (nombre, categoria, cantidad, precio, vencimiento,),
-    )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 
 
@@ -337,9 +350,17 @@ def perdidas_registrar():
     return jsonify({"ok": True, "mensaje": "Pérdida registrada y descontada del inventario."})
 
 
-
-
-
+# RUTAS DE SEDES (el frontend las consulta en cada carga)
+@app.get("/api/sedes")
+@login_requerido
+def sedes_listar():
+    try:
+        return jsonify(db.consultar(
+            "SELECT id, nombre, estado, actualizacion FROM sedes ORDER BY id"
+        ))
+    except Exception:
+        # Si la tabla no existe o tiene otras columnas, no se rompe la carga.
+        return jsonify([])
 
 
 # RUTAS DE CONTABILIDAD (RF 5)
@@ -372,6 +393,8 @@ def contabilidad_registrar():
         (tipo, descripcion, valor),
     )
     return jsonify({"ok": True, "mensaje": "Operación contable registrada correctamente."})
+
+
 # RUTAS DE BILLETERAS DE PROVEEDORES
 @app.get("/api/saldos-proveedores")
 @login_requerido
