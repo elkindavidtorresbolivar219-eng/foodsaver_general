@@ -249,11 +249,6 @@ def proveedores_eliminar(pid):
 @login_requerido
 def alimentos_listar():
     return jsonify(db.consultar(
-<<<<<<< HEAD
-        """SELECT id, nombre, categoria, cantidad, precio,
-                  to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, sede
-           FROM alimentos ORDER BY id"""
-=======
         """SELECT a.id, a.nombre, a.categoria, a.cantidad, a.precio,
                   to_char(a.vencimiento, 'YYYY-MM-DD') AS vencimiento,
                   a.proveedor_id,
@@ -261,7 +256,6 @@ def alimentos_listar():
            FROM alimentos a
            LEFT JOIN proveedores p ON p.id = a.proveedor_id
            ORDER BY a.id"""
->>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     ))
 
 
@@ -287,8 +281,6 @@ def alimentos_guardar():
         return error("La cantidad debe ser un número mayor o igual a 0.")
     if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
-<<<<<<< HEAD
-=======
     if not proveedor_id:
         return error("Selecciona el proveedor de origen.")
 
@@ -300,30 +292,15 @@ def alimentos_guardar():
                 (nombre, categoria, cantidad, precio, vencimiento, proveedor_id, aid),
             )
             return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
->>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
         db.ejecutar(
-<<<<<<< HEAD
-            """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
-            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
-=======
             """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, proveedor_id)
                VALUES (%s, %s, %s, %s, %s, %s)""",
             (nombre, categoria, cantidad, precio, vencimiento, proveedor_id),
->>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
         )
     except pg_errors.ForeignKeyViolation:
         return error("El proveedor seleccionado no existe.", 404)
 
-<<<<<<< HEAD
-    db.ejecutar(
-        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
-           VALUES (%s, %s, %s, %s, %s, %s)""",
-        (nombre, categoria, cantidad, precio, vencimiento, sede),
-    )
-=======
->>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 
 

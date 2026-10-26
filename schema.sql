@@ -78,3 +78,5 @@ ALTER TABLE alimentos             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE perdidas              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contabilidad          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE movimientos_proveedor ENABLE ROW LEVEL SECURITY;
+
+--  joselin pinguin
