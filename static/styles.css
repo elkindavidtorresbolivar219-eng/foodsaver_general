@@ -75,7 +75,7 @@ a {
   display: flex;
   flex-direction: column;
   background: #0D0C16;
-  border-right: 1px solid var( --gold);
+  border-right: 1px solid var( --border);
   z-index: 10;
 }
 
@@ -1886,7 +1886,7 @@ footer {
   .btn-venta {
     width: 100%;
   }
-
+}
 /* Meta de ventas */
 .meta-container {
   background: var(--card-bg, #22212e);
@@ -2283,9 +2283,9 @@ footer {
 }
 
 
-/* =========================================================
-   META DE VENTAS (mismo estilo de siempre)
-   ========================================================= */
+/* 
+   META DE VENTAS 
+ */
 
 .meta-container {
   background: var(--card);
@@ -2371,5 +2371,86 @@ footer {
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
+  }
+
+/*  MODO CLARO  */
+:root[data-tema="claro"] {
+  --card: #FFFFFF;
+  --white: #17161F;
+  --text-secondary: #000000;
+  --border: #E3E1EA;
+  --shadow: 0 10px 30px rgba(20, 20, 40, .08);
+}
+
+:root[data-tema="claro"] body {
+  background: #F4F3F8;
+}
+
+
+.barra-lateral,
+.login-pantalla {
+  --card: #211F2D;
+  --white: #FFFFFF;
+  --text-secondary: #C7C5CC;
+  --border: #34313F;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+
+/* Superficies que tenían color fijo */
+:root[data-tema="claro"] .campo input,
+:root[data-tema="claro"] .campo select,
+:root[data-tema="claro"] .campo textarea,
+:root[data-tema="claro"] .panel select,
+:root[data-tema="claro"] .panel-reportes select,
+:root[data-tema="claro"] .icono-producto,
+:root[data-tema="claro"] .reporte-box,
+:root[data-tema="claro"] .orden-footer,
+:root[data-tema="claro"] .boton-secundario,
+:root[data-tema="claro"] .acciones-tabla button,
+:root[data-tema="claro"] #listaOrden button {
+  background: #F3F2F7;
+}
+
+:root[data-tema="claro"] .progreso {
+  background: #E9E7F0;
+}
+
+:root[data-tema="claro"] .bienvenida {
+  background: linear-gradient(115deg, #FFFFFF, #F1EFF7);
+}
+
+
+:root[data-tema="claro"] .etiqueta-superior,
+:root[data-tema="claro"] .etiqueta-seccion,
+:root[data-tema="claro"] .enlace-ver,
+:root[data-tema="claro"] .tabla th,
+:root[data-tema="claro"] .tabla-wrapper th,
+:root[data-tema="claro"] .orden-productos-header,
+:root[data-tema="claro"] .orden-total strong,
+:root[data-tema="claro"] .resumen-card:nth-child(3) strong {
+  color: #B07800;
+}
+
+:root[data-tema="claro"] .tarjeta-estadistica,
+:root[data-tema="claro"] .panel {
+  box-shadow: 0 4px 18px rgba(20, 20, 40, .06);
+}
+
+
+.icono-tema {
+  display: inline-block;
+  transition: transform .5s ease;
+}
+:root[data-tema="claro"] .icono-tema {
+  transform: rotate(360deg);
+}
+
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 
 
