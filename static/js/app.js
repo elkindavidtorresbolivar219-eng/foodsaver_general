@@ -1,23 +1,45 @@
 (() => {
   "use strict";
 
+<<<<<<< HEAD
+  /* COMUNICACIÓN CON EL SERVIDOR */
+=======
   /* 
      COMUNICACIÓN CON EL SERVIDOR
    */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   async function api(url, opciones) {
     const resp = await fetch(
       url,
+<<<<<<< HEAD
+      Object.assign({ credentials: "same-origin" }, opciones)
+=======
       Object.assign(
         { credentials: "same-origin" },
         opciones
       )
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     let cuerpo = {};
 
     try {
       cuerpo = await resp.json();
+<<<<<<< HEAD
+    } catch (e) {}
+
+    if (!resp.ok) {
+      if (resp.status === 401 && url !== "/api/login") {
+        mostrarLogin();
+      }
+
+      throw new Error(
+        cuerpo.error || "No se pudo comunicar con el servidor."
+      );
+    }
+
+=======
     } catch (e) {
       // La respuesta del servidor no contiene JSON.
     }
@@ -32,6 +54,7 @@
       );
     }
 
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     return cuerpo;
   }
 
@@ -46,9 +69,13 @@
       body: JSON.stringify(cuerpo || {})
     });
 
+<<<<<<< HEAD
+  /* DATOS */
+=======
   /* 
      DATOS
   */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   let sesion = null;
 
@@ -57,6 +84,12 @@
     alimentos: [],
     perdidas: [],
     contabilidad: [],
+<<<<<<< HEAD
+    sedes: []
+  };
+
+  /* SISTEMA DE MESAS */
+=======
     sedes: [],
     proveedores: []
   };
@@ -64,6 +97,7 @@
   /*
      SISTEMA DE MESAS
    */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   let mesaSeleccionada = null;
 
@@ -74,6 +108,12 @@
     4: { estado: "disponible", productos: [] }
   };
 
+<<<<<<< HEAD
+  /* FUNCIONES GENERALES */
+
+  const hoyISO = () =>
+    new Date().toLocaleDateString("en-CA");
+=======
   /* 
      FUNCIONES GENERALES
  */
@@ -86,6 +126,7 @@
 
     return `${anio}-${mes}-${dia}`;
   };
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   function esc(texto) {
     const mapa = {
@@ -134,6 +175,14 @@
       style: "currency",
       currency: "COP",
       maximumFractionDigits: 0
+<<<<<<< HEAD
+    }).format(valor || 0);
+  }
+
+  function iniciales(nombre) {
+    return nombre
+      .split(" ")
+=======
     }).format(Number(valor) || 0);
   }
 
@@ -142,6 +191,7 @@
       .trim()
       .split(/\s+/)
       .filter(Boolean)
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       .map(x => x[0])
       .join("")
       .slice(0, 2)
@@ -151,6 +201,14 @@
   function fechaBonita(fecha) {
     if (!fecha) return "-";
 
+<<<<<<< HEAD
+    const [y, m, d] = fecha.split("-");
+
+    return d + "/" + m + "/" + y;
+  }
+
+  /* CARGA DE DATOS */
+=======
     const [y, m, d] = String(fecha).split("-");
 
     if (!y || !m || !d) {
@@ -163,6 +221,7 @@
   /* 
      CARGA DE DATOS
    */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   async function cargarDatos() {
     if (!sesion) return;
@@ -195,6 +254,13 @@
   }
 
   function recargar() {
+<<<<<<< HEAD
+    return cargarDatos()
+      .catch(err => console.error(err));
+  }
+
+  /* VISTAS Y SESIÓN */
+=======
     return cargarDatos().catch(err => {
       console.error("Error al cargar los datos:", err);
     });
@@ -203,26 +269,47 @@
   /* 
      VISTAS Y SESIÓN
    */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   function mostrarVista(nombre) {
     if (!sesion) return;
 
+<<<<<<< HEAD
+    document
+      .querySelectorAll(".vista")
+      .forEach(v => v.classList.remove("activa"));
+
+    const vista =
+      document.getElementById("vista-" + nombre);
+=======
     document.querySelectorAll(".vista").forEach(v => {
       v.classList.remove("activa");
     });
 
     const vista = document.getElementById("vista-" + nombre);
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     if (vista) {
       vista.classList.add("activa");
     }
 
+<<<<<<< HEAD
+    document
+      .querySelectorAll(".elemento-menu")
+      .forEach(a => {
+        a.classList.toggle(
+          "activo",
+          a.dataset.vista === nombre
+        );
+      });
+=======
     document.querySelectorAll(".elemento-menu").forEach(a => {
       a.classList.toggle(
         "activo",
         a.dataset.vista === nombre
       );
     });
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     const titulos = {
 
@@ -276,14 +363,23 @@
       inventario: ["Inicio / Inventario", "Inventario en tiempo real"],
       sincronizacion: ["Inicio / Sincronización", "Sincronización de inventario"],
       ventas: ["Inicio / Ventas", "Gestión de mesas y ventas"],
+<<<<<<< HEAD
+=======
       saldos: ["Inicio / Saldos", "Gestión de saldos y cuentas"],
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       reportes: ["Inicio / Reportes", "Generación de reportes"],
       configuracion: ["Inicio / Configuración", "Configuración"],
       ayuda: ["Inicio / Ayuda", "Ayuda"]
 
     };
 
+<<<<<<< HEAD
+    const t =
+      titulos[nombre] ||
+      ["Inicio", "Meraki"];
+=======
     const t = titulos[nombre] || ["Inicio", "Meraki"];
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     setText("migas", t[0]);
     setText("tituloSuperior", t[1]);
@@ -306,8 +402,18 @@
       login: usuario.login
     };
 
+<<<<<<< HEAD
+    document
+      .getElementById("pantallaLogin")
+      .classList.add("oculto");
+
+    document
+      .getElementById("aplicacion")
+      .classList.remove("oculto");
+=======
     document.getElementById("pantallaLogin")?.classList.add("oculto");
     document.getElementById("aplicacion")?.classList.remove("oculto");
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     setText("nombreSidebar", sesion.nombre);
     setText("rolSidebar", sesion.rol);
@@ -321,6 +427,17 @@
   }
 
   function aplicarPermisos() {
+<<<<<<< HEAD
+    const enlaceUsuarios =
+      document.querySelector(
+        '[data-vista="usuarios"]'
+      );
+
+    if (enlaceUsuarios) {
+      enlaceUsuarios.style.display =
+        sesion &&
+        sesion.rol === "Administrador"
+=======
     const enlaceUsuarios = document.querySelector(
       '[data-vista="usuarios"]'
     );
@@ -328,6 +445,7 @@
     if (enlaceUsuarios) {
       enlaceUsuarios.style.display =
         sesion && sesion.rol === "Administrador"
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           ? "flex"
           : "none";
     }
@@ -341,6 +459,26 @@
       alimentos: [],
       perdidas: [],
       contabilidad: [],
+<<<<<<< HEAD
+      sedes: []
+    };
+
+    document
+      .getElementById("aplicacion")
+      .classList.add("oculto");
+
+    document
+      .getElementById("pantallaLogin")
+      .classList.remove("oculto");
+
+    document
+      .getElementById("formLogin")
+      .reset();
+
+    document
+      .getElementById("formRestablecer")
+      .classList.add("oculto");
+=======
       sedes: [],
       proveedores: []
     };
@@ -349,20 +487,83 @@
     document.getElementById("pantallaLogin")?.classList.remove("oculto");
     document.getElementById("formLogin")?.reset();
     document.getElementById("formRestablecer")?.classList.add("oculto");
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
   }
 
   async function cerrarSesion() {
     try {
       await POST("/api/logout");
+<<<<<<< HEAD
+    } catch (e) {}
+=======
     } catch (e) {
       console.error("No se pudo cerrar la sesión en el servidor:", e);
     }
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     mostrarLogin();
   }
 
   window.cerrarSesion = cerrarSesion;
 
+<<<<<<< HEAD
+  document
+    .querySelectorAll(".elemento-menu")
+    .forEach(enlace => {
+      enlace.addEventListener("click", e => {
+        e.preventDefault();
+
+        mostrarVista(
+          enlace.dataset.vista
+        );
+      });
+    });
+
+  /* LOGIN */
+
+  document
+    .getElementById("formLogin")
+    .addEventListener("submit", async e => {
+      e.preventDefault();
+
+      try {
+        const usuario =
+          await POST("/api/login", {
+            usuario:
+              document
+                .getElementById("loginUsuario")
+                .value
+                .trim(),
+
+            clave:
+              document
+                .getElementById("loginClave")
+                .value
+          });
+
+        await iniciarSesion(usuario);
+
+      } catch (err) {
+        mensaje(
+          "mensajeLogin",
+          err.message,
+          "error"
+        );
+      }
+    });
+
+  document
+    .getElementById("btnRestablecer")
+    .addEventListener("click", () => {
+      document
+        .getElementById("formRestablecer")
+        .classList.toggle("oculto");
+    });
+
+  document
+    .getElementById("formRestablecer")
+    .addEventListener("submit", async e => {
+=======
   document.querySelectorAll(".elemento-menu").forEach(enlace => {
     enlace.addEventListener("click", e => {
       e.preventDefault();
@@ -404,14 +605,28 @@
   document.getElementById("formRestablecer")?.addEventListener(
     "submit",
     async e => {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       e.preventDefault();
 
       const formulario = e.target;
 
       try {
         await POST("/api/restablecer", {
+<<<<<<< HEAD
+          usuario:
+            document
+              .getElementById("recUsuario")
+              .value
+              .trim(),
+
+          clave:
+            document
+              .getElementById("recNuevaClave")
+              .value
+=======
           usuario: document.getElementById("recUsuario").value.trim(),
           clave: document.getElementById("recNuevaClave").value
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
         });
 
         mensaje(
@@ -421,6 +636,74 @@
         );
 
         formulario.reset();
+<<<<<<< HEAD
+
+      } catch (err) {
+        mensaje(
+          "mensajeReset",
+          err.message,
+          "error"
+        );
+      }
+    });
+
+  document
+    .getElementById("btnPerfil")
+    .addEventListener(
+      "click",
+      () => mostrarVista("configuracion")
+    );
+
+  /* USUARIOS */
+
+  document
+    .getElementById("formUsuario")
+    .addEventListener("submit", async e => {
+      e.preventDefault();
+
+      try {
+        const id =
+          Number(
+            document
+              .getElementById("usuarioId")
+              .value
+          ) || null;
+
+        const nombre =
+          document
+            .getElementById("usuarioNombre")
+            .value
+            .trim();
+
+        const apellido =
+          document
+            .getElementById("usuarioApellido")
+            .value
+            .trim();
+
+        const usuario =
+          document
+            .getElementById("usuarioLogin")
+            .value
+            .trim();
+
+        const clave =
+          document
+            .getElementById("usuarioClave")
+            .value;
+
+        const rol =
+          document
+            .getElementById("usuarioRol")
+            .value;
+
+        if (
+          !nombre ||
+          !apellido ||
+          !usuario ||
+          !rol
+        ) {
+=======
       } catch (err) {
         mensaje("mensajeReset", err.message, "error");
       }
@@ -453,11 +736,16 @@
         const rol = document.getElementById("usuarioRol").value;
 
         if (!nombre || !apellido || !usuario || !rol) {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           mensaje(
             "mensajeUsuario",
             "Completa todos los campos obligatorios.",
             "error"
           );
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           return;
         }
 
@@ -467,6 +755,30 @@
             "La contraseña debe tener mínimo 4 caracteres.",
             "error"
           );
+<<<<<<< HEAD
+
+          return;
+        }
+
+        const r =
+          await POST(
+            "/api/usuarios",
+            {
+              id: id,
+              nombre: nombre,
+              apellido: apellido,
+              usuario: usuario,
+              login: usuario,
+              clave: clave,
+              rol: rol
+            }
+          );
+
+        mensaje(
+          "mensajeUsuario",
+          r.mensaje ||
+            "Usuario guardado correctamente.",
+=======
           return;
         }
 
@@ -483,10 +795,49 @@
         mensaje(
           "mensajeUsuario",
           r.mensaje || "Usuario guardado correctamente.",
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           "ok"
         );
 
         limpiarUsuario();
+<<<<<<< HEAD
+
+        await recargar();
+
+      } catch (err) {
+        mensaje(
+          "mensajeUsuario",
+          err.message,
+          "error"
+        );
+      }
+    });
+
+  function limpiarUsuario() {
+    document
+      .getElementById("formUsuario")
+      .reset();
+
+    document
+      .getElementById("usuarioId")
+      .value = "";
+
+    document
+      .getElementById("usuarioClave")
+      .required = true;
+  }
+
+  window.limpiarUsuario =
+    limpiarUsuario;
+
+  function editarUsuario(id) {
+    const u =
+      datos.usuarios.find(
+        usuario =>
+          Number(usuario.id) ===
+          Number(id)
+      );
+=======
         await recargar();
       } catch (err) {
         mensaje("mensajeUsuario", err.message, "error");
@@ -516,12 +867,66 @@
     const u = datos.usuarios.find(
       usuario => Number(usuario.id) === Number(id)
     );
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     if (!u) {
-      mensaje("mensajeUsuario", "No se encontró el usuario.", "error");
+      mensaje(
+        "mensajeUsuario",
+        "No se encontró el usuario.",
+        "error"
+      );
+
       return;
     }
 
+<<<<<<< HEAD
+    document
+      .getElementById("usuarioId")
+      .value = u.id || "";
+
+    document
+      .getElementById("usuarioNombre")
+      .value = u.nombre || "";
+
+    document
+      .getElementById("usuarioApellido")
+      .value = u.apellido || "";
+
+    document
+      .getElementById("usuarioLogin")
+      .value =
+        u.login ||
+        u.usuario ||
+        "";
+
+    document
+      .getElementById("usuarioClave")
+      .value = "";
+
+    document
+      .getElementById("usuarioClave")
+      .required = false;
+
+    document
+      .getElementById("usuarioRol")
+      .value = u.rol || "";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  window.editarUsuario =
+    editarUsuario;
+
+  async function eliminarUsuario(id) {
+    if (
+      !confirm(
+        "¿Deseas eliminar este usuario?"
+      )
+    ) {
+=======
     document.getElementById("usuarioId").value = u.id || "";
     document.getElementById("usuarioNombre").value = u.nombre || "";
     document.getElementById("usuarioApellido").value = u.apellido || "";
@@ -537,11 +942,20 @@
 
   async function eliminarUsuario(id) {
     if (!confirm("¿Deseas eliminar este usuario?")) {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       return;
     }
 
     try {
+<<<<<<< HEAD
+      await POST(
+        "/api/usuarios/" +
+        id +
+        "/eliminar"
+      );
+=======
       await POST("/api/usuarios/" + id + "/eliminar");
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
       mensaje(
         "mensajeUsuario",
@@ -550,11 +964,160 @@
       );
 
       await recargar();
+
     } catch (err) {
-      mensaje("mensajeUsuario", err.message, "error");
+      mensaje(
+        "mensajeUsuario",
+        err.message,
+        "error"
+      );
     }
   }
 
+<<<<<<< HEAD
+  window.eliminarUsuario =
+    eliminarUsuario;
+
+  /* ALIMENTOS */
+
+  document
+    .getElementById("formAlimento")
+    .addEventListener("submit", async e => {
+      e.preventDefault();
+
+      try {
+        const r =
+          await POST(
+            "/api/alimentos",
+            {
+              id:
+                Number(
+                  document
+                    .getElementById("alimentoId")
+                    .value
+                ) || null,
+
+              nombre:
+                document
+                  .getElementById("alimentoNombre")
+                  .value
+                  .trim(),
+
+              categoria:
+                document
+                  .getElementById("alimentoCategoria")
+                  .value,
+
+              cantidad:
+                Number(
+                  document
+                    .getElementById("alimentoCantidad")
+                    .value
+                ),
+
+              precio:
+                Number(
+                  document
+                    .getElementById("alimentoPrecio")
+                    .value
+                ),
+
+              vencimiento:
+                document
+                  .getElementById("alimentoVencimiento")
+                  .value,
+
+              sede:
+                document
+                  .getElementById("alimentoSede")
+                  .value
+            }
+          );
+
+        mensaje(
+          "mensajeAlimento",
+          r.mensaje,
+          "ok"
+        );
+
+        limpiarAlimento();
+
+        await recargar();
+
+      } catch (err) {
+        mensaje(
+          "mensajeAlimento",
+          err.message,
+          "error"
+        );
+      }
+    });
+
+  function limpiarAlimento() {
+    document
+      .getElementById("formAlimento")
+      .reset();
+
+    document
+      .getElementById("alimentoId")
+      .value = "";
+  }
+
+  window.limpiarAlimento =
+    limpiarAlimento;
+
+  function editarAlimento(id) {
+    const a =
+      datos.alimentos.find(
+        x => x.id === id
+      );
+
+    if (!a) return;
+
+    document
+      .getElementById("alimentoId")
+      .value = a.id;
+
+    document
+      .getElementById("alimentoNombre")
+      .value = a.nombre;
+
+    document
+      .getElementById("alimentoCategoria")
+      .value = a.categoria;
+
+    document
+      .getElementById("alimentoCantidad")
+      .value = a.cantidad;
+
+    document
+      .getElementById("alimentoPrecio")
+      .value = a.precio;
+
+    document
+      .getElementById("alimentoVencimiento")
+      .value = a.vencimiento;
+
+    document
+      .getElementById("alimentoSede")
+      .value = a.sede;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  window.editarAlimento =
+    editarAlimento;
+
+  async function eliminarAlimento(id) {
+    if (
+      !confirm(
+        "¿Desea eliminar este alimento?"
+      )
+    ) {
+=======
   window.eliminarUsuario = eliminarUsuario;
 
   function generarInformeUsuarios() {
@@ -834,24 +1397,47 @@ let stockOriginal = 0;
 
   async function eliminarAlimento(id) {
     if (!confirm("¿Deseas eliminar este alimento?")) {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       return;
     }
 
     try {
+<<<<<<< HEAD
+      await POST(
+        "/api/alimentos/" +
+        id +
+        "/eliminar"
+=======
       await POST("/api/alimentos/" + id + "/eliminar");
 
       mensaje(
         "mensajeAlimento",
         "Alimento eliminado correctamente.",
         "ok"
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       );
 
       await recargar();
+
     } catch (err) {
-      mensaje("mensajeAlimento", err.message, "error");
+      mensaje(
+        "mensajeAlimento",
+        err.message,
+        "error"
+      );
     }
   }
 
+<<<<<<< HEAD
+  window.eliminarAlimento =
+    eliminarAlimento;
+
+  /* PÉRDIDAS */
+
+  document
+    .getElementById("formPerdida")
+    .addEventListener("submit", async e => {
+=======
   window.eliminarAlimento = eliminarAlimento;
 
   /* 
@@ -861,27 +1447,689 @@ let stockOriginal = 0;
   document.getElementById("formPerdida")?.addEventListener(
     "submit",
     async e => {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       e.preventDefault();
 
       const formulario = e.target;
 
       try {
+<<<<<<< HEAD
+        const r =
+          await POST(
+            "/api/perdidas",
+            {
+              alimento_id:
+                Number(
+                  document
+                    .getElementById("perdidaAlimento")
+                    .value
+                ),
+
+              cantidad:
+                Number(
+                  document
+                    .getElementById("perdidaCantidad")
+                    .value
+                ),
+
+              motivo:
+                document
+                  .getElementById("perdidaMotivo")
+                  .value,
+
+              observacion:
+                document
+                  .getElementById("perdidaObservacion")
+                  .value
+            }
+          );
+=======
         const r = await POST("/api/perdidas", {
           alimento_id: Number(document.getElementById("perdidaAlimento").value),
           cantidad: Number(document.getElementById("perdidaCantidad").value),
           motivo: document.getElementById("perdidaMotivo").value,
           observacion: document.getElementById("perdidaObservacion").value
         });
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
         formulario.reset();
 
         mensaje(
           "mensajePerdida",
+<<<<<<< HEAD
+          r.mensaje,
+=======
           r.mensaje || "Pérdida registrada correctamente.",
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           "ok"
         );
 
         await recargar();
+<<<<<<< HEAD
+
+      } catch (err) {
+        mensaje(
+          "mensajePerdida",
+          err.message,
+          "error"
+        );
+      }
+    });
+
+  /* MESAS */
+
+  function inicializarMesas() {
+    const tarjetas =
+      document.querySelectorAll(
+        ".mesa-card"
+      );
+
+    tarjetas.forEach(mesa => {
+      mesa.addEventListener(
+        "click",
+        () => {
+          const numero =
+            Number(
+              mesa.dataset.mesa
+            );
+
+          seleccionarMesa(numero);
+        }
+      );
+    });
+
+    const btnAgregar =
+      document.getElementById(
+        "btnAgregarProducto"
+      );
+
+    if (btnAgregar) {
+      btnAgregar.addEventListener(
+        "click",
+        agregarProductoOrden
+      );
+    }
+
+    const btnVenta =
+      document.getElementById(
+        "btnRegistrarVenta"
+      );
+
+    if (btnVenta) {
+      btnVenta.addEventListener(
+        "click",
+        registrarVenta
+      );
+    }
+
+    const btnLiberar =
+      document.getElementById(
+        "btnLiberarMesa"
+      );
+
+    if (btnLiberar) {
+      btnLiberar.addEventListener(
+        "click",
+        liberarMesa
+      );
+    }
+
+    actualizarProductosOrden();
+    actualizarVisualMesas();
+  }
+
+  function seleccionarMesa(numero) {
+    if (!mesas[numero]) return;
+
+    mesaSeleccionada = numero;
+
+    const mesa =
+      mesas[numero];
+
+    setText(
+      "mesaSeleccionada",
+      "Mesa " + numero
+    );
+
+    setText(
+      "estadoOrden",
+      mesa.estado === "ocupada"
+        ? "Orden activa"
+        : "Mesa disponible"
+    );
+
+    renderizarOrden();
+    actualizarVisualMesas();
+  }
+
+  function actualizarVisualMesas() {
+    document
+      .querySelectorAll(".mesa-card")
+      .forEach(card => {
+        const numero =
+          Number(card.dataset.mesa);
+
+        const mesa =
+          mesas[numero];
+
+        card.classList.remove(
+          "disponible",
+          "ocupada",
+          "seleccionada"
+        );
+
+        card.classList.add(
+          mesa.estado
+        );
+
+        if (
+          numero ===
+          mesaSeleccionada
+        ) {
+          card.classList.add(
+            "seleccionada"
+          );
+        }
+
+        const estado =
+          card.querySelector(
+            ".mesa-estado"
+          );
+
+        if (estado) {
+          estado.textContent =
+            mesa.estado === "ocupada"
+              ? "Ocupada"
+              : "Disponible";
+        }
+      });
+  }
+
+  /* PRODUCTOS */
+
+  function actualizarProductosOrden() {
+    const select =
+      document.getElementById(
+        "productoOrden"
+      );
+
+    if (!select) return;
+
+    const seleccionado =
+      select.value;
+
+    select.innerHTML =
+      '<option value="">Seleccionar producto</option>' +
+      datos.alimentos
+        .map(a => {
+          const precio =
+            obtenerPrecioProducto(a);
+
+          return (
+            '<option value="' +
+            esc(a.id) +
+            '">' +
+            esc(a.nombre) +
+            " — " +
+            formatoMoneda(precio) +
+            "</option>"
+          );
+        })
+        .join("");
+
+    if (seleccionado) {
+      select.value =
+        seleccionado;
+    }
+  }
+
+  function obtenerPrecioProducto(producto) {
+    return Number(
+      producto.precio ??
+      producto.precio_venta ??
+      producto.valor ??
+      0
+    );
+  }
+
+  /* AGREGAR PRODUCTO */
+
+  function agregarProductoOrden() {
+    if (!mesaSeleccionada) {
+      alert(
+        "Primero selecciona una mesa."
+      );
+
+      return;
+    }
+
+    const productoId =
+      Number(
+        document
+          .getElementById("productoOrden")
+          .value
+      );
+
+    const cantidad =
+      Number(
+        document
+          .getElementById("cantidadOrden")
+          .value
+      );
+
+    if (!productoId) {
+      alert(
+        "Selecciona un producto."
+      );
+
+      return;
+    }
+
+    if (
+      !cantidad ||
+      cantidad < 1
+    ) {
+      alert(
+        "La cantidad debe ser mayor a 0."
+      );
+
+      return;
+    }
+
+    const producto =
+      datos.alimentos.find(
+        a =>
+          Number(a.id) ===
+          productoId
+      );
+
+    if (!producto) {
+      alert(
+        "No se encontró el producto."
+      );
+
+      return;
+    }
+
+    const precio =
+      obtenerPrecioProducto(
+        producto
+      );
+
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
+
+    const existente =
+      orden.productos.find(
+        p =>
+          Number(p.id) ===
+          productoId
+      );
+
+    if (existente) {
+      existente.cantidad +=
+        cantidad;
+    } else {
+      orden.productos.push({
+        id: producto.id,
+        nombre:
+          producto.nombre,
+        cantidad:
+          cantidad,
+        precio:
+          precio
+      });
+    }
+
+    orden.estado = "ocupada";
+
+    document
+      .getElementById(
+        "cantidadOrden"
+      )
+      .value = 1;
+
+    document
+      .getElementById(
+        "productoOrden"
+      )
+      .value = "";
+
+    renderizarOrden();
+    actualizarVisualMesas();
+  }
+
+  /* RENDERIZAR ORDEN */
+
+  function renderizarOrden() {
+    const lista =
+      document.getElementById(
+        "listaOrden"
+      );
+
+    if (!lista) return;
+
+    if (!mesaSeleccionada) {
+      lista.innerHTML = `
+        <div class="orden-vacia">
+          <span>🍽️</span>
+          <p>
+            Selecciona una mesa para comenzar.
+          </p>
+        </div>
+      `;
+
+      setText(
+        "totalOrden",
+        formatoMoneda(0)
+      );
+
+      return;
+    }
+
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
+
+    if (
+      !orden ||
+      !orden.productos.length
+    ) {
+      lista.innerHTML = `
+        <div class="orden-vacia">
+          <span>🍽️</span>
+          <p>
+            No hay productos en esta orden.
+          </p>
+        </div>
+      `;
+
+      setText(
+        "totalOrden",
+        formatoMoneda(0)
+      );
+
+      return;
+    }
+
+    lista.innerHTML =
+      orden.productos
+        .map(
+          (producto, indice) => {
+            const subtotal =
+              producto.precio *
+              producto.cantidad;
+
+            return `
+              <div class="orden-producto">
+
+                <span>
+                  <strong>
+                    ${esc(producto.nombre)}
+                  </strong>
+                </span>
+
+                <span>
+                  ${producto.cantidad}
+                </span>
+
+                <span>
+                  ${formatoMoneda(producto.precio)}
+                </span>
+
+                <strong>
+                  ${formatoMoneda(subtotal)}
+                </strong>
+
+                <button
+                  type="button"
+                  class="btn-eliminar-producto"
+                  onclick="eliminarProductoOrden(${indice})"
+                >
+                  ×
+                </button>
+
+              </div>
+            `;
+          }
+        )
+        .join("");
+
+    setText(
+      "totalOrden",
+      formatoMoneda(
+        calcularTotalOrden()
+      )
+    );
+  }
+
+  function calcularTotalOrden() {
+    if (!mesaSeleccionada) {
+      return 0;
+    }
+
+    return mesas[
+      mesaSeleccionada
+    ].productos.reduce(
+      (total, producto) =>
+        total +
+        producto.precio *
+        producto.cantidad,
+      0
+    );
+  }
+
+  function eliminarProductoOrden(indice) {
+    if (!mesaSeleccionada) return;
+
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
+
+    orden.productos.splice(
+      indice,
+      1
+    );
+
+    if (
+      orden.productos.length ===
+      0
+    ) {
+      orden.estado =
+        "disponible";
+    }
+
+    renderizarOrden();
+    actualizarVisualMesas();
+  }
+
+  window.eliminarProductoOrden =
+    eliminarProductoOrden;
+
+  /* REGISTRAR VENTA */
+
+  async function registrarVenta() {
+    if (!mesaSeleccionada) {
+      alert(
+        "Selecciona una mesa."
+      );
+
+      return;
+    }
+
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
+
+    if (
+      !orden ||
+      !orden.productos.length
+    ) {
+      alert(
+        "La mesa no tiene productos."
+      );
+
+      return;
+    }
+
+    const total =
+      calcularTotalOrden();
+
+    if (total <= 0) {
+      alert(
+        "El total de la orden debe ser mayor a $0."
+      );
+
+      return;
+    }
+
+    const numeroMesa =
+      mesaSeleccionada;
+
+    const descripcion =
+      "Venta Mesa " +
+      numeroMesa +
+      ": " +
+      orden.productos
+        .map(
+          p =>
+            p.cantidad +
+            "x " +
+            p.nombre
+        )
+        .join(", ");
+
+    try {
+      const respuesta =
+        await POST(
+          "/api/contabilidad",
+          {
+            tipo: "Venta",
+            descripcion:
+              descripcion,
+            valor:
+              total
+          }
+        );
+
+      mensaje(
+        "mensajeContable",
+        respuesta.mensaje ||
+          "Venta registrada correctamente.",
+        "ok"
+      );
+
+      mesas[
+        numeroMesa
+      ] = {
+        estado:
+          "disponible",
+        productos:
+          []
+      };
+
+      mesaSeleccionada =
+        null;
+
+      setText(
+        "mesaSeleccionada",
+        "Selecciona una mesa para comenzar"
+      );
+
+      setText(
+        "estadoOrden",
+        "Sin orden"
+      );
+
+      renderizarOrden();
+      actualizarVisualMesas();
+
+      await recargar();
+
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        "No se pudo registrar la venta:\n" +
+        err.message
+      );
+    }
+  }
+
+  /* LIBERAR MESA */
+
+  function liberarMesa() {
+    if (!mesaSeleccionada) {
+      alert(
+        "Selecciona una mesa."
+      );
+
+      return;
+    }
+
+    const confirmar =
+      confirm(
+        "¿Seguro que deseas liberar la Mesa " +
+        mesaSeleccionada +
+        "?\n\nLa orden actual se eliminará."
+      );
+
+    if (!confirmar) return;
+
+    mesas[
+      mesaSeleccionada
+    ] = {
+      estado:
+        "disponible",
+      productos:
+        []
+    };
+
+    seleccionarMesa(
+      mesaSeleccionada
+    );
+  }
+
+  /* SINCRONIZACIÓN */
+
+  async function sincronizar() {
+    setText(
+      "estadoSync",
+      "Sincronizando información..."
+    );
+
+    const punto =
+      document.getElementById(
+        "puntoSync"
+      );
+
+    if (punto) {
+      punto.style.background =
+        "var(--warning)";
+    }
+
+    try {
+      const r =
+        await POST(
+          "/api/sincronizar"
+        );
+
+      await cargarDatos();
+
+      setText(
+        "estadoSync",
+        "Información sincronizada"
+      );
+
+      if (punto) {
+        punto.style.background =
+          "var(--success)";
+=======
       } catch (err) {
         mensaje("mensajePerdida", err.message, "error");
       }
@@ -1308,10 +2556,46 @@ let stockOriginal = 0;
 
       if (punto) {
         punto.style.background = "var(--success)";
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       }
 
       mensaje(
         "mensajeSync",
+<<<<<<< HEAD
+        r.mensaje,
+        "ok"
+      );
+
+    } catch (err) {
+      setText(
+        "estadoSync",
+        "Error de sincronización"
+      );
+
+      mensaje(
+        "mensajeSync",
+        err.message,
+        "error"
+      );
+    }
+  }
+
+  window.sincronizar =
+    sincronizar;
+
+  /* ESTADOS DE ALIMENTOS */
+
+  function diasParaVencer(a) {
+    return Math.ceil(
+      (
+        new Date(
+          a.vencimiento +
+          "T23:59:59"
+        ) -
+        new Date()
+      ) /
+      86400000
+=======
         r.mensaje || "Sincronización completada.",
         "ok"
       );
@@ -1345,10 +2629,22 @@ let stockOriginal = 0;
 
     return Math.ceil(
       (vencimiento.getTime() - Date.now()) / 86400000
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
   }
 
   function estadoAlimento(a) {
+<<<<<<< HEAD
+    if (a.cantidad <= 15) {
+      return ["Crítico", "bad"];
+    }
+
+    if (diasParaVencer(a) <= 3) {
+      return ["Por vencer", "bad"];
+    }
+
+    if (a.cantidad <= 30) {
+=======
     const cantidad = Number(a.cantidad) || 0;
     const dias = diasParaVencer(a);
 
@@ -1361,19 +2657,70 @@ let stockOriginal = 0;
     }
 
     if (cantidad <= 30) {
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       return ["Stock bajo", "warn"];
     }
 
     return ["Disponible", "ok"];
   }
 
+<<<<<<< HEAD
+  /* RENDERIZADO GENERAL */
+=======
   /* 
      RENDERIZADO GENERAL
    */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   function renderizarTodo() {
     if (!sesion) return;
 
+<<<<<<< HEAD
+    const totalUnidades =
+      datos.alimentos.reduce(
+        (s, a) =>
+          s + a.cantidad,
+        0
+      );
+
+    const criticos =
+      datos.alimentos.filter(
+        a =>
+          estadoAlimento(a)[1] ===
+          "bad"
+      ).length;
+
+    const porVencer =
+      datos.alimentos.filter(
+        a =>
+          diasParaVencer(a) <= 3
+      ).length;
+
+    const ventas =
+      datos.contabilidad
+        .filter(
+          x =>
+            x.tipo === "Venta"
+        )
+        .reduce(
+          (s, x) =>
+            s + Number(x.valor),
+          0
+        );
+
+    const gastos =
+      datos.contabilidad
+        .filter(
+          x =>
+            x.tipo ===
+            "Gasto operativo"
+        )
+        .reduce(
+          (s, x) =>
+            s + Number(x.valor),
+          0
+        );
+=======
     const totalUnidades = datos.alimentos.reduce(
       (s, a) => s + (Number(a.cantidad) || 0),
       0
@@ -1396,6 +2743,7 @@ let stockOriginal = 0;
       .reduce((s, x) => s + (Number(x.valor) || 0), 0);
 
     /* ESTADÍSTICAS */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
     setText("statProductos", datos.alimentos.length);
     setText("statInventario", totalUnidades);
@@ -1410,6 +2758,8 @@ let stockOriginal = 0;
     setText("totalGastos", formatoMoneda(gastos));
     setText("balance", formatoMoneda(ventas - gastos));
 
+<<<<<<< HEAD
+=======
 /* INVERSIONES */
 
 const insumos = datos.contabilidad
@@ -1448,10 +2798,101 @@ setText(
 const barra = document.getElementById("invBarra");
 if (barra) barra.style.width = progreso + "%";
 
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     /* USUARIOS */
 
     setHTML(
       "tablaUsuarios",
+<<<<<<< HEAD
+      datos.usuarios
+        .map(
+          u =>
+            "<tr>" +
+
+            "<td><strong>" +
+            esc(u.nombre) +
+            "</strong></td>" +
+
+            "<td>" +
+            esc(u.apellido) +
+            "</td>" +
+
+            "<td>" +
+            esc(u.login) +
+            "</td>" +
+
+            "<td>" +
+            esc(u.rol) +
+            "</td>" +
+
+            '<td><div class="acciones-tabla">' +
+
+            '<button onclick="editarUsuario(' +
+            u.id +
+            ')">Editar</button>' +
+
+            '<button class="eliminar" onclick="eliminarUsuario(' +
+            u.id +
+            ')">Eliminar</button>' +
+
+            "</div></td>" +
+
+            "</tr>"
+        )
+        .join("")
+    );
+
+    /* ALIMENTOS (Alimento, Categoría, Cantidad, Precio, Vence, Sede, Acciones) */
+
+    setHTML(
+      "tablaAlimentos",
+      datos.alimentos
+        .map(
+          a =>
+            "<tr>" +
+
+            "<td><strong>" +
+            esc(a.nombre) +
+            "</strong></td>" +
+
+            "<td>" +
+            esc(a.categoria) +
+            "</td>" +
+
+            "<td>" +
+            a.cantidad +
+            "</td>" +
+
+            "<td>" +
+            formatoMoneda(a.precio) +
+            "</td>" +
+
+            "<td>" +
+            fechaBonita(
+              a.vencimiento
+            ) +
+            "</td>" +
+
+            "<td>" +
+            esc(a.sede) +
+            "</td>" +
+
+            '<td><div class="acciones-tabla">' +
+
+            '<button onclick="editarAlimento(' +
+            a.id +
+            ')">Editar</button>' +
+
+            '<button class="eliminar" onclick="eliminarAlimento(' +
+            a.id +
+            ')">Eliminar</button>' +
+
+            "</div></td>" +
+
+            "</tr>"
+        )
+        .join("")
+=======
       datos.usuarios.map(u =>
         "<tr>" +
           "<td><strong>" + esc(u.nombre) + "</strong></td>" +
@@ -1501,12 +2942,86 @@ if (barra) barra.style.width = progreso + "%";
           "</div></td>" +
         "</tr>"
       ).join("")
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     /* INVENTARIO */
 
     setHTML(
       "tablaInventario",
+<<<<<<< HEAD
+      datos.alimentos
+        .map(a => {
+          const est =
+            estadoAlimento(a);
+
+          return (
+            "<tr>" +
+
+            "<td><strong>" +
+            esc(a.nombre) +
+            "</strong></td>" +
+
+            "<td>" +
+            esc(a.categoria) +
+            "</td>" +
+
+            "<td>" +
+            a.cantidad +
+            " unidades</td>" +
+
+            "<td>" +
+            fechaBonita(
+              a.vencimiento
+            ) +
+            "</td>" +
+
+            "<td>" +
+            esc(a.sede) +
+            "</td>" +
+
+            '<td><span class="estado-demo ' +
+            est[1] +
+            '">' +
+            est[0] +
+            "</span></td>" +
+
+            "</tr>"
+          );
+        })
+        .join("")
+    );
+
+    /* PÉRDIDAS */
+
+    const comboPerdida =
+      document.getElementById(
+        "perdidaAlimento"
+      );
+
+    if (comboPerdida) {
+      const seleccionado =
+        comboPerdida.value;
+
+      comboPerdida.innerHTML =
+        datos.alimentos
+          .map(
+            a =>
+              '<option value="' +
+              a.id +
+              '">' +
+              esc(a.nombre) +
+              " (" +
+              a.cantidad +
+              " disponibles)" +
+              "</option>"
+          )
+          .join("");
+
+      if (seleccionado) {
+        comboPerdida.value =
+          seleccionado;
+=======
       datos.alimentos.map(a => {
         const est = estadoAlimento(a);
 
@@ -1540,6 +3055,7 @@ if (barra) barra.style.width = progreso + "%";
 
       if (seleccionado) {
         comboPerdida.value = seleccionado;
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       }
     }
 
@@ -1547,6 +3063,42 @@ if (barra) barra.style.width = progreso + "%";
 
     setHTML(
       "tablaContabilidad",
+<<<<<<< HEAD
+      datos.contabilidad
+        .slice()
+        .reverse()
+        .map(
+          x =>
+            "<tr>" +
+
+            "<td>" +
+            fechaBonita(x.fecha) +
+            "</td>" +
+
+            '<td><span class="estado-demo ' +
+            (
+              x.tipo === "Venta"
+                ? "ok"
+                : "warn"
+            ) +
+            '">' +
+
+            esc(x.tipo) +
+
+            "</span></td>" +
+
+            "<td>" +
+            esc(x.descripcion) +
+            "</td>" +
+
+            "<td><strong>" +
+            formatoMoneda(x.valor) +
+            "</strong></td>" +
+
+            "</tr>"
+        )
+        .join("")
+=======
       datos.contabilidad.slice().reverse().map(x =>
         "<tr>" +
           "<td>" + fechaBonita(x.fecha) + "</td>" +
@@ -1557,12 +3109,35 @@ if (barra) barra.style.width = progreso + "%";
           "<td><strong>" + formatoMoneda(x.valor) + "</strong></td>" +
         "</tr>"
       ).join("")
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     /* SEDES */
 
     setHTML(
       "tablaSedes",
+<<<<<<< HEAD
+      datos.sedes
+        .map(
+          s =>
+            "<tr>" +
+
+            "<td><strong>" +
+            esc(s.nombre) +
+            "</strong></td>" +
+
+            '<td><span class="estado-demo ok">' +
+            esc(s.estado) +
+            "</span></td>" +
+
+            "<td>" +
+            esc(s.actualizacion) +
+            "</td>" +
+
+            "</tr>"
+        )
+        .join("")
+=======
       datos.sedes.map(s =>
         "<tr>" +
           "<td><strong>" + esc(s.nombre) + "</strong></td>" +
@@ -1570,6 +3145,7 @@ if (barra) barra.style.width = progreso + "%";
           "<td>" + esc(s.actualizacion) + "</td>" +
         "</tr>"
       ).join("")
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     /* ALERTAS */
@@ -1577,6 +3153,43 @@ if (barra) barra.style.width = progreso + "%";
     const alertas = [];
 
     datos.alimentos.forEach(a => {
+<<<<<<< HEAD
+      const estado =
+        estadoAlimento(a)[0];
+
+      if (
+        estado !==
+        "Disponible"
+      ) {
+        alertas.push(
+          '<div class="elemento-alerta alerta-' +
+          (
+            estado === "Crítico"
+              ? "peligro"
+              : "advertencia"
+          ) +
+          '">' +
+
+          '<div class="icono-alerta">!</div>' +
+
+          "<div>" +
+
+          "<strong>" +
+          esc(a.nombre) +
+          "</strong>" +
+
+          "<p>" +
+          estado +
+          ": " +
+          a.cantidad +
+          " unidades disponibles." +
+          "</p>" +
+
+          "<small>Actualizado ahora</small>" +
+
+          "</div>" +
+
+=======
       const estado = estadoAlimento(a)[0];
 
       if (estado !== "Disponible") {
@@ -1592,6 +3205,7 @@ if (barra) barra.style.width = progreso + "%";
                 " unidades disponibles.</p>" +
               "<small>Actualizado ahora</small>" +
             "</div>" +
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
           "</div>"
         );
       }
@@ -1600,16 +3214,139 @@ if (barra) barra.style.width = progreso + "%";
     if (!alertas.length) {
       alertas.push(
         '<div class="elemento-alerta alerta-exito">' +
+<<<<<<< HEAD
+
+        '<div class="icono-alerta">✓</div>' +
+
+        "<div>" +
+
+        "<strong>Sin alertas críticas</strong>" +
+
+        "<p>" +
+        "El inventario se encuentra dentro de los niveles configurados." +
+        "</p>" +
+
+        "<small>Actualizado ahora</small>" +
+
+        "</div>" +
+
+=======
           '<div class="icono-alerta">✓</div>' +
           "<div>" +
             "<strong>Sin alertas críticas</strong>" +
             "<p>El inventario se encuentra dentro de los niveles configurados.</p>" +
             "<small>Actualizado ahora</small>" +
           "</div>" +
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
         "</div>"
       );
     }
 
+<<<<<<< HEAD
+    setHTML(
+      "dashboardAlertas",
+      alertas.join("")
+    );
+
+    setText(
+      "contadorAlertas",
+      alertas.length
+    );
+
+    /* DASHBOARD INVENTARIO */
+
+    setHTML(
+      "dashboardInventario",
+      datos.alimentos
+        .slice(0, 5)
+        .map(a => {
+          const porcentaje =
+            Math.min(
+              100,
+              Math.max(
+                5,
+                a.cantidad
+              )
+            );
+
+          const est =
+            estadoAlimento(a);
+
+          const clase =
+            est[1];
+
+          return (
+            '<div class="fila-inventario">' +
+
+            '<div class="producto">' +
+
+            '<div class="icono-producto">▤</div>' +
+
+            "<div>" +
+
+            "<strong>" +
+            esc(a.nombre) +
+            "</strong>" +
+
+            "<span>" +
+            esc(a.categoria) +
+            "</span>" +
+
+            "</div>" +
+
+            "</div>" +
+
+            '<div class="existencias">' +
+
+            '<div class="texto-existencias">' +
+
+            "<span>" +
+            a.cantidad +
+            " unidades</span>" +
+
+            "<strong>" +
+            porcentaje +
+            "%</strong>" +
+
+            "</div>" +
+
+            '<div class="progreso ' +
+            (
+              clase === "warn"
+                ? "advertencia"
+                : clase === "bad"
+                  ? "peligro"
+                  : ""
+            ) +
+            '">' +
+
+            '<span style="width:' +
+            porcentaje +
+            '%"></span>' +
+
+            "</div>" +
+
+            "</div>" +
+
+            '<span class="estado ' +
+            (
+              clase === "ok"
+                ? "exito"
+                : clase === "warn"
+                  ? "advertencia"
+                  : "peligro"
+            ) +
+            '">' +
+
+            est[0] +
+
+            "</span>" +
+
+            "</div>"
+          );
+        })
+        .join("")
+=======
     setHTML("dashboardAlertas", alertas.join(""));
     setText("contadorAlertas", alertas.length);
 
@@ -1663,11 +3400,43 @@ if (barra) barra.style.width = progreso + "%";
           "</div>"
         );
       }).join("")
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     /* GRÁFICA */
 
     const alturas = [45, 68, 54, 82, 61, 90, 72];
+<<<<<<< HEAD
+
+    const dias = [
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb",
+      "Dom"
+    ];
+
+    setHTML(
+      "graficaBarras",
+      alturas
+        .map(
+          (h, i) =>
+            '<div class="contenedor-barra">' +
+
+            '<div class="barra" style="height:' +
+            h +
+            '%"></div>' +
+
+            "<small>" +
+            dias[i] +
+            "</small>" +
+
+            "</div>"
+        )
+        .join("")
+=======
     const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
     setHTML(
@@ -1678,10 +3447,28 @@ if (barra) barra.style.width = progreso + "%";
           "<small>" + dias[i] + "</small>" +
         "</div>"
       ).join("")
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     );
 
     /* ÚLTIMA SINCRONIZACIÓN */
 
+<<<<<<< HEAD
+    const primera =
+      datos.sedes[0];
+
+    setText(
+      "ultimaSync",
+      primera &&
+      primera.actualizacion !==
+      "Pendiente"
+
+        ? "Última sincronización: " +
+          primera.actualizacion
+
+        : "Aún no se ha ejecutado una sincronización."
+    );
+
+=======
     const primera = datos.sedes[0];
 
     setText(
@@ -1694,10 +3481,150 @@ if (barra) barra.style.width = progreso + "%";
 
 
 
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     /* MESAS */
 
     actualizarProductosOrden();
     actualizarVisualMesas();
+<<<<<<< HEAD
+  }
+
+  /* REPORTES */
+
+  function generarReporte() {
+    const tipo =
+      document
+        .getElementById(
+          "tipoReporte"
+        )
+        .value;
+
+    const fecha =
+      document
+        .getElementById(
+          "fechaReporte"
+        )
+        .value ||
+      hoyISO();
+
+    let texto = "";
+
+    if (
+      tipo ===
+      "Reporte diario"
+    ) {
+      texto =
+        "Fecha: " +
+        fechaBonita(fecha) +
+
+        "\nProductos registrados: " +
+        datos.alimentos.length +
+
+        "\nUnidades disponibles: " +
+        datos.alimentos.reduce(
+          (s, a) =>
+            s + a.cantidad,
+          0
+        ) +
+
+        "\nPérdidas registradas: " +
+        datos.perdidas.length +
+
+        "\nOperaciones contables: " +
+        datos.contabilidad.length;
+    }
+
+    else if (
+      tipo ===
+      "Inventario general"
+    ) {
+      texto =
+        datos.alimentos
+          .map(
+            a =>
+              a.nombre +
+              " | " +
+              a.categoria +
+              " | " +
+              a.cantidad +
+              " unidades | " +
+              a.sede
+          )
+          .join("\n") ||
+
+        "No hay alimentos registrados.";
+    }
+
+    else if (
+      tipo ===
+      "Pérdida de alimentos"
+    ) {
+      texto =
+        datos.perdidas.length
+
+          ? datos.perdidas
+              .map(
+                p =>
+                  fechaBonita(
+                    p.fecha
+                  ) +
+                  " | " +
+                  p.alimento +
+                  " | " +
+                  p.cantidad +
+                  " unidades | " +
+                  p.motivo
+              )
+              .join("\n")
+
+          : "No hay pérdidas registradas.";
+    }
+
+    else if (
+      tipo ===
+      "Consumo"
+    ) {
+      texto =
+        "Consumo estimado a partir de las salidas registradas.\n\n" +
+
+        (
+          datos.perdidas.length
+
+            ? datos.perdidas
+                .map(
+                  p =>
+                    p.alimento +
+                    ": " +
+                    p.cantidad +
+                    " unidades registradas como salida/pérdida"
+                )
+                .join("\n")
+
+            : "No hay registros de consumo/salidas disponibles."
+        );
+    }
+
+    else {
+      texto =
+        datos.contabilidad
+          .map(
+            x =>
+              fechaBonita(
+                x.fecha
+              ) +
+              " | " +
+              x.tipo +
+              " | " +
+              x.descripcion +
+              " | " +
+              formatoMoneda(
+                x.valor
+              )
+          )
+          .join("\n") ||
+
+        "No hay operaciones contables registradas.";
+=======
     renderizarOrden();
   }
 
@@ -1758,16 +3685,34 @@ if (barra) barra.style.width = progreso + "%";
         " | " + x.descripcion +
         " | " + formatoMoneda(x.valor)
       ).join("\n") || "No hay operaciones contables registradas.";
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
     }
 
     setHTML(
       "resultadoReporte",
+<<<<<<< HEAD
+      "<h4>" +
+      esc(tipo) +
+      "</h4><p>" +
+      esc(texto) +
+=======
       "<h4>" + esc(tipo) + "</h4><p>" +
       esc(texto).replace(/\n/g, "<br>") +
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
       "</p>"
     );
   }
 
+<<<<<<< HEAD
+  window.generarReporte =
+    generarReporte;
+
+  /* INICIALIZACIÓN */
+
+  inicializarMesas();
+
+  /* RESTAURAR SESIÓN */
+=======
   window.generarReporte = generarReporte;
 
   /* 
@@ -1778,15 +3723,28 @@ if (barra) barra.style.width = progreso + "%";
   /* 
      RESTAURAR SESIÓN
   */
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
   GET("/api/sesion")
     .then(r => {
       if (r.usuario) {
+<<<<<<< HEAD
+        return iniciarSesion(
+          r.usuario
+        );
+      }
+    })
+    .catch(
+      err =>
+        console.error(err)
+    );
+=======
         return iniciarSesion(r.usuario);
       }
     })
     .catch(err => {
       console.error("No se pudo restaurar la sesión:", err);
     });
+>>>>>>> 1fd2ba9dbb743b2cede1cd172981f8c4b735adb6
 
 })();
