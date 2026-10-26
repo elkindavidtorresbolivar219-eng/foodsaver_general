@@ -1,5 +1,3 @@
-
-
 :root {
   --dark: #11101D;
   --dark-2: #181725;
@@ -77,7 +75,7 @@ a {
   display: flex;
   flex-direction: column;
   background: #0D0C16;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var( --border);
   z-index: 10;
 }
 
@@ -87,7 +85,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgb(223, 10, 10);
+  border-bottom: 1px solid var(--border);
 }
 
 .marca img {
@@ -1248,63 +1246,113 @@ footer {
 
 /* Login */
 .login-pantalla {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: var(--dark);
+  background:
+    linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .35)),  
+    url("img/fondogif.gif") center / cover no-repeat;     
 }
 
 .login-caja {
   width: min(430px, 100%);
   padding: 30px;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, .60);          
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(3px);              
+  -webkit-backdrop-filter: blur(3px);
 }
 
 .login-logo {
   display: block;
-  width: 170px;
-  height: 82px;
+  width: 110px;
+  height: 110px;
   margin: 0 auto 15px;
   object-fit: contain;
+  border-radius: 50%;
 }
 
 .login-caja h1 {
   text-align: center;
   font-family: var(--font-title);
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 800;
 }
 
 .login-caja > p {
-  margin: 7px 0 22px;
-  color: var(--text-secondary);
+  margin: 7px 0 24px;
+  color: var(--white);
   text-align: center;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .login-caja .campo {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.login-caja .campo label {
+  color: var(--white);
+  font-size: 12px;
+}
+
+/* Inputs oscuros y translúcidos */
+.login-caja .campo input {
+  padding: 14px 16px;
+  color: var(--white);
+  background: rgba(0, 0, 0, .45);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-caja .campo input::placeholder {
+  color: rgba(255, 255, 255, .45);
+}
+
+.login-caja .campo input:focus {
+  border-color: var(--gold);
+}
+
+/* Botón negro redondeado */
+.login-caja button[type="submit"],
+.login-caja .boton-principal {
+  display: block;
+  width: 80%;
+  margin: 18px auto 0;
+  padding: 12px;
+  color: var(--white);
+  background: #000;
+  border: 0;
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login-caja button[type="submit"]:hover,
+.login-caja .boton-principal:hover {
+  background: var(--gold);
+  color: var(--dark);
 }
 
 .login-ayuda {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .enlace-boton {
   border: 0;
   padding: 0;
-  color: var(--gold);
+  color: var(--white);
   background: transparent;
   cursor: pointer;
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .enlace-boton:hover {
@@ -1404,3 +1452,1093 @@ footer {
     padding: 22px;
   }
 }
+
+
+
+/* =========================================================
+   CONTABILIDAD: VENTAS Y MESAS
+   ========================================================= */
+
+#vista-contabilidad > * {
+  margin-bottom: 20px;
+}
+
+/* ---- Mesas ---- */
+.mesas-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.mesa-card {
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: .2s ease;
+}
+
+.mesa-card:hover {
+  border-color: rgba(255, 185, 20, .5);
+  transform: translateY(-3px);
+}
+
+.mesa-icono {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  background: rgba(255, 185, 20, .10);
+
+  border-radius: 12px;
+}
+
+.mesa-card h3 {
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mesa-estado {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.mesa-card.disponible .mesa-estado {
+  color: var(--success);
+  background: rgba(34, 197, 94, .10);
+}
+
+.mesa-card.ocupada {
+  border-color: rgba(239, 68, 68, .35);
+}
+
+.mesa-card.ocupada .mesa-estado {
+  color: var(--error);
+  background: rgba(239, 68, 68, .10);
+}
+
+.mesa-card.activa,
+.mesa-card.seleccionada {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(255, 185, 20, .15), var(--shadow);
+}
+
+/* ---- Panel de orden ---- */
+.orden-container,
+.tabla-contabilidad {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.orden-header,
+.tabla-header {
+  min-height: 76px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.orden-header h3,
+.tabla-header h3 {
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.orden-header span#mesaSeleccionada,
+.tabla-header p {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.estado-orden {
+  padding: 5px 10px;
+  color: var(--gold);
+  background: rgba(255, 185, 20, .10);
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---- Formulario para agregar producto ---- */
+.orden-form {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px auto;
+  align-items: end;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.orden-form .campo label {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.orden-form .campo input,
+.orden-form .campo select {
+  width: 100%;
+  padding: 10px 12px;
+  color: var(--white);
+  background: #181725;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: 0;
+  font-size: 10px;
+}
+
+.orden-form .campo input:focus,
+.orden-form .campo select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(255, 185, 20, .08);
+}
+
+/* ---- Productos de la orden ---- */
+.orden-productos {
+  padding: 6px 22px 10px;
+}
+
+.orden-productos-header,
+.orden-item,
+.orden-fila,
+#listaOrden > div:not(.orden-vacia) {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 50px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  font-size: 10px;
+  border-bottom: 1px solid rgba(52, 49, 63, .65);
+}
+
+.orden-productos-header {
+  color: var(--gold);
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+#listaOrden > div:not(.orden-vacia) {
+  color: var(--text-secondary);
+}
+
+#listaOrden button {
+  border: 1px solid var(--border);
+  background: #181725;
+  color: var(--error);
+  border-radius: 6px;
+  padding: 5px 7px;
+  cursor: pointer;
+  font-size: 9px;
+}
+
+#listaOrden button:hover {
+  border-color: var(--error);
+}
+
+.orden-vacia {
+  padding: 34px 0;
+  text-align: center;
+}
+
+.orden-vacia span {
+  font-size: 30px;
+}
+
+.orden-vacia p {
+  margin-top: 8px;
+  color: #777481;
+  font-size: 10px;
+}
+
+/* ---- Total y acciones ---- */
+.orden-footer {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: #181725;
+  border-top: 1px solid var(--border);
+}
+
+.orden-total span {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.orden-total strong {
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.orden-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---- Resumen contable ---- */
+.contabilidad-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.resumen-card {
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.resumen-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.resumen-card strong {
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.resumen-card:nth-child(1) strong { color: var(--success); }
+.resumen-card:nth-child(2) strong { color: var(--error); }
+.resumen-card:nth-child(3) strong { color: var(--gold); }
+
+/* ---- Historial ---- */
+.tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-wrapper table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.tabla-wrapper th,
+.tabla-wrapper td {
+  padding: 12px 22px;
+  text-align: left;
+  border-bottom: 1px solid rgba(52, 49, 63, .65);
+  font-size: 10px;
+}
+
+.tabla-wrapper th {
+  color: var(--gold);
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.tabla-wrapper td {
+  color: var(--text-secondary);
+}
+
+.tabla-wrapper tbody tr:hover {
+  background: rgba(255, 185, 20, .025);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1000px) {
+  .mesas-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .mesas-container,
+  .contabilidad-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .orden-form {
+    grid-template-columns: 1fr;
+  }
+
+  .orden-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orden-acciones {
+    flex-direction: column;
+  }
+}
+
+/* ---- Icono de mesa ---- */
+.mesa-icono {
+  color: var(--gold);
+}
+
+.mesa-icono svg {
+  display: block;
+}
+
+/* ---- Botones de la orden ---- */
+.btn-agregar,
+.btn-liberar,
+.btn-venta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-family: var(--font-title);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.btn-agregar svg,
+.btn-liberar svg,
+.btn-venta svg {
+  flex: 0 0 auto;
+}
+
+/* Agregar producto: dorado sólido */
+.btn-agregar {
+  color: var(--dark);
+  background: var(--gold);
+}
+
+.btn-agregar:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 185, 20, .18);
+}
+
+/* Liberar mesa: contorno rojo suave */
+.btn-liberar {
+  color: var(--error);
+  background: rgba(239, 68, 68, .08);
+  border-color: rgba(239, 68, 68, .30);
+}
+
+.btn-liberar:hover {
+  background: rgba(239, 68, 68, .16);
+  border-color: var(--error);
+  transform: translateY(-2px);
+}
+
+/* Registrar venta: verde sólido */
+.btn-venta {
+  color: #0B1A10;
+  background: var(--success);
+}
+
+.btn-venta:hover {
+  background: #34D673;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, .22);
+}
+
+.btn-agregar:active,
+.btn-liberar:active,
+.btn-venta:active {
+  transform: translateY(0);
+}
+
+.btn-agregar:focus-visible,
+.btn-liberar:focus-visible,
+.btn-venta:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 650px) {
+  .btn-agregar,
+  .btn-liberar,
+  .btn-venta {
+    width: 100%;
+  }
+}
+/* Meta de ventas */
+.meta-container {
+  background: var(--card-bg, #22212e);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 12px;
+}
+
+.mesa-card h3 {
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mesa-estado {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.mesa-card.disponible .mesa-estado {
+  color: var(--success);
+  background: rgba(34, 197, 94, .10);
+}
+
+.mesa-card.ocupada {
+  border-color: rgba(239, 68, 68, .35);
+}
+
+.mesa-card.ocupada .mesa-estado {
+  color: var(--error);
+  background: rgba(239, 68, 68, .10);
+}
+
+.mesa-card.activa,
+.mesa-card.seleccionada {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(255, 185, 20, .15), var(--shadow);
+}
+
+/* ---- Panel de orden ---- */
+.orden-container,
+.tabla-contabilidad {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.orden-header,
+.tabla-header {
+  min-height: 76px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.orden-header h3,
+.tabla-header h3 {
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.orden-header span#mesaSeleccionada,
+.tabla-header p {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.estado-orden {
+  padding: 5px 10px;
+  color: var(--gold);
+  background: rgba(255, 185, 20, .10);
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---- Formulario para agregar producto ---- */
+.orden-form {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px auto;
+  align-items: end;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.orden-form .campo label {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.orden-form .campo input,
+.orden-form .campo select {
+  width: 100%;
+  padding: 10px 12px;
+  color: var(--white);
+  background: #181725;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: 0;
+  font-size: 10px;
+}
+
+.orden-form .campo input:focus,
+.orden-form .campo select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(255, 185, 20, .08);
+}
+
+/* ---- Productos de la orden ---- */
+.orden-productos {
+  padding: 6px 22px 10px;
+}
+
+.orden-productos-header,
+.orden-item,
+.orden-fila,
+#listaOrden > div:not(.orden-vacia) {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 50px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  font-size: 10px;
+  border-bottom: 1px solid rgba(52, 49, 63, .65);
+}
+
+.orden-productos-header {
+  color: var(--gold);
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+#listaOrden > div:not(.orden-vacia) {
+  color: var(--text-secondary);
+}
+
+#listaOrden button {
+  border: 1px solid var(--border);
+  background: #181725;
+  color: var(--error);
+  border-radius: 6px;
+  padding: 5px 7px;
+  cursor: pointer;
+  font-size: 9px;
+}
+
+#listaOrden button:hover {
+  border-color: var(--error);
+}
+
+.orden-vacia {
+  padding: 34px 0;
+  text-align: center;
+}
+
+.orden-vacia span {
+  font-size: 30px;
+}
+
+.orden-vacia p {
+  margin-top: 8px;
+  color: #777481;
+  font-size: 10px;
+}
+
+/* ---- Total y acciones ---- */
+.orden-footer {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: #181725;
+  border-top: 1px solid var(--border);
+}
+
+.orden-total span {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.orden-total strong {
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.orden-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---- Resumen contable ---- */
+.contabilidad-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.resumen-card {
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.resumen-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.resumen-card strong {
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.resumen-card:nth-child(1) strong { color: var(--success); }
+.resumen-card:nth-child(2) strong { color: var(--error); }
+.resumen-card:nth-child(3) strong { color: var(--gold); }
+
+/* ---- Historial ---- */
+.tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-wrapper table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.tabla-wrapper th,
+.tabla-wrapper td {
+  padding: 12px 22px;
+  text-align: left;
+  border-bottom: 1px solid rgba(52, 49, 63, .65);
+  font-size: 10px;
+}
+
+.tabla-wrapper th {
+  color: var(--gold);
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.tabla-wrapper td {
+  color: var(--text-secondary);
+}
+
+.tabla-wrapper tbody tr:hover {
+  background: rgba(255, 185, 20, .025);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1000px) {
+  .mesas-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .mesas-container,
+  .contabilidad-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .orden-form {
+    grid-template-columns: 1fr;
+  }
+
+  .orden-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orden-acciones {
+    flex-direction: column;
+  }
+}
+
+/* ---- Icono de mesa ---- */
+.mesa-icono {
+  color: var(--gold);
+}
+
+.mesa-icono svg {
+  display: block;
+}
+
+/* ---- Botones de la orden ---- */
+.btn-agregar,
+.btn-liberar,
+.btn-venta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-family: var(--font-title);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.btn-agregar svg,
+.btn-liberar svg,
+.btn-venta svg {
+  flex: 0 0 auto;
+}
+
+/* Agregar producto: dorado sólido */
+.btn-agregar {
+  color: var(--dark);
+  background: var(--gold);
+}
+
+.btn-agregar:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 185, 20, .18);
+}
+
+/* Liberar mesa: contorno rojo suave */
+.btn-liberar {
+  color: var(--error);
+  background: rgba(239, 68, 68, .08);
+  border-color: rgba(239, 68, 68, .30);
+}
+
+.btn-liberar:hover {
+  background: rgba(239, 68, 68, .16);
+  border-color: var(--error);
+  transform: translateY(-2px);
+}
+
+/* Registrar venta: verde sólido */
+.btn-venta {
+  color: #0B1A10;
+  background: var(--success);
+}
+
+.btn-venta:hover {
+  background: #34D673;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, .22);
+}
+
+.btn-agregar:active,
+.btn-liberar:active,
+.btn-venta:active {
+  transform: translateY(0);
+}
+
+.btn-agregar:focus-visible,
+.btn-liberar:focus-visible,
+.btn-venta:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 650px) {
+  .btn-agregar,
+  .btn-liberar,
+  .btn-venta {
+    width: 100%;
+  }
+}
+
+
+/* 
+
+   META DE VENTAS 
+ */
+
+
+.meta-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.meta-header h3 { font-family: var(--font-title); font-size: 14px; margin: 0; }
+.meta-header p { color: var(--text-secondary); font-size: 9px; margin: 4px 0 0; }
+
+.meta-estado {
+  font-size: 8px; font-weight: 700; padding: 4px 8px; border-radius: 6px;
+  background: rgba(160, 156, 174, 0.15); color: #a09cae;
+}
+.meta-estado.progreso { background: rgba(255, 184, 0, 0.15); color: #ffb800; }
+.meta-estado.cumplida { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+
+.meta-form {
+  display: flex; align-items: flex-end; gap: 10px;
+  padding: 16px 20px; flex-wrap: wrap;
+}
+.meta-form .campo { flex: 1; min-width: 200px; }
+
+.meta-progreso { padding: 0 20px 20px; }
+.meta-barra-fondo {
+  height: 12px; border-radius: 999px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+.meta-barra {
+  height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #ffb800, #22c55e);
+  transition: width 0.5s ease;
+}
+.meta-datos {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-top: 14px;
+}
+.meta-datos span { display: block; color: var(--text-secondary); font-size: 9px; }
+.meta-datos strong { font-size: 15px; }
+
+
+@media (max-width: 700px) {
+  .meta-datos { grid-template-columns: repeat(2, 1fr); }
+
+}
+
+
+
+.mesas-zona {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.mesas-zona .meta-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  z-index: 30;
+  border-color: rgba(255, 185, 20, .35);
+  box-shadow: var(--shadow);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+
+.mesas-zona:hover .meta-container,
+.mesas-zona:focus-within .meta-container {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  }
+
+/*  MODO CLARO  */
+:root[data-tema="claro"] {
+  --card: #FFFFFF;
+  --white: #17161F;
+  --text-secondary: #000000;
+  --border: #E3E1EA;
+  --shadow: 0 10px 30px rgba(20, 20, 40, .08);
+}
+
+:root[data-tema="claro"] body {
+  background: #F4F3F8;
+}
+
+
+.barra-lateral,
+.login-pantalla {
+  --card: #211F2D;
+  --white: #FFFFFF;
+  --text-secondary: #C7C5CC;
+  --border: #34313F;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+
+/* Superficies que tenían color fijo */
+:root[data-tema="claro"] .campo input,
+:root[data-tema="claro"] .campo select,
+:root[data-tema="claro"] .campo textarea,
+:root[data-tema="claro"] .panel select,
+:root[data-tema="claro"] .panel-reportes select,
+:root[data-tema="claro"] .icono-producto,
+:root[data-tema="claro"] .reporte-box,
+:root[data-tema="claro"] .orden-footer,
+:root[data-tema="claro"] .boton-secundario,
+:root[data-tema="claro"] .acciones-tabla button,
+:root[data-tema="claro"] #listaOrden button {
+  background: #F3F2F7;
+}
+
+:root[data-tema="claro"] .progreso {
+  background: #E9E7F0;
+}
+
+:root[data-tema="claro"] .bienvenida {
+  background: linear-gradient(115deg, #FFFFFF, #F1EFF7);
+}
+
+
+:root[data-tema="claro"] .etiqueta-superior,
+:root[data-tema="claro"] .etiqueta-seccion,
+:root[data-tema="claro"] .enlace-ver,
+:root[data-tema="claro"] .tabla th,
+:root[data-tema="claro"] .tabla-wrapper th,
+:root[data-tema="claro"] .orden-productos-header,
+:root[data-tema="claro"] .orden-total strong,
+:root[data-tema="claro"] .resumen-card:nth-child(3) strong {
+  color: #B07800;
+}
+
+:root[data-tema="claro"] .tarjeta-estadistica,
+:root[data-tema="claro"] .panel {
+  box-shadow: 0 4px 18px rgba(20, 20, 40, .06);
+}
+
+
+.icono-tema {
+  display: inline-block;
+  transition: transform .5s ease;
+}
+:root[data-tema="claro"] .icono-tema {
+  transform: rotate(360deg);
+}
+
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+
+}}
+
+/* editar alimentos */
+ .modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, .7);
+}
+
+.modal-fondo.abierto {
+  display: flex;
+}
+
+.modal-caja {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.modal-caja h3 {
+  margin-bottom: 18px;
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.modal-caja .acciones {
+  justify-content: flex-end;
+}
+
+/* Control de stock + y − */
+.stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.stepper input {
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.btn-step {
+  width: 44px;
+  flex: 0 0 auto;
+  color: var(--white);
+  background: #181725;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.btn-step.mas:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.btn-step.menos:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.stock-delta {
+  min-height: 14px;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 9px;
+}
+
+.stock-delta.sube { color: var(--success); }
+.stock-delta.baja { color: var(--error); }
