@@ -1495,7 +1495,6 @@ if (barra) barra.style.width = progreso + "%";
           "<td>" + (Number(a.cantidad) || 0) + "</td>" +
           "<td>" + formatoMoneda(a.precio) + "</td>" +
           "<td>" + fechaBonita(a.vencimiento) + "</td>" +
-          "<td>" + esc(a.sede) + "</td>" +
           '<td><div class="acciones-tabla">' +
             '<button onclick="editarAlimento(' + Number(a.id) + ')">Editar</button>' +
             '<button class="eliminar" onclick="eliminarAlimento(' + Number(a.id) + ')">Eliminar</button>' +
@@ -1517,7 +1516,6 @@ if (barra) barra.style.width = progreso + "%";
             "<td>" + esc(a.categoria) + "</td>" +
             "<td>" + (Number(a.cantidad) || 0) + " unidades</td>" +
             "<td>" + fechaBonita(a.vencimiento) + "</td>" +
-            "<td>" + esc(a.sede) + "</td>" +
             '<td><span class="estado-demo ' + est[1] + '">' +
               esc(est[0]) +
             "</span></td>" +
