@@ -718,6 +718,10 @@
 
   window.limpiarAlimento = limpiarAlimento;
 
+  /*editar alimentos*/
+
+let stockOriginal = 0;
+
   function editarAlimento(id) {
     const a = datos.alimentos.find(
       x => Number(x.id) === Number(id)
@@ -728,18 +732,105 @@
       return;
     }
 
-    document.getElementById("alimentoId").value = a.id ?? "";
-    document.getElementById("alimentoNombre").value = a.nombre ?? "";
-    document.getElementById("alimentoCategoria").value = a.categoria ?? "";
-    document.getElementById("alimentoCantidad").value = a.cantidad ?? "";
-    document.getElementById("alimentoPrecio").value = a.precio ?? "";
-    document.getElementById("alimentoVencimiento").value = a.vencimiento ?? "";
-    document.getElementById("alimentoSede").value = a.sede ?? "";
+    // Reutiliza las opciones de categoría y sede del formulario principal
+    document.getElementById("editCategoria").innerHTML =
+      document.getElementById("alimentoCategoria").innerHTML;
+    document.getElementById("editSede").innerHTML =
+      document.getElementById("alimentoSede").innerHTML;
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById("editId").value = a.id ?? "";
+    document.getElementById("editNombre").value = a.nombre ?? "";
+    document.getElementById("editCategoria").value = a.categoria ?? "";
+    document.getElementById("editPrecio").value = a.precio ?? 0;
+    document.getElementById("editVencimiento").value = a.vencimiento ?? "";
+    document.getElementById("editSede").value = a.sede ?? "";
+    document.getElementById("editCantidad").value = Number(a.cantidad) || 0;
+    document.getElementById("editPaso").value = 1;
+
+    stockOriginal = Number(a.cantidad) || 0;
+    actualizarDeltaStock();
+
+    document.getElementById("modalEditarAlimento").classList.add("abierto");
   }
 
   window.editarAlimento = editarAlimento;
+
+  function cerrarModalAlimento() {
+    document.getElementById("modalEditarAlimento")?.classList.remove("abierto");
+  }
+
+  function cambiarStock(signo) {
+    const paso = Math.max(
+      1,
+      parseInt(document.getElementById("editPaso").value) || 1
+    );
+    const input = document.getElementById("editCantidad");
+    const actual = parseInt(input.value) || 0;
+
+    input.value = Math.max(0, actual + signo * paso); // nunca negativo
+    actualizarDeltaStock();
+  }
+
+  function actualizarDeltaStock() {
+    const nuevo = parseInt(document.getElementById("editCantidad").value) || 0;
+    const d = nuevo - stockOriginal;
+    const el = document.getElementById("stockDelta");
+
+    el.className = "stock-delta " + (d > 0 ? "sube" : d < 0 ? "baja" : "");
+    el.textContent = d === 0
+      ? "Stock actual: " + stockOriginal
+      : stockOriginal + " → " + nuevo + " (" + (d > 0 ? "+" : "") + d + ")";
+  }
+
+  async function guardarEdicionAlimento() {
+    const nombre = document.getElementById("editNombre").value.trim();
+
+    if (!nombre) {
+      mensaje("mensajeEdicion", "El nombre es obligatorio.", "error");
+      return;
+    }
+
+    try {
+      const r = await POST("/api/alimentos", {
+        id: Number(document.getElementById("editId").value) || null,
+        nombre,
+        categoria: document.getElementById("editCategoria").value,
+        cantidad: Math.max(0, Number(document.getElementById("editCantidad").value) || 0),
+        precio: Number(document.getElementById("editPrecio").value) || 0,
+        vencimiento: document.getElementById("editVencimiento").value,
+        sede: document.getElementById("editSede").value
+      });
+
+      cerrarModalAlimento();
+
+      mensaje(
+        "mensajeAlimento",
+        r.mensaje || "Alimento actualizado correctamente.",
+        "ok"
+      );
+
+      await recargar();
+    } catch (err) {
+      mensaje("mensajeEdicion", err.message, "error");
+    }
+  }
+
+  document.getElementById("btnStockMas")?.addEventListener("click", () => cambiarStock(+1));
+  document.getElementById("btnStockMenos")?.addEventListener("click", () => cambiarStock(-1));
+  document.getElementById("editCantidad")?.addEventListener("input", actualizarDeltaStock);
+  document.getElementById("btnGuardarEdicion")?.addEventListener("click", guardarEdicionAlimento);
+  document.getElementById("btnCancelarEdicion")?.addEventListener("click", cerrarModalAlimento);
+
+  document.getElementById("modalEditarAlimento")?.addEventListener("click", e => {
+    if (e.target.id === "modalEditarAlimento") cerrarModalAlimento();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") cerrarModalAlimento();
+  });
+
+
+/*fin de editar alimentos */
 
   async function eliminarAlimento(id) {
     if (!confirm("¿Deseas eliminar este alimento?")) {

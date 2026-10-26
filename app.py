@@ -248,7 +248,7 @@ def proveedores_eliminar(pid):
 def alimentos_listar():
     return jsonify(db.consultar(
         """SELECT id, nombre, categoria, cantidad, precio,
-                  to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, sede
+                  to_char(vencimiento, 'YYYY-MM-DD') AS vencimiento, 
            FROM alimentos ORDER BY id"""
     ))
 
@@ -260,7 +260,7 @@ def alimentos_guardar():
     aid = entero(d.get("id"), 1)
     nombre = (d.get("nombre") or "").strip()
     categoria = (d.get("categoria") or "").strip()
-    sede = (d.get("sede") or "").strip()
+    
     cantidad = entero(d.get("cantidad"), 0)
     precio = entero(d.get("precio"), 0)
     try:
@@ -268,8 +268,8 @@ def alimentos_guardar():
     except ValueError:
         return error("La fecha de vencimiento no es válida.")
 
-    if not nombre or not categoria or not sede:
-        return error("Nombre, categoría y sede son obligatorios.")
+    if not nombre or not categoria or not cantidad or not precio:
+        return error("Nombre, categoría, cantidad y precio son obligatorios.")
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
     if precio is None:
@@ -278,15 +278,15 @@ def alimentos_guardar():
     if aid:
         db.ejecutar(
             """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                      precio=%s, vencimiento=%s, sede=%s WHERE id=%s""",
-            (nombre, categoria, cantidad, precio, vencimiento, sede, aid),
+                      precio=%s, vencimiento=%s WHERE id=%s""",
+            (nombre, categoria, cantidad, precio, vencimiento,  aid),
         )
         return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
 
     db.ejecutar(
-        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, sede)
+        """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, )
            VALUES (%s, %s, %s, %s, %s, %s)""",
-        (nombre, categoria, cantidad, precio, vencimiento, sede),
+        (nombre, categoria, cantidad, precio, vencimiento,),
     )
     return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 
@@ -337,22 +337,9 @@ def perdidas_registrar():
     return jsonify({"ok": True, "mensaje": "Pérdida registrada y descontada del inventario."})
 
 
-# RUTAS DE SEDES Y SINCRONIZACIÓN (RF 4)
-@app.get("/api/sedes")
-@login_requerido
-def sedes_listar():
-    return jsonify(db.consultar(
-        """SELECT nombre, estado,
-                  COALESCE(to_char(actualizacion, 'DD/MM/YYYY HH24:MI'), 'Pendiente') AS actualizacion
-           FROM sedes ORDER BY id"""
-    ))
 
 
-@app.post("/api/sincronizar")
-@login_requerido
-def sincronizar():
-    db.ejecutar("UPDATE sedes SET estado = 'Conectada', actualizacion = now()")
-    return jsonify({"ok": True, "mensaje": "Inventario sincronizado con todas las sedes."})
+
 
 
 # RUTAS DE CONTABILIDAD (RF 5)

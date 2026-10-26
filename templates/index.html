@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=3">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=4">
   <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
 </head>
 
@@ -432,7 +432,6 @@
             <span id="estadoOrden" class="estado-orden">Sin orden</span>
           </div>
 
-=======
           <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
         </div>
 
@@ -477,7 +476,7 @@
             <span id="estadoOrden" class="estado-orden">Sin orden</span>
           </div>
 
->>>>>>> main
+
           <!-- AGREGAR PRODUCTO -->
           <div class="orden-form">
 
@@ -547,12 +546,12 @@
 
         </div>
 
-<<<<<<< HEAD
+
         <!-- RESUMEN DE VENTAS -->
         <div class="ventas-resumen">
 
           <div class="resumen-card">
-=======
+
         <!-- META DE VENTAS -->
         <div class="meta-container">
           <div class="meta-header">
@@ -586,7 +585,7 @@
         <!-- RESUMEN DE VENTAS -->
         <div class="ventas-resumen">
 
-<<<<<<< HEAD
+
       <div class="meta-progreso">
         <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
         <div class="meta-datos">
@@ -607,7 +606,7 @@
 
           <div class="resumen-card">
 
->>>>>>> main
+
             <span>Total ventas</span>
             <strong id="totalVentas">$0</strong>
           </div>
@@ -974,6 +973,43 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
       </footer>
     </main>
   </div>
+<!--editar alimentos -->
+<div class="modal-fondo" id="modalEditarAlimento">
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <h3 id="modalTitulo">Editar alimento</h3>
+      <input type="hidden" id="editId">
+
+      <div class="form-grid">
+        <div class="campo form-full"><label>Nombre del alimento</label><input id="editNombre"></div>
+        <div class="campo"><label>Categoría</label><select id="editCategoria"></select></div>
+        <div class="campo"><label>Precio</label><input id="editPrecio" type="number" min="0"></div>
+        <div class="campo"><label>Fecha de vencimiento</label><input id="editVencimiento" type="date"></div>
+        <div class="campo"><label>Sede</label><select id="editSede"></select></div>
+
+        <div class="campo form-full">
+          <label>Stock</label>
+          <div class="stepper">
+            <button type="button" class="btn-step menos" id="btnStockMenos" aria-label="Restar">−</button>
+            <input id="editCantidad" type="number" min="0" value="0">
+            <button type="button" class="btn-step mas" id="btnStockMas" aria-label="Sumar">+</button>
+          </div>
+          <div class="stock-delta" id="stockDelta"></div>
+        </div>
+
+        <div class="campo form-full">
+          <label>Cantidad a sumar o restar por clic</label>
+          <input id="editPaso" type="number" min="1" value="1">
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button type="button" class="boton-secundario" id="btnCancelarEdicion">Cancelar</button>
+        <button type="button" class="boton-principal" id="btnGuardarEdicion">Guardar cambios</button>
+      </div>
+      <div id="mensajeEdicion" class="mensaje"></div>
+    </div>
+  </div>
+  <!--fin de editar alimentos-->
 
 <!-- conexion con js  de joselin-->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
