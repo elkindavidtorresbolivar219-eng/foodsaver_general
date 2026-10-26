@@ -131,6 +131,9 @@
           <h1 id="tituloSuperior">Panel principal</h1>
         </div>
         <div class="acciones-superiores">
+          <button class="boton-icono" id="btnTema" type="button" aria-label="Cambiar tema">
+          <span class="icono-tema">☾</span>
+          </button>
           <button class="boton-icono notificacion" aria-label="Notificaciones" onclick="mostrarVista('reportes')">
             ♧<span class="punto-notificacion"></span>
           </button>
@@ -300,7 +303,7 @@
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
                 <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
-                <div class="campo"><label>Sede</label><select id="alimentoSede"><option>Sede principal</option><option>Sede norte</option><option>Sede sur</option></select></div>
+                
               </div>
               <div class="acciones"><button class="boton-principal" type="submit">Guardar alimento</button><button class="boton-secundario" type="button" onclick="limpiarAlimento()">Limpiar</button></div>
               <div id="mensajeAlimento" class="mensaje"></div>
@@ -324,7 +327,7 @@
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
 
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Sede</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
 
         </article>
       </section>
@@ -1010,6 +1013,7 @@ Inventario: consulta de existencias y actualización de cantidades.</p></div>
 
 <!-- conexion con js  de joselin-->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tema.js') }}"></script>
 <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
