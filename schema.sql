@@ -25,8 +25,7 @@ CREATE TABLE IF NOT EXISTS alimentos (
     nombre      VARCHAR(100) NOT NULL,
     categoria   VARCHAR(30)  NOT NULL,
     cantidad    INTEGER      NOT NULL CHECK (cantidad >= 0),
-    vencimiento DATE         NOT NULL,
-    sede        VARCHAR(50)  NOT NULL
+    vencimiento DATE         NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS perdidas (
@@ -65,4 +64,3 @@ ALTER TABLE usuarios     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alimentos    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE perdidas     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contabilidad ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sedes        ENABLE ROW LEVEL SECURITY;
