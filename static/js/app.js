@@ -1689,10 +1689,9 @@
             "</td>" +
 
             "<td>" +
-            esc(a.sede) +
-            "</td>" +
+            
 
-            '<td><div class="acciones-tabla">' +
+            '<div class="acciones-tabla">' +
 
             '<button onclick="editarAlimento(' +
             a.id +
@@ -1740,10 +1739,7 @@
             "</td>" +
 
             "<td>" +
-            esc(a.sede) +
-            "</td>" +
-
-            '<td><span class="estado-demo ' +
+            '<span class="estado-demo ' +
             est[1] +
             '">' +
             est[0] +
