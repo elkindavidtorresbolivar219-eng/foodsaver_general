@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=4">
-  <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.png') }}?v=1">
 </head>
 
 <body>
@@ -974,7 +974,7 @@
         <div class="campo"><label>Categoría</label><select id="editCategoria"></select></div>
         <div class="campo"><label>Precio</label><input id="editPrecio" type="number" min="0"></div>
         <div class="campo"><label>Fecha de vencimiento</label><input id="editVencimiento" type="date"></div>
-        <div class="campo"><label>Sede</label><select id="editSede"></select></div>
+       
 
         <div class="campo form-full">
           <label>Stock</label>
@@ -1002,10 +1002,9 @@
   <!--fin de editar alimentos-->
 
 <!-- conexion con js  de joselin-->
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v=5"></script>
 <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
 <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
-<script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
 
 </body>
