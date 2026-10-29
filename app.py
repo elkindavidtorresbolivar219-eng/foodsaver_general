@@ -281,14 +281,16 @@ def alimentos_guardar():
         return error("La cantidad debe ser un número mayor o igual a 0.")
     if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
-    if not proveedor_id:
+    # Al crear, el proveedor es obligatorio. Al editar, si no llega, se conserva el actual.
+    if not aid and not proveedor_id:
         return error("Selecciona el proveedor de origen.")
 
     try:
         if aid:
             db.ejecutar(
                 """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                          precio=%s, vencimiento=%s, proveedor_id=%s WHERE id=%s""",
+                          precio=%s, vencimiento=%s,
+                          proveedor_id=COALESCE(%s, proveedor_id) WHERE id=%s""",
                 (nombre, categoria, cantidad, precio, vencimiento, proveedor_id, aid),
             )
             return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
