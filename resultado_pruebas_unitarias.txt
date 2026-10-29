@@ -1,0 +1,91 @@
+PRUEBAS UNITARIAS - FOODSAVER (foodsaver_general)
+Fecha: 2026-10-27 23:05
+Archivo de pruebas: tests/test_app.py
+Comando: .venv\Scripts\python -m unittest tests.test_app -v
+La base de datos se simula con unittest.mock (no se usa Supabase).
+==================================================================
+test_convierte_texto_numerico (tests.test_app.PruebaEntero.test_convierte_texto_numerico) ... ok
+test_rechaza_none (tests.test_app.PruebaEntero.test_rechaza_none) ... ok
+test_rechaza_texto_no_numerico (tests.test_app.PruebaEntero.test_rechaza_texto_no_numerico) ... ok
+test_rechaza_valor_menor_al_minimo (tests.test_app.PruebaEntero.test_rechaza_valor_menor_al_minimo) ... ok
+test_login_clave_incorrecta (tests.test_app.PruebaLogin.test_login_clave_incorrecta) ... ok
+test_login_correcto (tests.test_app.PruebaLogin.test_login_correcto) ... ok
+test_login_usuario_inexistente (tests.test_app.PruebaLogin.test_login_usuario_inexistente) ... ok
+test_logout_cierra_sesion (tests.test_app.PruebaLogin.test_logout_cierra_sesion) ... ok
+test_restablecer_clave_corta (tests.test_app.PruebaLogin.test_restablecer_clave_corta) ... ok
+test_crear_usuario_duplicado_responde_409 (tests.test_app.PruebaUsuarios.test_crear_usuario_duplicado_responde_409) ... ok
+test_crear_usuario_guarda_clave_cifrada (tests.test_app.PruebaUsuarios.test_crear_usuario_guarda_clave_cifrada) ... ok
+test_crear_usuario_rol_invalido (tests.test_app.PruebaUsuarios.test_crear_usuario_rol_invalido) ... ok
+test_crear_usuario_sin_nombre (tests.test_app.PruebaUsuarios.test_crear_usuario_sin_nombre) ... ok
+test_no_puede_eliminarse_a_si_mismo (tests.test_app.PruebaUsuarios.test_no_puede_eliminarse_a_si_mismo) ... ok
+test_rol_no_admin_responde_403 (tests.test_app.PruebaUsuarios.test_rol_no_admin_responde_403) ... ok
+test_sin_sesion_responde_401 (tests.test_app.PruebaUsuarios.test_sin_sesion_responde_401) ... ok
+test_alimento_fecha_invalida (tests.test_app.PruebaValidaciones.test_alimento_fecha_invalida) ... ok
+test_contabilidad_tipo_invalido (tests.test_app.PruebaValidaciones.test_contabilidad_tipo_invalido) ... ok
+test_proveedor_telefono_con_letras (tests.test_app.PruebaValidaciones.test_proveedor_telefono_con_letras) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.538s
+
+OK
+
+==================================================================
+FELICITACIONES AL EQUIPO DE FOODSAVER
+==================================================================
+¡Felicitaciones! Las 19 pruebas unitarias pasaron sin errores.
+El backend responde como se espera en el inicio de sesión, la gestión
+de usuarios y las validaciones de datos. Es un trabajo sólido.
+
+LO QUE REALIZARON BIEN
+------------------------------------------------------------------
+1. Contraseñas cifradas
+   Las claves se guardan con generate_password_hash y se verifican con
+   check_password_hash. Nunca quedan en texto plano en la base de datos
+   (lo confirma la prueba test_crear_usuario_guarda_clave_cifrada).
+
+2. Protección contra inyección SQL
+   Todas las consultas usan parámetros (%s) en lugar de concatenar
+   texto, así que lo que escribe el usuario no puede alterar el SQL.
+
+3. Control de acceso por roles
+   Los decoradores login_requerido y solo_admin protegen las rutas:
+   sin sesión se responde 401 y un rol sin permiso recibe 403.
+
+4. Validación de datos de entrada
+   Se revisan campos obligatorios, roles y tipos contables permitidos,
+   teléfonos solo numéricos, fechas válidas y contraseñas de mínimo
+   4 caracteres, con mensajes de error claros en español.
+
+5. Manejo de errores de la base de datos
+   Se capturan UniqueViolation (usuario repetido, 409) y
+   ForeignKeyViolation (proveedor inexistente, 404) en vez de dejar
+   que la aplicación falle.
+
+6. Reglas de negocio seguras
+   Un administrador no puede eliminarse a sí mismo, una pérdida no
+   puede superar las existencias y un pago no puede superar la deuda
+   con el proveedor. Además usan transacciones con SELECT ... FOR UPDATE
+   para que dos operaciones al mismo tiempo no descuadren el inventario
+   ni los saldos.
+
+7. Sesiones bien configuradas
+   La cookie de sesión es HttpOnly y SameSite=Lax, lo que dificulta
+   robarla desde JavaScript o usarla desde otros sitios.
+
+8. Conexión ordenada a la base de datos
+   La clase Conexion abre y cierra cada conexión con un context
+   manager, confirma o revierte la transacción automáticamente, lee
+   las credenciales desde variables de entorno y fija la zona horaria
+   America/Bogota.
+
+9. Código organizado y legible
+   El archivo app.py está dividido por secciones según los requisitos
+   funcionales (RF 1, RF 2, RF 3, RF 5), con nombres en español claros
+   y funciones de apoyo reutilizables (error, datos_json, entero).
+
+10. Trabajo en equipo con Git
+    El proyecto se desarrolla en ramas por integrante (Dilan, israel,
+    jose, Tester) y se integra a main mediante Pull Requests, con
+    aportes de varios miembros del equipo.
+
+¡Sigan así, equipo FoodSaver!
