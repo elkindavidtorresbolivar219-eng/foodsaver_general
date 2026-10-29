@@ -2908,3 +2908,35 @@ footer {
     gap: 10px;
   }
 }
+
+:root[data-tema="claro"] .login-caja {
+  --white: #FFFFFF;
+  --text-secondary: #C7C5CC;
+  --border: #34313F;
+}
+
+:root[data-tema="claro"] .login-caja h1,
+:root[data-tema="claro"] .login-caja > p,
+:root[data-tema="claro"] .login-caja .campo label,
+:root[data-tema="claro"] .enlace-boton {
+  color: #FFFFFF;
+}
+
+:root[data-tema="claro"] .login-caja .campo input {
+  background: rgba(0, 0, 0, .45);
+  color: #FFFFFF;
+}
+
+:root[data-tema="claro"] .login-caja .campo input::placeholder {
+  color: rgba(255, 255, 255, .45);
+}
+
+:root[data-tema="claro"] .login-caja .boton-principal {
+  background: #000;
+  color: #FFFFFF;
+}
+
+:root[data-tema="claro"] .login-caja .boton-principal:hover {
+  background: var(--gold);
+  color: var(--dark);
+}
