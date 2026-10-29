@@ -88,6 +88,9 @@
         <a href="#" class="elemento-menu" data-vista="alimentos">
           <span class="icono">▤</span><span>Alimentos</span>
         </a>
+        <a href="#" class="elemento-menu" data-vista="platos">
+        <span class="icono">🍔</span><span>Platos</span>
+        </a>
         <a href="#" class="elemento-menu" data-vista="inventario">
           <span class="icono">◫</span><span>Inventario</span>
         </a>
@@ -353,7 +356,86 @@
           <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
         </article>
       </section>
+    <section id="vista-platos" class="vista">
+  <div class="titulo-vista">
+    <span class="etiqueta-seccion">MENÚ</span>
+    <h2>Platos</h2>
+    <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
+  </div>
 
+  <div class="platos-grid" id="platosGrid">
+
+    <!-- Plato: Meraki (los ingredientes luego vendrán de la base de datos) -->
+    <div class="plato-carta" tabindex="0" role="button" data-nombre="MERAKI" data-precio="16000" aria-label="Ver ingredientes de la hamburguesa Meraki">
+      <div class="plato-carta-interior">
+
+        <!-- Frente: imagen -->
+        <div class="plato-cara plato-frente">
+          <img src="{{ url_for('static', filename='img/hamburguesa1.jpg') }}" alt="Hamburguesa Meraki">
+          <div class="plato-pie">
+            <strong>MERAKI</strong>
+            <span>$16.000</span>
+          </div>
+        </div>
+
+        <!-- Reverso: ingredientes (cada uno tendrá su botón Quitar / Agregar) -->
+        <div class="plato-cara plato-reverso">
+          <div class="plato-reverso-cab">
+            <div>
+              <h3>MERAKI</h3>
+              <span class="plato-precio">$16.000</span>
+            </div>
+            <button type="button" class="plato-volver">↺ Volver</button>
+          </div>
+
+          <p class="plato-subtitulo">Ingredientes</p>
+          <ul class="plato-ingredientes" id="ingredientesMeraki">
+             <li data-fijo>Pan Brioche</li>
+             <li>Salsa de ajo</li>
+             <li>Lechuga</li>
+             <li>Tomate</li>
+             <li>Cebolla</li>
+             <li>Queso mozzarella</li>
+             <li data-fijo>150 g de carne 100% res</li>
+             <li>Tocineta</li>
+             <li>100 g de papas a la francesa</li>
+            </ul>
+          <button type="button" class="btn-agregar plato-agregar">+ Agregar al pedido</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PEDIDO DEL CLIENTE -->
+  <article class="panel pedido-panel">
+    <div class="encabezado-panel">
+      <div>
+        <span class="etiqueta-seccion">PEDIDO</span>
+        <h3>Productos pedidos</h3>
+      </div>
+      <span class="estado-orden" id="pedidoContador">0 productos</span>
+    </div>
+
+    <div class="pedido-lista" id="pedidoLista"></div>
+
+    <div class="orden-footer">
+      <div class="orden-total">
+        <span>Total del pedido</span>
+        <strong id="pedidoTotal">$0</strong>
+      </div>
+
+      <button type="button" id="btnHacerPedido" class="btn-venta">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        Hacer pedido
+      </button>
+    </div>
+
+    <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
+  </article>
+</section>
+</section>
       <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
@@ -395,7 +477,6 @@
             </div>
 
           </div>
-
           <!-- META DE VENTAS -->
           <div class="meta-container">
             <div class="meta-header">
@@ -1015,6 +1096,7 @@
 <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
+ <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
 
 </body>
 </html>
