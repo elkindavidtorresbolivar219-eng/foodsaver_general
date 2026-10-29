@@ -11,6 +11,14 @@
 <body>
   <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
+    
+    <!-- Fondo con fotos que cambian con transición -->
+  <div class="login-fondo" aria-hidden="true">
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+
     <div class="login-caja">
       <img src="{{ url_for('static', filename='img/logo3.png') }}" alt="Logo Meraki" class="login-logo">
       <h1>Iniciar sesión</h1>

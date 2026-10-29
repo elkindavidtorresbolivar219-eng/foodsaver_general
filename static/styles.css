@@ -1252,9 +1252,50 @@ footer {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background:
-    linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .35)),  
-    url("img/fondogif.gif") center / cover no-repeat;     
+  overflow: hidden;
+  background: #0D0C16;
+}
+
+/* Fondo del login: fotos con transición suave */
+.login-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.login-fondo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .35);
+}
+
+.login-fondo .slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation: fondoLogin 18s infinite;
+}
+
+.login-fondo .slide:nth-child(1) { background-image: url("img/fondo1.avif"); animation-delay: 0s; }
+.login-fondo .slide:nth-child(2) { background-image: url("img/fondo2.jpg"); animation-delay: 6s; }
+.login-fondo .slide:nth-child(3) { background-image: url("img/fondo3.jpg"); animation-delay: 12s; }
+
+@keyframes fondoLogin {
+  0%    { opacity: 0; transform: scale(1); }
+  6%    { opacity: 1; }
+  33%   { opacity: 1; }
+  39%   { opacity: 0; transform: scale(1.08); }
+  100%  { opacity: 0; transform: scale(1.08); }
+}
+
+.login-caja {
+  position: relative;
+  z-index: 1;
 }
 
 .login-caja {
