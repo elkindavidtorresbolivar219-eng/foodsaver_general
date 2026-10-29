@@ -5,19 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=4">
-  <link rel="stylesheet" href="{{ url_for('static', filename='img/logo.css') }}">
 </head>
 
 <body>
   <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
-    
+
     <!-- Fondo con fotos que cambian con transición -->
-  <div class="login-fondo" aria-hidden="true">
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-  </div>
+    <div class="login-fondo" aria-hidden="true">
+      <div class="slide"></div>
+      <div class="slide"></div>
+      <div class="slide"></div>
+    </div>
 
     <div class="login-caja">
       <img src="{{ url_for('static', filename='img/logo3.png') }}" alt="Logo Meraki" class="login-logo">
@@ -91,19 +90,15 @@
         <a href="#" class="elemento-menu" data-vista="inventario">
           <span class="icono">◫</span><span>Inventario</span>
         </a>
-          <a href="#" class="elemento-menu" data-vista="inversiones">
-      <span class="icono">$</span><span>Inversiones</span>
-    </a>
+        <a href="#" class="elemento-menu" data-vista="inversiones">
+          <span class="icono">$</span><span>Inversiones</span>
+        </a>
         <a href="#" class="elemento-menu" data-vista="ventas">
           <span class="icono">$</span><span>Ventas</span>
         </a>
-
-   
-
         <a href="#" class="elemento-menu" data-vista="saldos">
           <span class="icono">🏦</span><span>Saldos</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="reportes">
           <span class="icono">▥</span><span>Reportes</span>
         </a>
@@ -112,12 +107,6 @@
         <a href="#" class="elemento-menu" data-vista="configuracion">
           <span class="icono">⚙</span><span>Configuración</span>
         </a>
-        
-
-     
-
-     
-
       </nav>
 
       <div class="usuario-barra-lateral">
@@ -138,7 +127,7 @@
         </div>
         <div class="acciones-superiores">
           <button class="boton-icono" id="btnTema" type="button" aria-label="Cambiar tema">
-          <span class="icono-tema">☾</span>
+            <span class="icono-tema">☾</span>
           </button>
           <button class="boton-icono notificacion" aria-label="Notificaciones" onclick="mostrarVista('reportes')">
             ♧<span class="punto-notificacion"></span>
@@ -215,9 +204,7 @@
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
-
         </section>
-
       </section>
 
       <!-- USUARIOS -->
@@ -279,7 +266,7 @@
             <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.3</span><h3>Proveedores registrados</h3></div></div>
             <div class="tabla-contenedor">
               <table class="tabla">
-                <thead><tr><th>Nombre<th>Teléfono</th><th>Acciones</th></tr></thead>
+                <thead><tr><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
                 <tbody id="tablaProveedores"></tbody>
               </table>
             </div>
@@ -300,7 +287,7 @@
         <div class="titulo-vista"><span class="etiqueta-seccion">ADMINISTRACIÓN DE ALIMENTOS</span><h2>Registro de alimentos</h2><p>Ingreso, modificación, eliminación y registro de pérdidas.</p></div>
         <div class="modulo-grid">
           <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">3.1 / 3.2</span><h3>Registrar / modificar alimento</h3></div></div>
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">3.1 / 3.2</span><h3>Registrar alimento</h3></div></div>
             <form id="formAlimento" style="padding-top:18px;">
               <input type="hidden" id="alimentoId">
               <div class="form-grid">
@@ -309,7 +296,7 @@
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
                 <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
-                
+                <div class="campo"><label>Proveedor de origen</label><select id="alimentoProveedor" required><option value="">Seleccionar proveedor</option></select></div>
               </div>
               <div class="acciones"><button class="boton-principal" type="submit">Guardar alimento</button><button class="boton-secundario" type="button" onclick="limpiarAlimento()">Limpiar</button></div>
               <div id="mensajeAlimento" class="mensaje"></div>
@@ -332,11 +319,7 @@
         </div>
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
-
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
-
-
-
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Proveedor</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
         </article>
       </section>
 
@@ -350,7 +333,7 @@
         </div>
         <article class="panel">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div><button class="boton-secundario" onclick="mostrarVista('sincronizacion')">Sincronizar →</button></div>
-          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
+          <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Proveedor</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
         </article>
       </section>
 
@@ -360,7 +343,6 @@
         <div class="titulo-vista">
           <span class="etiqueta-seccion">VENTAS</span>
           <h2>Ventas y mesas</h2>
-
           <p>Gestiona las órdenes de las mesas y registra las ventas. Pasa el mouse sobre las mesas para ver la meta de ventas.</p>
         </div>
 
@@ -440,51 +422,6 @@
             <span id="estadoOrden" class="estado-orden">Sin orden</span>
           </div>
 
-          <p>Gestiona las órdenes de las mesas y registra las ventas.</p>
-        </div>
-
-        <!-- MESAS -->
-        <div class="mesas-container">
-
-          <div class="mesa-card disponible" data-mesa="1">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 1</h3>
-            <span class="mesa-estado">Disponible</span>
-          </div>
-
-          <div class="mesa-card disponible" data-mesa="2">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 2</h3>
-            <span class="mesa-estado">Disponible</span>
-          </div>
-
-          <div class="mesa-card disponible" data-mesa="3">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 3</h3>
-            <span class="mesa-estado">Disponible</span>
-          </div>
-
-          <div class="mesa-card disponible" data-mesa="4">
-            <div class="mesa-icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="4" rx="1.5"/><path d="M6 9v10M18 9v10"/></svg></div>
-            <h3>Mesa 4</h3>
-            <span class="mesa-estado">Disponible</span>
-          </div>
-
-        </div>
-
-        <!-- PANEL DE ORDEN -->
-        <div class="orden-container">
-
-          <div class="orden-header">
-            <div>
-              <h3>Orden de la mesa</h3>
-              <span id="mesaSeleccionada">Selecciona una mesa para comenzar</span>
-            </div>
-
-            <span id="estadoOrden" class="estado-orden">Sin orden</span>
-          </div>
-
-
           <!-- AGREGAR PRODUCTO -->
           <div class="orden-form">
 
@@ -554,67 +491,10 @@
 
         </div>
 
-
         <!-- RESUMEN DE VENTAS -->
         <div class="ventas-resumen">
 
           <div class="resumen-card">
-
-        <!-- META DE VENTAS -->
-        <div class="meta-container">
-          <div class="meta-header">
-            <div>
-              <h3>Meta de ventas</h3>
-              <p>Define cuánto quieres vender; el avance sube con cada venta.</p>
-            </div>
-            <span id="metaEstado" class="meta-estado">Sin meta definida</span>
-          </div>
-
-          <form id="formMeta" class="meta-form">
-            <div class="campo">
-              <label for="metaInput">Meta de dinero</label>
-              <input id="metaInput" type="number" min="1" placeholder="Ej: 1000000" required>
-            </div>
-            <button class="boton-principal" type="submit">Guardar meta</button>
-            <button class="boton-secundario" type="button" id="btnQuitarMeta">Quitar</button>
-          </form>
-
-          <div class="meta-progreso">
-            <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
-            <div class="meta-datos">
-              <div><span>Meta</span><strong id="metaValor">$0</strong></div>
-              <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
-              <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
-              <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RESUMEN DE VENTAS -->
-        <div class="ventas-resumen">
-
-
-      <div class="meta-progreso">
-        <div class="meta-barra-fondo"><div id="metaBarra" class="meta-barra"></div></div>
-        <div class="meta-datos">
-          <div><span>Meta</span><strong id="metaValor">$0</strong></div>
-          <div><span>Vendido</span><strong id="metaVendido">$0</strong></div>
-          <div><span>Falta</span><strong id="metaFalta">$0</strong></div>
-          <div><span>Progreso</span><strong id="metaPorcentaje">0%</strong></div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- RESUMEN DE VENTAS -->
-    <div class="ventas-resumen">
-
-        <div class="resumen-card">
-
-          <div class="resumen-card">
-
-
             <span>Total ventas</span>
             <strong id="totalVentas">$0</strong>
           </div>
@@ -654,7 +534,7 @@
                 </tr>
               </thead>
 
-              <tbody id="tablaventas">
+              <tbody id="tablaContabilidad">
                 <tr>
                   <td colspan="4">No hay operaciones registradas.</td>
                 </tr>
@@ -799,7 +679,6 @@
               <p>Registro completo de préstamos, pagos y ajustes realizados.</p>
             </div>
           </div>
-          <!-- Joselin pinguin -->
 
           <div class="tabla-wrapper">
             <table>
@@ -839,119 +718,120 @@
         </article>
       </section>
 
-<!-- INVERSIONES -->
-<section id="vista-inversiones" class="vista">
-  <div class="titulo-vista">
-    <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
-    <h2>Inversiones del negocio</h2>
-    <p>Controla el dinero invertido y las ganancias generadas.</p>
-  </div>
-
-<!-- REGISTRAR INVERSIÓN -->
-<article class="panel panel-form" style="margin-bottom:20px;">
-  <div class="encabezado-panel">
-    <div>
-      <span class="etiqueta-seccion">REGISTRAR</span>
-      <h3>Inversión en insumos</h3>
-    </div>
-  </div>
-
-  <form id="formInversion" style="padding-top:18px;">
-    <div class="form-grid">
-      <div class="campo">
-        <label for="inversionDescripcion">Descripción</label>
-        <input id="inversionDescripcion" placeholder="Ej: Compra de verduras" required>
-      </div>
-      <div class="campo">
-        <label for="inversionValor">Valor invertido</label>
-        <input id="inversionValor" type="number" min="1" placeholder="Ej: 200000" required>
-      </div>
-    </div>
-    <div class="acciones">
-      <button class="boton-principal" type="submit">Guardar inversión</button>
-    </div>
-    <div id="mensajeInversion" class="mensaje"></div>
-  </form>
-
-  <div class="meta-progreso" style="margin-top:20px;">
-    <div class="meta-barra-fondo"><div id="invBarra" class="meta-barra"></div></div>
-    <div class="meta-datos">
-      <div><span>Por recuperar</span><strong id="invPorRecuperar">$0</strong></div>
-      <div><span>Recuperado</span><strong id="invRecuperado">$0</strong></div>
-      <div><span>Estado</span><strong id="invEstadoTexto">Sin inversión</strong></div>
-    </div>
-  </div>
-</article>
-
-  <section class="panel panel-inversiones-dashboard">
-    <div class="encabezado-panel">
-      <div>
-        <span class="etiqueta-seccion">RESUMEN</span>
-        <h3>Estado financiero</h3>
-      </div>
-      <button type="button" class="boton-principal" onclick="document.getElementById('inversionValor').focus()">
-  + Registrar inversión
-</button>
-    </div>
-
-    <div class="cuadricula-estadisticas">
-      <article class="tarjeta-estadistica">
-        <div class="icono-estadistica dorado">$</div>
-        <div class="informacion-estadistica">
-          <span>Total invertido</span>
-          <strong id="dashboardInversion">$0</strong>
-          <small>Inversión registrada en insumos</small>
+      <!-- INVERSIONES -->
+      <section id="vista-inversiones" class="vista">
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">CONTROL FINANCIERO</span>
+          <h2>Inversiones del negocio</h2>
+          <p>Controla el dinero invertido y las ganancias generadas.</p>
         </div>
-      </article>
 
-      <article class="tarjeta-estadistica">
-        <div class="icono-estadistica verde">$</div>
-        <div class="informacion-estadistica">
-          <span>Ingresos por ventas</span>
-          <strong id="dashboardIngresos">$0</strong>
-          <small>Ventas registradas</small>
-        </div>
-      </article>
+        <!-- REGISTRAR INVERSIÓN -->
+        <article class="panel panel-form" style="margin-bottom:20px;">
+          <div class="encabezado-panel">
+            <div>
+              <span class="etiqueta-seccion">REGISTRAR</span>
+              <h3>Inversión en insumos</h3>
+            </div>
+          </div>
 
-      <article class="tarjeta-estadistica">
-        <div class="icono-estadistica morado">$</div>
-        <div class="informacion-estadistica">
-          <span>Ganancia neta</span>
-          <strong id="dashboardGanancia">$0</strong>
-          <small>Después de costos y gastos</small>
-        </div>
-      </article>
+          <form id="formInversion" style="padding-top:18px;">
+            <div class="form-grid">
+              <div class="campo">
+                <label for="inversionDescripcion">Descripción</label>
+                <input id="inversionDescripcion" placeholder="Ej: Compra de verduras" required>
+              </div>
+              <div class="campo">
+                <label for="inversionValor">Valor invertido</label>
+                <input id="inversionValor" type="number" min="1" placeholder="Ej: 200000" required>
+              </div>
+            </div>
+            <div class="acciones">
+              <button class="boton-principal" type="submit">Guardar inversión</button>
+            </div>
+            <div id="mensajeInversion" class="mensaje"></div>
+          </form>
 
-      <article class="tarjeta-estadistica">
-        <div class="icono-estadistica verde">%</div>
-        <div class="informacion-estadistica">
-          <span>Rentabilidad</span>
-          <strong id="dashboardRentabilidad">0%</strong>
-          <small>Retorno sobre la inversión</small>
-        </div>
-      </article>
-    </div>
+          <div class="meta-progreso" style="margin-top:20px;">
+            <div class="meta-barra-fondo"><div id="invBarra" class="meta-barra"></div></div>
+            <div class="meta-datos">
+              <div><span>Por recuperar</span><strong id="invPorRecuperar">$0</strong></div>
+              <div><span>Recuperado</span><strong id="invRecuperado">$0</strong></div>
+              <div><span>Estado</span><strong id="invEstadoTexto">Sin inversión</strong></div>
+            </div>
+          </div>
+        </article>
 
-    <div class="reporte-box">
-      <h4>Resumen financiero</h4>
-      <div class="lista-inventario">
-        <div class="elemento-inventario">
-          <span>Inversión en insumos</span>
-          <strong id="dashboardCostoInsumos">$0</strong>
-        </div>
-        <div class="elemento-inventario">
-          <span>Otros gastos</span>
-          <strong id="dashboardGastos">$0</strong>
-        </div>
-        <div class="elemento-inventario">
-          <span>Resultado del negocio</span>
-          <strong id="dashboardBalance">$0</strong>
-        </div>
-      </div>
-    </div>
-  </section>
-</section>
-      <!-- CONFIGURACIÓN-->
+        <section class="panel panel-inversiones-dashboard">
+          <div class="encabezado-panel">
+            <div>
+              <span class="etiqueta-seccion">RESUMEN</span>
+              <h3>Estado financiero</h3>
+            </div>
+            <button type="button" class="boton-principal" onclick="document.getElementById('inversionValor').focus()">
+              + Registrar inversión
+            </button>
+          </div>
+
+          <div class="cuadricula-estadisticas">
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica dorado">$</div>
+              <div class="informacion-estadistica">
+                <span>Total invertido</span>
+                <strong id="dashboardInversion">$0</strong>
+                <small>Inversión registrada en insumos</small>
+              </div>
+            </article>
+
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica verde">$</div>
+              <div class="informacion-estadistica">
+                <span>Ingresos por ventas</span>
+                <strong id="dashboardIngresos">$0</strong>
+                <small>Ventas registradas</small>
+              </div>
+            </article>
+
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica morado">$</div>
+              <div class="informacion-estadistica">
+                <span>Ganancia neta</span>
+                <strong id="dashboardGanancia">$0</strong>
+                <small>Después de costos y gastos</small>
+              </div>
+            </article>
+
+            <article class="tarjeta-estadistica">
+              <div class="icono-estadistica verde">%</div>
+              <div class="informacion-estadistica">
+                <span>Rentabilidad</span>
+                <strong id="dashboardRentabilidad">0%</strong>
+                <small>Retorno sobre la inversión</small>
+              </div>
+            </article>
+          </div>
+
+          <div class="reporte-box">
+            <h4>Resumen financiero</h4>
+            <div class="lista-inventario">
+              <div class="elemento-inventario">
+                <span>Inversión en insumos</span>
+                <strong id="dashboardCostoInsumos">$0</strong>
+              </div>
+              <div class="elemento-inventario">
+                <span>Otros gastos</span>
+                <strong id="dashboardGastos">$0</strong>
+              </div>
+              <div class="elemento-inventario">
+                <span>Resultado del negocio</span>
+                <strong id="dashboardBalance">$0</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- CONFIGURACIÓN -->
       <section id="vista-configuracion" class="vista">
         <div class="titulo-vista"><span class="etiqueta-seccion">SISTEMA</span><h2>Configuración</h2><p>Opciones generales de la sesión actual.</p></div>
         <article class="panel panel-form">
@@ -961,18 +841,15 @@
         </article>
       </section>
 
-     
-        </article>
-      </section>
-
       <footer>
         <span>© 2026 Meraki · Sistema de Gestión Alimentaria</span>
         <span>Versión 2.0 · RF integrados</span>
       </footer>
     </main>
   </div>
-<!--editar alimentos -->
-<div class="modal-fondo" id="modalEditarAlimento">
+
+  <!-- EDITAR ALIMENTOS (ventana emergente) -->
+  <div class="modal-fondo" id="modalEditarAlimento" aria-hidden="true">
     <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
       <h3 id="modalTitulo">Editar alimento</h3>
       <input type="hidden" id="editId">
@@ -982,7 +859,7 @@
         <div class="campo"><label>Categoría</label><select id="editCategoria"></select></div>
         <div class="campo"><label>Precio</label><input id="editPrecio" type="number" min="0"></div>
         <div class="campo"><label>Fecha de vencimiento</label><input id="editVencimiento" type="date"></div>
-       
+        <div class="campo"><label>Proveedor de origen</label><select id="editProveedor"></select></div>
 
         <div class="campo form-full">
           <label>Stock</label>
@@ -1007,13 +884,13 @@
       <div id="mensajeEdicion" class="mensaje"></div>
     </div>
   </div>
-  <!--fin de editar alimentos-->
+  <!-- fin de editar alimentos -->
 
-<!-- conexion con js  de joselin-->
-<script src="{{ url_for('static', filename='js/app.js') }}?v=5"></script>
-<script src="{{ url_for('static', filename='js/tema.js') }}"></script>
-<script src="{{ url_for('static', filename='js/meta.js') }}"></script>
-<script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
+  <!-- conexión con js -->
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=6"></script>
+  <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
 
 </body>
 </html>
