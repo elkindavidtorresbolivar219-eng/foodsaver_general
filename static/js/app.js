@@ -703,6 +703,7 @@
   window.limpiarAlimento =
     limpiarAlimento;
 
+
     /* editar alimento */
   let stockOriginalEdicion = 0;
 
@@ -732,21 +733,46 @@
     document.body.classList.add("modal-abierto");
     document.getElementById("editNombre").focus();
   }
+=======
+  function editarAlimento(id) {
+    const a =
+      datos.alimentos.find(
+        x => x.id === id
+      );
 
-  function actualizarDeltaStock() {
-    const cantidad = Number(document.getElementById("editCantidad").value) || 0;
-    const cambio = cantidad - stockOriginalEdicion;
-    document.getElementById("stockDelta").textContent = cambio === 0
-      ? "Sin cambios en el stock"
-      : `Cambio de stock: ${cambio > 0 ? "+" : ""}${cambio} unidades`;
+    if (!a) return;
+
+    document
+      .getElementById("alimentoId")
+      .value = a.id;
+
+
+    document
+      .getElementById("alimentoNombre")
+      .value = a.nombre;
+
+    document
+      .getElementById("alimentoCategoria")
+      .value = a.categoria;
+
+    document
+      .getElementById("alimentoCantidad")
+      .value = a.cantidad;
+
+    document
+      .getElementById("alimentoPrecio")
+      .value = a.precio;
+
+    document
+      .getElementById("alimentoVencimiento")
+      .value = a.vencimiento;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
-  function cerrarModalEdicion() {
-    const modal = document.getElementById("modalEditarAlimento");
-    modal.classList.remove("abierto");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-abierto");
-  }
 
   document.getElementById("btnStockMas")?.addEventListener("click", () => {
     const input = document.getElementById("editCantidad");
@@ -806,6 +832,10 @@
       boton.disabled = false;
     }
   });
+
+  window.editarAlimento =
+    editarAlimento;
+
 
   window.editarAlimento = editarAlimento;
  
