@@ -703,143 +703,223 @@
   window.limpiarAlimento =
     limpiarAlimento;
 
+/* MODAL EDITAR ALIMENTOS */
 
-    /* editar alimento */
-  let stockOriginalEdicion = 0;
+let stockOriginal = 0;
 
-  function editarAlimento(id) {
-    const a = datos.alimentos.find(x => String(x.id) === String(id));
-    const modal = document.getElementById("modalEditarAlimento");
-    if (!a || !modal) return;
+function editarAlimento(id) {
+  const alimento = datos.alimentos.find(
+    a => Number(a.id) === Number(id)
+  );
 
-    const categorias = document.getElementById("alimentoCategoria");
-    const selector = document.getElementById("editCategoria");
-    selector.innerHTML = categorias ? categorias.innerHTML : "<option>Otros</option>";
-
-    document.getElementById("editId").value = a.id;
-    document.getElementById("editNombre").value = a.nombre || "";
-    selector.value = a.categoria || "Otros";
-    document.getElementById("editPrecio").value = Number(a.precio) || 0;
-    document.getElementById("editVencimiento").value = a.vencimiento || "";
-    document.getElementById("editCantidad").value = Number(a.cantidad) || 0;
-    document.getElementById("editPaso").value = 1;
-
-    stockOriginalEdicion = Number(a.cantidad) || 0;
-    actualizarDeltaStock();
-    mensaje("mensajeEdicion", "", "");
-
-    modal.classList.add("abierto");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-abierto");
-    document.getElementById("editNombre").focus();
+  if (!alimento) {
+    mensaje("mensajeAlimento", "No se encontró el alimento.", "error");
+    return;
   }
-=======
-  function editarAlimento(id) {
-    const a =
-      datos.alimentos.find(
-        x => x.id === id
-      );
 
-    if (!a) return;
+  const modal = document.getElementById("modalEditarAlimento");
+  const categoria = document.getElementById("editCategoria");
+  const proveedor = document.getElementById("editProveedor");
 
-    document
-      .getElementById("alimentoId")
-      .value = a.id;
+  // Cargar las categorías del formulario principal
+  categoria.innerHTML = document.getElementById("alimentoCategoria").innerHTML;
+
+  // Cargar los proveedores registrados
+  proveedor.innerHTML = '<option value="">Seleccione un proveedor</option>';
+
+  datos.proveedores.forEach(p => {
+    const opcion = document.createElement("option");
+    opcion.value = p.id ?? p.nombre;
+    opcion.textContent = p.nombre;
+    proveedor.appendChild(opcion);
+  });
+
+  // Llenar los campos del modal
+  document.getElementById("editId").value = alimento.id;
+  document.getElementById("editNombre").value = alimento.nombre ?? "";
+  document.getElementById("editCategoria").value = alimento.categoria ?? "";
+  document.getElementById("editPrecio").value = alimento.precio ?? 0;
+  document.getElementById("editVencimiento").value = alimento.vencimiento ?? "";
+  document.getElementById("editCantidad").value = Number(alimento.cantidad) || 0;
+  document.getElementById("editPaso").value = 1;
+
+  const proveedorEncontrado = datos.proveedores.find(p =>
+  String(p.id) === String(alimento.proveedor_id) ||
+  String(p.nombre).trim().toLowerCase() ===
+  String(alimento.proveedor || "").trim().toLowerCase()
+);
+
+proveedor.value = proveedorEncontrado
+  ? String(proveedorEncontrado.id ?? proveedorEncontrado.nombre)
+  : "";
+
+  stockOriginal = Number(alimento.cantidad) || 0;
+
+  actualizarDeltaStock();
+
+  document.getElementById("mensajeEdicion").textContent = "";
+
+  modal.classList.add("abierto");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+window.editarAlimento = editarAlimento;
 
 
-    document
-      .getElementById("alimentoNombre")
-      .value = a.nombre;
+// Cerrar modal
+function cerrarModalAlimento() {
+  const modal = document.getElementById("modalEditarAlimento");
 
-    document
-      .getElementById("alimentoCategoria")
-      .value = a.categoria;
+  modal.classList.remove("abierto");
+  modal.setAttribute("aria-hidden", "true");
+}
 
-    document
-      .getElementById("alimentoCantidad")
-      .value = a.cantidad;
 
-    document
-      .getElementById("alimentoPrecio")
-      .value = a.precio;
+// Sumar o restar stock
+function cambiarStock(signo) {
+  const cantidad = document.getElementById("editCantidad");
+  const pasoInput = document.getElementById("editPaso");
 
-    document
-      .getElementById("alimentoVencimiento")
-      .value = a.vencimiento;
+  const paso = Math.max(1, Number(pasoInput.value) || 1);
+  const actual = Math.max(0, Number(cantidad.value) || 0);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
+  cantidad.value = Math.max(0, actual + (signo * paso));
+
+  actualizarDeltaStock();
+}
+
+
+// Mostrar diferencia de inventario
+function actualizarDeltaStock() {
+  const nuevo = Math.max(
+    0,
+    Number(document.getElementById("editCantidad").value) || 0
+  );
+
+  const diferencia = nuevo - stockOriginal;
+  const indicador = document.getElementById("stockDelta");
+
+  indicador.className = "stock-delta";
+
+  if (diferencia > 0) {
+    indicador.classList.add("sube");
+  } else if (diferencia < 0) {
+    indicador.classList.add("baja");
+  }
+
+  if (diferencia === 0) {
+    indicador.textContent = `Stock actual: ${stockOriginal}`;
+  } else {
+    indicador.textContent =
+      `${stockOriginal} → ${nuevo} (${diferencia > 0 ? "+" : ""}${diferencia})`;
+  }
+}
+
+
+// Guardar cambios
+async function guardarEdicionAlimento() {
+  const id = Number(document.getElementById("editId").value);
+  const alimentoOriginal = datos.alimentos.find(
+    a => Number(a.id) === id
+  );
+
+  const nombre = document.getElementById("editNombre").value.trim();
+  const categoria = document.getElementById("editCategoria").value;
+  const precio = Number(document.getElementById("editPrecio").value);
+  const cantidad = Number(document.getElementById("editCantidad").value);
+  const vencimiento = document.getElementById("editVencimiento").value;
+  const proveedorId = document.getElementById("editProveedor").value;
+
+  if (!nombre) {
+    mensaje("mensajeEdicion", "El nombre del alimento es obligatorio.", "error");
+    return;
+  }
+
+  if (!Number.isFinite(precio) || precio < 0) {
+    mensaje("mensajeEdicion", "El precio no puede ser negativo.", "error");
+    return;
+  }
+
+  if (!Number.isInteger(cantidad) || cantidad < 0) {
+    mensaje("mensajeEdicion", "El stock debe ser un número entero igual o mayor a cero.", "error");
+    return;
+  }
+
+  const boton = document.getElementById("btnGuardarEdicion");
+  boton.disabled = true;
+  boton.textContent = "Guardando...";
+
+  try {
+    const respuesta = await POST("/api/alimentos", {
+      id,
+      nombre,
+      categoria,
+      precio,
+      cantidad,
+      vencimiento,
+      sede: alimentoOriginal?.sede ?? "",
+      proveedor_id: proveedorId || null
     });
+
+    cerrarModalAlimento();
+
+    mensaje(
+      "mensajeAlimento",
+      respuesta.mensaje || "Alimento actualizado correctamente.",
+      "ok"
+    );
+
+    await recargar();
+
+  } catch (error) {
+    mensaje("mensajeEdicion", error.message || "No se pudieron guardar los cambios.", "error");
+
+  } finally {
+    boton.disabled = false;
+    boton.textContent = "Guardar cambios";
   }
+}
 
 
-  document.getElementById("btnStockMas")?.addEventListener("click", () => {
-    const input = document.getElementById("editCantidad");
-    const paso = Math.max(1, Number(document.getElementById("editPaso").value) || 1);
-    input.value = Math.max(0, Number(input.value) || 0) + paso;
-    actualizarDeltaStock();
+// Eventos del modal
+document.getElementById("btnStockMas")
+  ?.addEventListener("click", () => cambiarStock(1));
+
+document.getElementById("btnStockMenos")
+  ?.addEventListener("click", () => cambiarStock(-1));
+
+document.getElementById("editCantidad")
+  ?.addEventListener("input", actualizarDeltaStock);
+
+document.getElementById("editPaso")
+  ?.addEventListener("input", () => {
+    const paso = document.getElementById("editPaso");
+    if (Number(paso.value) < 1) paso.value = 1;
   });
 
-  document.getElementById("btnStockMenos")?.addEventListener("click", () => {
-    const input = document.getElementById("editCantidad");
-    const paso = Math.max(1, Number(document.getElementById("editPaso").value) || 1);
-    input.value = Math.max(0, (Number(input.value) || 0) - paso);
-    actualizarDeltaStock();
-  });
+document.getElementById("btnGuardarEdicion")
+  ?.addEventListener("click", guardarEdicionAlimento);
 
-  document.getElementById("editCantidad")?.addEventListener("input", actualizarDeltaStock);
-  document.getElementById("btnCancelarEdicion")?.addEventListener("click", cerrarModalEdicion);
+document.getElementById("btnCancelarEdicion")
+  ?.addEventListener("click", cerrarModalAlimento);
 
-  document.getElementById("modalEditarAlimento")?.addEventListener("click", e => {
-    if (e.target.id === "modalEditarAlimento") cerrarModalEdicion();
-  });
-
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape" &&
-        document.getElementById("modalEditarAlimento")?.classList.contains("abierto")) {
-      cerrarModalEdicion();
+// Cerrar al hacer clic fuera de la ventana
+document.getElementById("modalEditarAlimento")
+  ?.addEventListener("click", evento => {
+    if (evento.target.id === "modalEditarAlimento") {
+      cerrarModalAlimento();
     }
   });
 
-  document.getElementById("btnGuardarEdicion")?.addEventListener("click", async () => {
-    const id = Number(document.getElementById("editId").value);
-    const nombre = document.getElementById("editNombre").value.trim();
-    const cantidad = Number(document.getElementById("editCantidad").value);
-    const precio = Number(document.getElementById("editPrecio").value);
-    const vencimiento = document.getElementById("editVencimiento").value;
+// Cerrar con Escape
+document.addEventListener("keydown", evento => {
+  if (evento.key === "Escape") {
+    cerrarModalAlimento();
+  }
+});
 
-    if (!nombre || !vencimiento || !Number.isFinite(cantidad) || cantidad < 0 ||
-        !Number.isFinite(precio) || precio < 0) {
-      mensaje("mensajeEdicion", "Completa los campos. El stock y el precio no pueden ser negativos.", "error");
-      return;
-    }
+/* FIN MODAL EDITAR ALIMENTOS */
 
-    const boton = document.getElementById("btnGuardarEdicion");
-    boton.disabled = true;
-    try {
-      const r = await POST("/api/alimentos", {
-        id, nombre,
-        categoria: document.getElementById("editCategoria").value,
-        cantidad, precio, vencimiento
-      });
-      cerrarModalEdicion();
-      await recargar();
-      mensaje("mensajeAlimento", r.mensaje || "Alimento actualizado correctamente.", "ok");
-    } catch (err) {
-      mensaje("mensajeEdicion", err.message || "No se pudo guardar.", "error");
-    } finally {
-      boton.disabled = false;
-    }
-  });
-
-  window.editarAlimento =
-    editarAlimento;
-
-
-  window.editarAlimento = editarAlimento;
- 
-/*fin de editar alimento*/
   async function eliminarAlimento(id) {
     if (
       !confirm(
