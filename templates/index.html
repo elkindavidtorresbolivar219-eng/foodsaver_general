@@ -967,6 +967,16 @@
   </div>
 
   <!--fin de editar alimentos-->
+  
+  <!-- conexion con mis archivos js en la carpeta static -->
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=8"></script>
+  <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
+
+
 
 <!-- conexion con js  de joselin-->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
