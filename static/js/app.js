@@ -48,7 +48,8 @@
     alimentos: [],
     perdidas: [],
     contabilidad: [],
-    sedes: []
+    sedes: [],
+    proveedores: []
   };
 
   /* SISTEMA DE MESAS */
@@ -197,50 +198,6 @@
       });
 
     const titulos = {
-
-      dashboard: [
-        "Inicio / Dashboard",
-        "Panel principal"
-      ],
-      usuarios: [
-        "Inicio / Usuarios",
-        "Gestión de usuarios"
-      ],
-      alimentos: [
-        "Inicio / Alimentos",
-        "Administración de alimentos"
-      ],
-      inventario: [
-        "Inicio / Inventario",
-        "Inventario en tiempo real"
-      ],
-      sincronizacion: [
-        "Inicio / Sincronización",
-        "Sincronización de inventario"
-      ],
-      ventas: [
-        "Inicio / Ventas",
-        "Gestión de mesas y ventas"
-      ],
-      reportes: [
-        "Inicio / Reportes",
-        "Generación de reportes"
-      ],
-      configuracion: [
-        "Inicio / Configuración",
-        "Configuración"
-      ],
-      ayuda: [
-        "Inicio / Ayuda",
-        "Ayuda"
-      ],
-
-   inversiones: [
-  "Inicio / Inversiones",
-  "Control de inversiones"
-],
-
-
       dashboard: ["Inicio / Dashboard", "Panel principal"],
       usuarios: ["Inicio / Usuarios", "Gestión de usuarios"],
       proveedores: ["Inicio / Proveedores", "Gestión de proveedores"],
@@ -248,10 +205,11 @@
       inventario: ["Inicio / Inventario", "Inventario en tiempo real"],
       sincronizacion: ["Inicio / Sincronización", "Sincronización de inventario"],
       ventas: ["Inicio / Ventas", "Gestión de mesas y ventas"],
+      saldos: ["Inicio / Saldos", "Gestión de Saldos y Cuentas"],
       reportes: ["Inicio / Reportes", "Generación de reportes"],
+      inversiones: ["Inicio / Inversiones", "Control de inversiones"],
       configuracion: ["Inicio / Configuración", "Configuración"],
       ayuda: ["Inicio / Ayuda", "Ayuda"]
-
     };
 
     const t =
@@ -321,7 +279,8 @@
       alimentos: [],
       perdidas: [],
       contabilidad: [],
-      sedes: []
+      sedes: [],
+      proveedores: []
     };
 
     document
@@ -708,11 +667,6 @@
               vencimiento:
                 document
                   .getElementById("alimentoVencimiento")
-                  .value,
-
-              sede:
-                document
-                  .getElementById("alimentoSede")
                   .value
             }
           );
@@ -749,18 +703,18 @@
   window.limpiarAlimento =
     limpiarAlimento;
 
-/*editar alimentos */
-
+    /* editar alimento */
   let stockOriginalEdicion = 0;
 
   function editarAlimento(id) {
     const a = datos.alimentos.find(x => String(x.id) === String(id));
     const modal = document.getElementById("modalEditarAlimento");
-    
     if (!a || !modal) return;
+
     const categorias = document.getElementById("alimentoCategoria");
     const selector = document.getElementById("editCategoria");
     selector.innerHTML = categorias ? categorias.innerHTML : "<option>Otros</option>";
+
     document.getElementById("editId").value = a.id;
     document.getElementById("editNombre").value = a.nombre || "";
     selector.value = a.categoria || "Otros";
@@ -768,9 +722,11 @@
     document.getElementById("editVencimiento").value = a.vencimiento || "";
     document.getElementById("editCantidad").value = Number(a.cantidad) || 0;
     document.getElementById("editPaso").value = 1;
+
     stockOriginalEdicion = Number(a.cantidad) || 0;
     actualizarDeltaStock();
     mensaje("mensajeEdicion", "", "");
+
     modal.classList.add("abierto");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-abierto");
@@ -798,35 +754,47 @@
     input.value = Math.max(0, Number(input.value) || 0) + paso;
     actualizarDeltaStock();
   });
+
   document.getElementById("btnStockMenos")?.addEventListener("click", () => {
     const input = document.getElementById("editCantidad");
     const paso = Math.max(1, Number(document.getElementById("editPaso").value) || 1);
     input.value = Math.max(0, (Number(input.value) || 0) - paso);
     actualizarDeltaStock();
   });
+
   document.getElementById("editCantidad")?.addEventListener("input", actualizarDeltaStock);
   document.getElementById("btnCancelarEdicion")?.addEventListener("click", cerrarModalEdicion);
+
   document.getElementById("modalEditarAlimento")?.addEventListener("click", e => {
     if (e.target.id === "modalEditarAlimento") cerrarModalEdicion();
   });
+
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && document.getElementById("modalEditarAlimento")?.classList.contains("activo")) cerrarModalEdicion();
+    if (e.key === "Escape" &&
+        document.getElementById("modalEditarAlimento")?.classList.contains("abierto")) {
+      cerrarModalEdicion();
+    }
   });
+
   document.getElementById("btnGuardarEdicion")?.addEventListener("click", async () => {
     const id = Number(document.getElementById("editId").value);
     const nombre = document.getElementById("editNombre").value.trim();
     const cantidad = Number(document.getElementById("editCantidad").value);
     const precio = Number(document.getElementById("editPrecio").value);
     const vencimiento = document.getElementById("editVencimiento").value;
-    if (!nombre || !vencimiento || !Number.isFinite(cantidad) || cantidad < 0 || !Number.isFinite(precio) || precio < 0) {
+
+    if (!nombre || !vencimiento || !Number.isFinite(cantidad) || cantidad < 0 ||
+        !Number.isFinite(precio) || precio < 0) {
       mensaje("mensajeEdicion", "Completa los campos. El stock y el precio no pueden ser negativos.", "error");
       return;
     }
+
     const boton = document.getElementById("btnGuardarEdicion");
     boton.disabled = true;
     try {
       const r = await POST("/api/alimentos", {
-        id, nombre, categoria: document.getElementById("editCategoria").value,
+        id, nombre,
+        categoria: document.getElementById("editCategoria").value,
         cantidad, precio, vencimiento
       });
       cerrarModalEdicion();
@@ -838,9 +806,10 @@
       boton.disabled = false;
     }
   });
-  window.editarAlimento =
-    editarAlimento;
 
+  window.editarAlimento = editarAlimento;
+ 
+/*fin de editar alimento*/
   async function eliminarAlimento(id) {
     if (
       !confirm(
@@ -947,7 +916,7 @@
               mesa.dataset.mesa
             );
 
-          seleccionarMesa(numero);
+          seleccionarMesa(numero); 
         }
       );
     });
@@ -991,31 +960,23 @@
     actualizarProductosOrden();
     actualizarVisualMesas();
   }
+function seleccionarMesa(numero) {
+  if (!mesas[numero]) return;
 
-  function seleccionarMesa(numero) {
-    if (!mesas[numero]) return;
+  mesaSeleccionada = numero;
+  window.mesaSeleccionada = numero; // <--- AGREGA ESTA LÍNEA
 
-    mesaSeleccionada = numero;
+  setText("mesaSeleccionada", "Mesa " + numero);
+  setText("estadoOrden", mesas[numero].estado === "ocupada" ? "Orden activa" : "Mesa disponible");
 
-    const mesa =
-      mesas[numero];
-
-    setText(
-      "mesaSeleccionada",
-      "Mesa " + numero
-    );
-
-    setText(
-      "estadoOrden",
-      mesa.estado === "ocupada"
-        ? "Orden activa"
-        : "Mesa disponible"
-    );
-
-    renderizarOrden();
-    actualizarVisualMesas();
+  renderizarOrden();
+  actualizarVisualMesas();
+  
+  // Notifica al módulo de meta que la mesa cambió
+  if (typeof window.actualizarMeta === "function") {
+    window.actualizarMeta();
   }
-
+}
   function actualizarVisualMesas() {
     document
       .querySelectorAll(".mesa-card")
@@ -1364,7 +1325,7 @@
   window.eliminarProductoOrden =
     eliminarProductoOrden;
 
-  /* REGISTRAR VENTA */
+  /* REGISTRAR VENTA (CONECTADO A SALDOS) */
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
@@ -1438,6 +1399,15 @@
         "ok"
       );
 
+      // --- SINCRONIZACIÓN AUTOMÁTICA CON SALDO ADMINISTRADOR ---
+      let saldoActualAdmin = Number(localStorage.getItem("saldoAdmin") || 0) + total;
+      localStorage.setItem("saldoAdmin", saldoActualAdmin);
+
+      if (typeof window.cargarSaldos === "function") {
+        window.cargarSaldos();
+      }
+      // ---------------------------------------------------------
+
       mesas[
         numeroMesa
       ] = {
@@ -1504,9 +1474,9 @@
         []
     };
 
-    seleccionarMesa(
-      mesaSeleccionada
-    );
+    seleccionarMesa()
+      window.mesaSeleccionada = numero;
+    
   }
 
   /* SINCRONIZACIÓN */
@@ -1662,6 +1632,20 @@
     setText("totalGastos", formatoMoneda(gastos));
     setText("balance", formatoMoneda(ventas - gastos));
 
+    // --- SINCRONIZACIÓN DE SALDO EN RENDERIZADO ---
+    // Si la clave no se ha creado explícitamente, tomamos las ventas netas contables como valor inicial.
+    if (localStorage.getItem("saldoAdmin") === null) {
+      localStorage.setItem("saldoAdmin", ventas - gastos);
+    }
+    
+    if (typeof window.cargarSaldos === "function") {
+      window.cargarSaldos();
+    } else {
+      const saldoLocal = Number(localStorage.getItem("saldoAdmin") || 0);
+      setText("saldoAdmin", formatoMoneda(saldoLocal));
+    }
+    // ----------------------------------------------
+
     /* USUARIOS */
 
     setHTML(
@@ -1704,7 +1688,7 @@
         .join("")
     );
 
-    /* ALIMENTOS (Alimento, Categoría, Cantidad, Precio, Vence, Sede, Acciones) */
+    /* ALIMENTOS */
 
     setHTML(
       "tablaAlimentos",
@@ -1736,7 +1720,6 @@
             "</td>" +
 
             "<td>" +
-            
 
             '<div class="acciones-tabla">' +
 
@@ -1830,10 +1813,10 @@
       }
     }
 
-    /* CONTABILIDAD */
+    /* CONTABILIDAD / VENTAS */
 
     setHTML(
-      "tablaContabilidad",
+      "tablaventas",
       datos.contabilidad
         .slice()
         .reverse()
@@ -2183,8 +2166,7 @@
               a.categoria +
               " | " +
               a.cantidad +
-              " unidades | " +
-              a.sede
+              " unidades"
           )
           .join("\n") ||
 
@@ -2277,7 +2259,9 @@
 
   /* INICIALIZACIÓN */
 
-  inicializarMesas();
+  document.addEventListener("DOMContentLoaded", () => {
+    inicializarMesas();
+  });
 
   /* RESTAURAR SESIÓN */
 
@@ -2295,4 +2279,3 @@
     );
 
 })();
-
