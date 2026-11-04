@@ -1,7 +1,9 @@
 (() => {
   "use strict";
 
-  /* COMUNICACIÓN CON EL SERVIDOR */
+  /* ============================================================
+     COMUNICACIÓN CON EL SERVIDOR
+  ============================================================ */
 
   async function api(url, opciones) {
     const resp = await fetch(
@@ -10,21 +12,15 @@
     );
 
     let cuerpo = {};
-
     try {
       cuerpo = await resp.json();
-    } catch (e) {
-      // La respuesta del servidor no contiene JSON.
-    }
+    } catch (e) {}
 
     if (!resp.ok) {
       if (resp.status === 401 && url !== "/api/login") {
         mostrarLogin();
       }
-
-      throw new Error(
-        cuerpo.error || "No se pudo comunicar con el servidor."
-      );
+      throw new Error(cuerpo.error || "No se pudo comunicar con el servidor.");
     }
 
     return cuerpo;
@@ -39,7 +35,9 @@
       body: JSON.stringify(cuerpo || {})
     });
 
-  /* DATOS */
+  /* ============================================================
+     DATOS
+  ============================================================ */
 
   let sesion = null;
 
@@ -52,7 +50,9 @@
     proveedores: []
   };
 
-  /* SISTEMA DE MESAS */
+  /* ============================================================
+     SISTEMA DE MESAS
+  ============================================================ */
 
   let mesaSeleccionada = null;
 
@@ -63,16 +63,11 @@
     4: { estado: "disponible", productos: [] }
   };
 
-  /* FUNCIONES GENERALES */
+  /* ============================================================
+     FUNCIONES GENERALES
+  ============================================================ */
 
-  const hoyISO = () => {
-    const fecha = new Date();
-    const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const dia = String(fecha.getDate()).padStart(2, "0");
-
-    return `${anio}-${mes}-${dia}`;
-  };
+  const hoyISO = () => new Date().toLocaleDateString("en-CA");
 
   function esc(texto) {
     const mapa = {
@@ -82,37 +77,22 @@
       '"': "&quot;",
       "'": "&#39;"
     };
-
-    return String(texto == null ? "" : texto)
-      .replace(/[&<>"']/g, c => mapa[c]);
+    return String(texto == null ? "" : texto).replace(/[&<>"']/g, c => mapa[c]);
   }
 
   function setHTML(id, html) {
     const el = document.getElementById(id);
-
-    if (el) {
-      el.innerHTML = html;
-    }
+    if (el) el.innerHTML = html;
   }
 
   function setText(id, texto) {
     const el = document.getElementById(id);
-
-    if (el) {
-      el.textContent = texto;
-    }
+    if (el) el.textContent = texto;
   }
 
   function mensaje(id, texto, tipo) {
     const el = document.getElementById(id);
-
     if (!el) return;
-
-    if (!texto) {
-      el.textContent = "";
-      el.classList.remove("visible");
-      return;
-    }
 
     el.textContent = texto;
     el.className = "mensaje visible " + (tipo || "ok");
@@ -127,14 +107,12 @@
       style: "currency",
       currency: "COP",
       maximumFractionDigits: 0
-    }).format(Number(valor) || 0);
+    }).format(valor || 0);
   }
 
   function iniciales(nombre) {
     return String(nombre || "")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
+      .split(" ")
       .map(x => x[0])
       .join("")
       .slice(0, 2)
@@ -143,17 +121,13 @@
 
   function fechaBonita(fecha) {
     if (!fecha) return "-";
-
-    const [y, m, d] = String(fecha).split("-");
-
-    if (!y || !m || !d) {
-      return fecha;
-    }
-
-    return `${d}/${m}/${y}`;
+    const [y, m, d] = fecha.split("-");
+    return d + "/" + m + "/" + y;
   }
 
-  /* CARGA DE DATOS */
+  /* ============================================================
+     CARGA DE DATOS
+  ============================================================ */
 
   async function cargarDatos() {
     if (!sesion) return;
@@ -186,25 +160,22 @@
   }
 
   function recargar() {
-    return cargarDatos().catch(err => {
-      console.error("Error al cargar los datos:", err);
-    });
+    return cargarDatos().catch(err => console.error(err));
   }
 
-  /* VISTAS Y SESIÓN */
+  /* ============================================================
+     VISTAS Y SESIÓN
+  ============================================================ */
 
   function mostrarVista(nombre) {
     if (!sesion) return;
 
-    document.querySelectorAll(".vista").forEach(v => {
-      v.classList.remove("activa");
-    });
+    document
+      .querySelectorAll(".vista")
+      .forEach(v => v.classList.remove("activa"));
 
     const vista = document.getElementById("vista-" + nombre);
-
-    if (vista) {
-      vista.classList.add("activa");
-    }
+    if (vista) vista.classList.add("activa");
 
     document.querySelectorAll(".elemento-menu").forEach(a => {
       a.classList.toggle("activo", a.dataset.vista === nombre);
@@ -212,21 +183,20 @@
 
     const titulos = {
       dashboard: ["Inicio / Dashboard", "Panel principal"],
-      usuarios: ["Inicio / Usuarios", "Gestión de usuarios"],
-      proveedores: ["Inicio / Proveedores", "Gestión de proveedores"],
+      usuarios: ["Inicio / Usuarios y Proveedores", "Usuarios y proveedores"],
       alimentos: ["Inicio / Alimentos", "Administración de alimentos"],
+      platos: ["Inicio / Platos", "Menú de platos"],
       inventario: ["Inicio / Inventario", "Inventario en tiempo real"],
-      inversiones: ["Inicio / Inversiones", "Control de inversiones"],
       sincronizacion: ["Inicio / Sincronización", "Sincronización de inventario"],
       ventas: ["Inicio / Ventas", "Gestión de mesas y ventas"],
-      saldos: ["Inicio / Saldos", "Gestión de saldos y cuentas"],
+      saldos: ["Inicio / Saldos", "Gestión de Saldos y Cuentas"],
       reportes: ["Inicio / Reportes", "Generación de reportes"],
+      inversiones: ["Inicio / Inversiones", "Control de inversiones"],
       configuracion: ["Inicio / Configuración", "Configuración"],
       ayuda: ["Inicio / Ayuda", "Ayuda"]
     };
 
     const t = titulos[nombre] || ["Inicio", "Meraki"];
-
     setText("migas", t[0]);
     setText("tituloSuperior", t[1]);
 
@@ -245,8 +215,8 @@
       login: usuario.login
     };
 
-    document.getElementById("pantallaLogin")?.classList.add("oculto");
-    document.getElementById("aplicacion")?.classList.remove("oculto");
+    document.getElementById("pantallaLogin").classList.add("oculto");
+    document.getElementById("aplicacion").classList.remove("oculto");
 
     setText("nombreSidebar", sesion.nombre);
     setText("rolSidebar", sesion.rol);
@@ -259,12 +229,13 @@
     await recargar();
   }
 
+  // Solo el Administrador ve el bloque de usuarios.
+  // Proveedores queda visible para todos los roles.
   function aplicarPermisos() {
-    const enlaceUsuarios = document.querySelector('[data-vista="usuarios"]');
-
-    if (enlaceUsuarios) {
-      enlaceUsuarios.style.display =
-        sesion && sesion.rol === "Administrador" ? "flex" : "none";
+    const bloque = document.getElementById("bloqueUsuarios");
+    if (bloque) {
+      bloque.style.display =
+        sesion && sesion.rol === "Administrador" ? "block" : "none";
     }
   }
 
@@ -280,19 +251,16 @@
       proveedores: []
     };
 
-    document.getElementById("aplicacion")?.classList.add("oculto");
-    document.getElementById("pantallaLogin")?.classList.remove("oculto");
-    document.getElementById("formLogin")?.reset();
-    document.getElementById("formRestablecer")?.classList.add("oculto");
+    document.getElementById("aplicacion").classList.add("oculto");
+    document.getElementById("pantallaLogin").classList.remove("oculto");
+    document.getElementById("formLogin").reset();
+    document.getElementById("formRestablecer").classList.add("oculto");
   }
 
   async function cerrarSesion() {
     try {
       await POST("/api/logout");
-    } catch (e) {
-      console.error("No se pudo cerrar la sesión en el servidor:", e);
-    }
-
+    } catch (e) {}
     mostrarLogin();
   }
 
@@ -305,9 +273,11 @@
     });
   });
 
-  /* LOGIN */
+  /* ============================================================
+     LOGIN
+  ============================================================ */
 
-  document.getElementById("formLogin")?.addEventListener("submit", async e => {
+  document.getElementById("formLogin").addEventListener("submit", async e => {
     e.preventDefault();
 
     try {
@@ -322,42 +292,43 @@
     }
   });
 
-  document.getElementById("btnRestablecer")?.addEventListener("click", () => {
-    document.getElementById("formRestablecer")?.classList.toggle("oculto");
+  document.getElementById("btnRestablecer").addEventListener("click", () => {
+    document.getElementById("formRestablecer").classList.toggle("oculto");
   });
 
-  document.getElementById("formRestablecer")?.addEventListener("submit", async e => {
-    e.preventDefault();
+  document
+    .getElementById("formRestablecer")
+    .addEventListener("submit", async e => {
+      e.preventDefault();
 
-    const formulario = e.target;
+      const formulario = e.target;
 
-    try {
-      await POST("/api/restablecer", {
-        usuario: document.getElementById("recUsuario").value.trim(),
-        clave: document.getElementById("recNuevaClave").value
-      });
+      try {
+        await POST("/api/restablecer", {
+          usuario: document.getElementById("recUsuario").value.trim(),
+          clave: document.getElementById("recNuevaClave").value
+        });
 
-      mensaje("mensajeReset", "Contraseña restablecida correctamente.", "ok");
+        mensaje("mensajeReset", "Contraseña restablecida correctamente.", "ok");
+        formulario.reset();
+      } catch (err) {
+        mensaje("mensajeReset", err.message, "error");
+      }
+    });
 
-      formulario.reset();
-    } catch (err) {
-      mensaje("mensajeReset", err.message, "error");
-    }
-  });
+  document
+    .getElementById("btnPerfil")
+    .addEventListener("click", () => mostrarVista("configuracion"));
 
-  document.getElementById("btnPerfil")?.addEventListener(
-    "click",
-    () => mostrarVista("configuracion")
-  );
+  /* ============================================================
+     USUARIOS
+  ============================================================ */
 
-  /* USUARIOS */
-
-  document.getElementById("formUsuario")?.addEventListener("submit", async e => {
+  document.getElementById("formUsuario").addEventListener("submit", async e => {
     e.preventDefault();
 
     try {
       const id = Number(document.getElementById("usuarioId").value) || null;
-
       const nombre = document.getElementById("usuarioNombre").value.trim();
       const apellido = document.getElementById("usuarioApellido").value.trim();
       const usuario = document.getElementById("usuarioLogin").value.trim();
@@ -375,13 +346,13 @@
       }
 
       const r = await POST("/api/usuarios", {
-        id,
-        nombre,
-        apellido,
-        usuario,
+        id: id,
+        nombre: nombre,
+        apellido: apellido,
+        usuario: usuario,
         login: usuario,
-        clave,
-        rol
+        clave: clave,
+        rol: rol
       });
 
       mensaje("mensajeUsuario", r.mensaje || "Usuario guardado correctamente.", "ok");
@@ -394,27 +365,15 @@
   });
 
   function limpiarUsuario() {
-    document.getElementById("formUsuario")?.reset();
-
-    const id = document.getElementById("usuarioId");
-
-    if (id) {
-      id.value = "";
-    }
-
-    const clave = document.getElementById("usuarioClave");
-
-    if (clave) {
-      clave.required = true;
-    }
+    document.getElementById("formUsuario").reset();
+    document.getElementById("usuarioId").value = "";
+    document.getElementById("usuarioClave").required = true;
   }
 
   window.limpiarUsuario = limpiarUsuario;
 
   function editarUsuario(id) {
-    const u = datos.usuarios.find(
-      usuario => Number(usuario.id) === Number(id)
-    );
+    const u = datos.usuarios.find(x => Number(x.id) === Number(id));
 
     if (!u) {
       mensaje("mensajeUsuario", "No se encontró el usuario.", "error");
@@ -435,15 +394,11 @@
   window.editarUsuario = editarUsuario;
 
   async function eliminarUsuario(id) {
-    if (!confirm("¿Deseas eliminar este usuario?")) {
-      return;
-    }
+    if (!confirm("¿Deseas eliminar este usuario?")) return;
 
     try {
       await POST("/api/usuarios/" + id + "/eliminar");
-
       mensaje("mensajeUsuario", "Usuario eliminado correctamente.", "ok");
-
       await recargar();
     } catch (err) {
       mensaje("mensajeUsuario", err.message, "error");
@@ -453,29 +408,24 @@
   window.eliminarUsuario = eliminarUsuario;
 
   function generarInformeUsuarios() {
-    const lista = datos.usuarios;
+    const html = datos.usuarios.length
+      ? "<h4>Total: " + datos.usuarios.length + " usuarios</h4><p>" +
+        datos.usuarios
+          .map(u => esc(u.nombre) + " " + esc(u.apellido) + " | " + esc(u.login) + " | " + esc(u.rol))
+          .join("<br>") +
+        "</p>"
+      : "<p>No hay usuarios registrados.</p>";
 
-    const porRol = lista.reduce((acc, u) => {
-      acc[u.rol] = (acc[u.rol] || 0) + 1;
-      return acc;
-    }, {});
-
-    setHTML(
-      "informeUsuarios",
-      "<p><strong>Total de usuarios:</strong> " + lista.length + "</p>" +
-      (Object.keys(porRol).length
-        ? "<ul>" + Object.entries(porRol).map(([rol, n]) =>
-            "<li>" + esc(rol) + ": " + n + "</li>"
-          ).join("") + "</ul>"
-        : "<p>No hay usuarios registrados.</p>")
-    );
+    setHTML("informeUsuarios", html);
   }
 
   window.generarInformeUsuarios = generarInformeUsuarios;
 
-  /* PROVEEDORES */
+  /* ============================================================
+     PROVEEDORES
+  ============================================================ */
 
-  document.getElementById("formProveedor")?.addEventListener("submit", async e => {
+  document.getElementById("formProveedor").addEventListener("submit", async e => {
     e.preventDefault();
 
     try {
@@ -495,13 +445,8 @@
   });
 
   function limpiarProveedor() {
-    document.getElementById("formProveedor")?.reset();
-
-    const id = document.getElementById("proveedorId");
-
-    if (id) {
-      id.value = "";
-    }
+    document.getElementById("formProveedor").reset();
+    document.getElementById("proveedorId").value = "";
   }
 
   window.limpiarProveedor = limpiarProveedor;
@@ -514,25 +459,23 @@
       return;
     }
 
-    document.getElementById("proveedorId").value = p.id ?? "";
-    document.getElementById("proveedorNombre").value = p.nombre ?? "";
-    document.getElementById("proveedorTelefono").value = p.telefono ?? "";
+    document.getElementById("proveedorId").value = p.id;
+    document.getElementById("proveedorNombre").value = p.nombre || "";
+    document.getElementById("proveedorTelefono").value = p.telefono || "";
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document
+      .getElementById("formProveedor")
+      .scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   window.editarProveedor = editarProveedor;
 
   async function eliminarProveedor(id) {
-    if (!confirm("¿Deseas eliminar este proveedor?")) {
-      return;
-    }
+    if (!confirm("¿Deseas eliminar este proveedor?")) return;
 
     try {
       await POST("/api/proveedores/" + id + "/eliminar");
-
       mensaje("mensajeProveedor", "Proveedor eliminado correctamente.", "ok");
-
       await recargar();
     } catch (err) {
       mensaje("mensajeProveedor", err.message, "error");
@@ -542,24 +485,24 @@
   window.eliminarProveedor = eliminarProveedor;
 
   function generarInformeProveedores() {
-    const lista = datos.proveedores;
+    const html = datos.proveedores.length
+      ? "<h4>Total: " + datos.proveedores.length + " proveedores</h4><p>" +
+        datos.proveedores
+          .map(p => esc(p.nombre) + " | " + esc(p.telefono))
+          .join("<br>") +
+        "</p>"
+      : "<p>No hay proveedores registrados.</p>";
 
-    setHTML(
-      "informeProveedores",
-      "<p><strong>Total de proveedores:</strong> " + lista.length + "</p>" +
-      (lista.length
-        ? "<ul>" + lista.map(p =>
-            "<li>" + esc(p.nombre) + " (" + esc(p.telefono) + ")</li>"
-          ).join("") + "</ul>"
-        : "<p>No hay proveedores registrados.</p>")
-    );
+    setHTML("informeProveedores", html);
   }
 
   window.generarInformeProveedores = generarInformeProveedores;
 
-  /* ALIMENTOS (crear) */
+  /* ============================================================
+     ALIMENTOS
+  ============================================================ */
 
-  document.getElementById("formAlimento")?.addEventListener("submit", async e => {
+  document.getElementById("formAlimento").addEventListener("submit", async e => {
     e.preventDefault();
 
     try {
@@ -573,7 +516,7 @@
         proveedor_id: Number(document.getElementById("alimentoProveedor").value) || null
       });
 
-      mensaje("mensajeAlimento", r.mensaje || "Alimento guardado correctamente.", "ok");
+      mensaje("mensajeAlimento", r.mensaje, "ok");
 
       limpiarAlimento();
       await recargar();
@@ -583,167 +526,209 @@
   });
 
   function limpiarAlimento() {
-    document.getElementById("formAlimento")?.reset();
-
-    const id = document.getElementById("alimentoId");
-
-    if (id) {
-      id.value = "";
-    }
+    document.getElementById("formAlimento").reset();
+    document.getElementById("alimentoId").value = "";
   }
 
   window.limpiarAlimento = limpiarAlimento;
 
-  /* ALIMENTOS (editar en ventana emergente) */
+  /* ---------- MODAL EDITAR ALIMENTOS ---------- */
 
-  let stockOriginalEdicion = 0;
-
-  function opcionesProveedores() {
-    return '<option value="">Seleccionar proveedor</option>' +
-      datos.proveedores.map(p =>
-        '<option value="' + esc(p.id) + '">' + esc(p.nombre) + "</option>"
-      ).join("");
-  }
+  let stockOriginal = 0;
 
   function editarAlimento(id) {
-    const a = datos.alimentos.find(x => String(x.id) === String(id));
-    const modal = document.getElementById("modalEditarAlimento");
+    const alimento = datos.alimentos.find(a => Number(a.id) === Number(id));
 
-    if (!a || !modal) return;
-
-    const categorias = document.getElementById("alimentoCategoria");
-    const selector = document.getElementById("editCategoria");
-
-    selector.innerHTML = categorias ? categorias.innerHTML : "<option>Otros</option>";
-
-    const selProv = document.getElementById("editProveedor");
-
-    if (selProv) {
-      selProv.innerHTML = opcionesProveedores();
-      selProv.value = a.proveedor_id ?? "";
+    if (!alimento) {
+      mensaje("mensajeAlimento", "No se encontró el alimento.", "error");
+      return;
     }
 
-    document.getElementById("editId").value = a.id;
-    document.getElementById("editNombre").value = a.nombre || "";
-    selector.value = a.categoria || "Otros";
-    document.getElementById("editPrecio").value = Number(a.precio) || 0;
-    document.getElementById("editVencimiento").value = a.vencimiento || "";
-    document.getElementById("editCantidad").value = Number(a.cantidad) || 0;
+    const modal = document.getElementById("modalEditarAlimento");
+    const categoria = document.getElementById("editCategoria");
+    const proveedor = document.getElementById("editProveedor");
+
+    categoria.innerHTML = document.getElementById("alimentoCategoria").innerHTML;
+
+    proveedor.innerHTML = '<option value="">Seleccione un proveedor</option>';
+
+    datos.proveedores.forEach(p => {
+      const opcion = document.createElement("option");
+      opcion.value = p.id ?? p.nombre;
+      opcion.textContent = p.nombre;
+      proveedor.appendChild(opcion);
+    });
+
+    document.getElementById("editId").value = alimento.id;
+    document.getElementById("editNombre").value = alimento.nombre ?? "";
+    document.getElementById("editCategoria").value = alimento.categoria ?? "";
+    document.getElementById("editPrecio").value = alimento.precio ?? 0;
+    document.getElementById("editVencimiento").value = alimento.vencimiento ?? "";
+    document.getElementById("editCantidad").value = Number(alimento.cantidad) || 0;
     document.getElementById("editPaso").value = 1;
 
-    stockOriginalEdicion = Number(a.cantidad) || 0;
+    const proveedorEncontrado = datos.proveedores.find(
+      p =>
+        String(p.id) === String(alimento.proveedor_id) ||
+        String(p.nombre).trim().toLowerCase() ===
+          String(alimento.proveedor || "").trim().toLowerCase()
+    );
+
+    proveedor.value = proveedorEncontrado
+      ? String(proveedorEncontrado.id ?? proveedorEncontrado.nombre)
+      : "";
+
+    stockOriginal = Number(alimento.cantidad) || 0;
 
     actualizarDeltaStock();
-    mensaje("mensajeEdicion", "", "");
+
+    document.getElementById("mensajeEdicion").textContent = "";
 
     modal.classList.add("abierto");
     modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-abierto");
-    document.getElementById("editNombre").focus();
+  }
+
+  window.editarAlimento = editarAlimento;
+
+  function cerrarModalAlimento() {
+    const modal = document.getElementById("modalEditarAlimento");
+    modal.classList.remove("abierto");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function cambiarStock(signo) {
+    const cantidad = document.getElementById("editCantidad");
+    const pasoInput = document.getElementById("editPaso");
+
+    const paso = Math.max(1, Number(pasoInput.value) || 1);
+    const actual = Math.max(0, Number(cantidad.value) || 0);
+
+    cantidad.value = Math.max(0, actual + signo * paso);
+
+    actualizarDeltaStock();
   }
 
   function actualizarDeltaStock() {
-    const cantidad = Number(document.getElementById("editCantidad").value) || 0;
-    const cambio = cantidad - stockOriginalEdicion;
+    const nuevo = Math.max(
+      0,
+      Number(document.getElementById("editCantidad").value) || 0
+    );
 
-    document.getElementById("stockDelta").textContent = cambio === 0
-      ? "Sin cambios en el stock"
-      : `Cambio de stock: ${cambio > 0 ? "+" : ""}${cambio} unidades`;
-  }
+    const diferencia = nuevo - stockOriginal;
+    const indicador = document.getElementById("stockDelta");
 
-  function cerrarModalEdicion() {
-    const modal = document.getElementById("modalEditarAlimento");
+    indicador.className = "stock-delta";
 
-    modal.classList.remove("abierto");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-abierto");
-  }
-
-  document.getElementById("btnStockMas")?.addEventListener("click", () => {
-    const input = document.getElementById("editCantidad");
-    const paso = Math.max(1, Number(document.getElementById("editPaso").value) || 1);
-
-    input.value = Math.max(0, Number(input.value) || 0) + paso;
-    actualizarDeltaStock();
-  });
-
-  document.getElementById("btnStockMenos")?.addEventListener("click", () => {
-    const input = document.getElementById("editCantidad");
-    const paso = Math.max(1, Number(document.getElementById("editPaso").value) || 1);
-
-    input.value = Math.max(0, (Number(input.value) || 0) - paso);
-    actualizarDeltaStock();
-  });
-
-  document.getElementById("editCantidad")?.addEventListener("input", actualizarDeltaStock);
-  document.getElementById("btnCancelarEdicion")?.addEventListener("click", cerrarModalEdicion);
-
-  document.getElementById("modalEditarAlimento")?.addEventListener("click", e => {
-    if (e.target.id === "modalEditarAlimento") cerrarModalEdicion();
-  });
-
-  document.addEventListener("keydown", e => {
-    if (
-      e.key === "Escape" &&
-      document.getElementById("modalEditarAlimento")?.classList.contains("abierto")
-    ) {
-      cerrarModalEdicion();
+    if (diferencia > 0) {
+      indicador.classList.add("sube");
+    } else if (diferencia < 0) {
+      indicador.classList.add("baja");
     }
-  });
 
-  document.getElementById("btnGuardarEdicion")?.addEventListener("click", async () => {
+    if (diferencia === 0) {
+      indicador.textContent = `Stock actual: ${stockOriginal}`;
+    } else {
+      indicador.textContent =
+        `${stockOriginal} → ${nuevo} (${diferencia > 0 ? "+" : ""}${diferencia})`;
+    }
+  }
+
+  async function guardarEdicionAlimento() {
     const id = Number(document.getElementById("editId").value);
-    const nombre = document.getElementById("editNombre").value.trim();
-    const cantidad = Number(document.getElementById("editCantidad").value);
-    const precio = Number(document.getElementById("editPrecio").value);
-    const vencimiento = document.getElementById("editVencimiento").value;
-    const proveedor_id = Number(document.getElementById("editProveedor")?.value) || null;
 
-    if (
-      !nombre || !vencimiento ||
-      !Number.isFinite(cantidad) || cantidad < 0 ||
-      !Number.isFinite(precio) || precio < 0
-    ) {
-      mensaje("mensajeEdicion", "Completa los campos. El stock y el precio no pueden ser negativos.", "error");
+    const nombre = document.getElementById("editNombre").value.trim();
+    const categoria = document.getElementById("editCategoria").value;
+    const precio = Number(document.getElementById("editPrecio").value);
+    const cantidad = Number(document.getElementById("editCantidad").value);
+    const vencimiento = document.getElementById("editVencimiento").value;
+    const proveedorId = document.getElementById("editProveedor").value;
+
+    if (!nombre) {
+      mensaje("mensajeEdicion", "El nombre del alimento es obligatorio.", "error");
+      return;
+    }
+
+    if (!Number.isFinite(precio) || precio < 0) {
+      mensaje("mensajeEdicion", "El precio no puede ser negativo.", "error");
+      return;
+    }
+
+    if (!Number.isInteger(cantidad) || cantidad < 0) {
+      mensaje(
+        "mensajeEdicion",
+        "El stock debe ser un número entero igual o mayor a cero.",
+        "error"
+      );
       return;
     }
 
     const boton = document.getElementById("btnGuardarEdicion");
     boton.disabled = true;
+    boton.textContent = "Guardando...";
 
     try {
-      const r = await POST("/api/alimentos", {
+      const respuesta = await POST("/api/alimentos", {
         id,
         nombre,
-        categoria: document.getElementById("editCategoria").value,
-        cantidad,
+        categoria,
         precio,
+        cantidad,
         vencimiento,
-        proveedor_id
+        proveedor_id: Number(proveedorId) || null
       });
 
-      cerrarModalEdicion();
+      cerrarModalAlimento();
+
+      mensaje(
+        "mensajeAlimento",
+        respuesta.mensaje || "Alimento actualizado correctamente.",
+        "ok"
+      );
+
       await recargar();
-      mensaje("mensajeAlimento", r.mensaje || "Alimento actualizado correctamente.", "ok");
-    } catch (err) {
-      mensaje("mensajeEdicion", err.message || "No se pudo guardar.", "error");
+    } catch (error) {
+      mensaje(
+        "mensajeEdicion",
+        error.message || "No se pudieron guardar los cambios.",
+        "error"
+      );
     } finally {
       boton.disabled = false;
+      boton.textContent = "Guardar cambios";
+    }
+  }
+
+  document.getElementById("btnStockMas")?.addEventListener("click", () => cambiarStock(1));
+  document.getElementById("btnStockMenos")?.addEventListener("click", () => cambiarStock(-1));
+  document.getElementById("editCantidad")?.addEventListener("input", actualizarDeltaStock);
+
+  document.getElementById("editPaso")?.addEventListener("input", () => {
+    const paso = document.getElementById("editPaso");
+    if (Number(paso.value) < 1) paso.value = 1;
+  });
+
+  document.getElementById("btnGuardarEdicion")?.addEventListener("click", guardarEdicionAlimento);
+  document.getElementById("btnCancelarEdicion")?.addEventListener("click", cerrarModalAlimento);
+
+  document.getElementById("modalEditarAlimento")?.addEventListener("click", evento => {
+    if (evento.target.id === "modalEditarAlimento") {
+      cerrarModalAlimento();
     }
   });
 
-  window.editarAlimento = editarAlimento;
+  document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape") {
+      cerrarModalAlimento();
+    }
+  });
+
+  /* ---------- FIN MODAL EDITAR ALIMENTOS ---------- */
 
   async function eliminarAlimento(id) {
-    if (!confirm("¿Deseas eliminar este alimento?")) {
-      return;
-    }
+    if (!confirm("¿Desea eliminar este alimento?")) return;
 
     try {
       await POST("/api/alimentos/" + id + "/eliminar");
-
-      mensaje("mensajeAlimento", "Alimento eliminado correctamente.", "ok");
-
       await recargar();
     } catch (err) {
       mensaje("mensajeAlimento", err.message, "error");
@@ -752,9 +737,11 @@
 
   window.eliminarAlimento = eliminarAlimento;
 
-  /* PÉRDIDAS */
+  /* ============================================================
+     PÉRDIDAS
+  ============================================================ */
 
-  document.getElementById("formPerdida")?.addEventListener("submit", async e => {
+  document.getElementById("formPerdida").addEventListener("submit", async e => {
     e.preventDefault();
 
     const formulario = e.target;
@@ -768,8 +755,7 @@
       });
 
       formulario.reset();
-
-      mensaje("mensajePerdida", r.mensaje || "Pérdida registrada correctamente.", "ok");
+      mensaje("mensajePerdida", r.mensaje, "ok");
 
       await recargar();
     } catch (err) {
@@ -777,36 +763,9 @@
     }
   });
 
-  /* INVERSIONES (formulario) */
-
-  document.getElementById("formInversion")?.addEventListener("submit", async e => {
-    e.preventDefault();
-
-    const formulario = e.target;
-    const valor = Number(document.getElementById("inversionValor").value);
-    const descripcion = document.getElementById("inversionDescripcion").value.trim();
-
-    if (!valor || valor <= 0) {
-      mensaje("mensajeInversion", "Ingresa un valor mayor a 0.", "error");
-      return;
-    }
-
-    try {
-      await POST("/api/contabilidad", {
-        tipo: "Inversión en insumos",
-        descripcion: descripcion || "Inversión en insumos",
-        valor
-      });
-
-      formulario.reset();
-      mensaje("mensajeInversion", "Inversión registrada correctamente.", "ok");
-      await recargar();
-    } catch (err) {
-      mensaje("mensajeInversion", err.message, "error");
-    }
-  });
-
-  /* MESAS */
+  /* ============================================================
+     MESAS
+  ============================================================ */
 
   function inicializarMesas() {
     document.querySelectorAll(".mesa-card").forEach(mesa => {
@@ -815,39 +774,44 @@
       });
     });
 
-    document.getElementById("btnAgregarProducto")?.addEventListener("click", agregarProductoOrden);
-    document.getElementById("btnRegistrarVenta")?.addEventListener("click", registrarVenta);
-    document.getElementById("btnLiberarMesa")?.addEventListener("click", liberarMesa);
+    const btnAgregar = document.getElementById("btnAgregarProducto");
+    if (btnAgregar) btnAgregar.addEventListener("click", agregarProductoOrden);
+
+    const btnVenta = document.getElementById("btnRegistrarVenta");
+    if (btnVenta) btnVenta.addEventListener("click", registrarVenta);
+
+    const btnLiberar = document.getElementById("btnLiberarMesa");
+    if (btnLiberar) btnLiberar.addEventListener("click", liberarMesa);
 
     actualizarProductosOrden();
     actualizarVisualMesas();
-    renderizarOrden();
   }
 
   function seleccionarMesa(numero) {
     if (!mesas[numero]) return;
 
     mesaSeleccionada = numero;
-
-    const mesa = mesas[numero];
+    window.mesaSeleccionada = numero;
 
     setText("mesaSeleccionada", "Mesa " + numero);
-
     setText(
       "estadoOrden",
-      mesa.estado === "ocupada" ? "Orden activa" : "Mesa disponible"
+      mesas[numero].estado === "ocupada" ? "Orden activa" : "Mesa disponible"
     );
 
     renderizarOrden();
     actualizarVisualMesas();
+
+    // Notifica al módulo de meta que la mesa cambió
+    if (typeof window.actualizarMeta === "function") {
+      window.actualizarMeta();
+    }
   }
 
   function actualizarVisualMesas() {
     document.querySelectorAll(".mesa-card").forEach(card => {
       const numero = Number(card.dataset.mesa);
       const mesa = mesas[numero];
-
-      if (!mesa) return;
 
       card.classList.remove("disponible", "ocupada", "seleccionada");
       card.classList.add(mesa.estado);
@@ -857,49 +821,43 @@
       }
 
       const estado = card.querySelector(".mesa-estado");
-
       if (estado) {
         estado.textContent = mesa.estado === "ocupada" ? "Ocupada" : "Disponible";
       }
     });
   }
 
-  /* PRODUCTOS PARA LAS ÓRDENES */
+  /* ============================================================
+     PRODUCTOS DE LA ORDEN
+  ============================================================ */
+
+  function obtenerPrecioProducto(producto) {
+    return Number(
+      producto.precio ?? producto.precio_venta ?? producto.valor ?? 0
+    );
+  }
 
   function actualizarProductosOrden() {
     const select = document.getElementById("productoOrden");
-
     if (!select) return;
 
     const seleccionado = select.value;
 
     select.innerHTML =
       '<option value="">Seleccionar producto</option>' +
-      datos.alimentos.map(a => {
-        const precio = obtenerPrecioProducto(a);
+      datos.alimentos
+        .map(a => {
+          const precio = obtenerPrecioProducto(a);
+          return (
+            '<option value="' + esc(a.id) + '">' +
+            esc(a.nombre) + " — " + formatoMoneda(precio) +
+            "</option>"
+          );
+        })
+        .join("");
 
-        return (
-          '<option value="' + esc(a.id) + '">' +
-          esc(a.nombre) + " — " + formatoMoneda(precio) +
-          "</option>"
-        );
-      }).join("");
-
-    if (seleccionado) {
-      select.value = seleccionado;
-    }
+    if (seleccionado) select.value = seleccionado;
   }
-
-  function obtenerPrecioProducto(producto) {
-    return Number(
-      producto.precio ??
-      producto.precio_venta ??
-      producto.valor ??
-      0
-    );
-  }
-
-  /* AGREGAR PRODUCTOS A UNA ORDEN */
 
   function agregarProductoOrden() {
     if (!mesaSeleccionada) {
@@ -938,8 +896,8 @@
       orden.productos.push({
         id: producto.id,
         nombre: producto.nombre,
-        cantidad,
-        precio
+        cantidad: cantidad,
+        precio: precio
       });
     }
 
@@ -948,25 +906,23 @@
     document.getElementById("cantidadOrden").value = 1;
     document.getElementById("productoOrden").value = "";
 
+    setText("estadoOrden", "Orden activa");
+
     renderizarOrden();
     actualizarVisualMesas();
   }
 
-  /* RENDERIZAR ORDEN */
-
   function renderizarOrden() {
     const lista = document.getElementById("listaOrden");
-
     if (!lista) return;
 
     if (!mesaSeleccionada) {
       lista.innerHTML = `
         <div class="orden-vacia">
-          <span></span>
+          <span>🍽️</span>
           <p>Selecciona una mesa para comenzar.</p>
         </div>
       `;
-
       setText("totalOrden", formatoMoneda(0));
       return;
     }
@@ -976,17 +932,16 @@
     if (!orden || !orden.productos.length) {
       lista.innerHTML = `
         <div class="orden-vacia">
-          <span></span>
+          <span>🍽️</span>
           <p>No hay productos en esta orden.</p>
         </div>
       `;
-
       setText("totalOrden", formatoMoneda(0));
       return;
     }
 
-    lista.innerHTML = orden.productos.map(
-      (producto, indice) => {
+    lista.innerHTML = orden.productos
+      .map((producto, indice) => {
         const subtotal = producto.precio * producto.cantidad;
 
         return `
@@ -995,26 +950,21 @@
             <span>${producto.cantidad}</span>
             <span>${formatoMoneda(producto.precio)}</span>
             <strong>${formatoMoneda(subtotal)}</strong>
-            <button
-              type="button"
-              class="btn-eliminar-producto"
-              onclick="eliminarProductoOrden(${indice})"
-            >×</button>
+            <button type="button" class="btn-eliminar-producto"
+              onclick="eliminarProductoOrden(${indice})">×</button>
           </div>
         `;
-      }
-    ).join("");
+      })
+      .join("");
 
     setText("totalOrden", formatoMoneda(calcularTotalOrden()));
   }
 
   function calcularTotalOrden() {
-    if (!mesaSeleccionada) {
-      return 0;
-    }
+    if (!mesaSeleccionada) return 0;
 
     return mesas[mesaSeleccionada].productos.reduce(
-      (total, producto) => total + producto.precio * producto.cantidad,
+      (total, p) => total + p.precio * p.cantidad,
       0
     );
   }
@@ -1023,11 +973,11 @@
     if (!mesaSeleccionada) return;
 
     const orden = mesas[mesaSeleccionada];
-
     orden.productos.splice(indice, 1);
 
     if (orden.productos.length === 0) {
       orden.estado = "disponible";
+      setText("estadoOrden", "Mesa disponible");
     }
 
     renderizarOrden();
@@ -1036,7 +986,9 @@
 
   window.eliminarProductoOrden = eliminarProductoOrden;
 
-  /* REGISTRAR VENTA */
+  /* ============================================================
+     REGISTRAR VENTA (CONECTADO A SALDOS)
+  ============================================================ */
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
@@ -1065,21 +1017,23 @@
       orden.productos.map(p => p.cantidad + "x " + p.nombre).join(", ");
 
     try {
-      const respuesta = await POST("/api/contabilidad", {
+      await POST("/api/contabilidad", {
         tipo: "Venta",
-        descripcion,
+        descripcion: descripcion,
         valor: total
       });
 
-      mensaje(
-        "mensajeContable",
-        respuesta.mensaje || "Venta registrada correctamente.",
-        "ok"
-      );
+      // Sincronización automática con el saldo del administrador
+      const saldoActualAdmin = Number(localStorage.getItem("saldoAdmin") || 0) + total;
+      localStorage.setItem("saldoAdmin", saldoActualAdmin);
+
+      if (typeof window.cargarSaldos === "function") {
+        window.cargarSaldos();
+      }
 
       mesas[numeroMesa] = { estado: "disponible", productos: [] };
-
       mesaSeleccionada = null;
+      window.mesaSeleccionada = null;
 
       setText("mesaSeleccionada", "Selecciona una mesa para comenzar");
       setText("estadoOrden", "Sin orden");
@@ -1090,12 +1044,13 @@
       await recargar();
     } catch (err) {
       console.error(err);
-
       alert("No se pudo registrar la venta:\n" + err.message);
     }
   }
 
-  /* LIBERAR MESA */
+  /* ============================================================
+     LIBERAR MESA
+  ============================================================ */
 
   function liberarMesa() {
     if (!mesaSeleccionada) {
@@ -1103,30 +1058,35 @@
       return;
     }
 
-    const numero = mesaSeleccionada;
-
     const confirmar = confirm(
-      "¿Seguro que deseas liberar la Mesa " + numero +
+      "¿Seguro que deseas liberar la Mesa " +
+      mesaSeleccionada +
       "?\n\nLa orden actual se eliminará."
     );
 
     if (!confirmar) return;
 
-    mesas[numero] = { estado: "disponible", productos: [] };
+    mesas[mesaSeleccionada] = { estado: "disponible", productos: [] };
 
-    seleccionarMesa(numero);
+    mesaSeleccionada = null;
+    window.mesaSeleccionada = null;
+
+    setText("mesaSeleccionada", "Selecciona una mesa para comenzar");
+    setText("estadoOrden", "Sin orden");
+
+    renderizarOrden();
+    actualizarVisualMesas();
   }
 
-  /* SINCRONIZACIÓN */
+  /* ============================================================
+     SINCRONIZACIÓN
+  ============================================================ */
 
   async function sincronizar() {
     setText("estadoSync", "Sincronizando información...");
 
     const punto = document.getElementById("puntoSync");
-
-    if (punto) {
-      punto.style.background = "var(--warning)";
-    }
+    if (punto) punto.style.background = "var(--warning)";
 
     try {
       const r = await POST("/api/sincronizar");
@@ -1134,103 +1094,56 @@
       await cargarDatos();
 
       setText("estadoSync", "Información sincronizada");
+      if (punto) punto.style.background = "var(--success)";
 
-      if (punto) {
-        punto.style.background = "var(--success)";
-      }
-
-      mensaje("mensajeSync", r.mensaje || "Sincronización completada.", "ok");
+      mensaje("mensajeSync", r.mensaje, "ok");
     } catch (err) {
       setText("estadoSync", "Error de sincronización");
-
       mensaje("mensajeSync", err.message, "error");
-
-      if (punto) {
-        punto.style.background = "var(--danger)";
-      }
     }
   }
 
   window.sincronizar = sincronizar;
 
-  /* ESTADOS DE LOS ALIMENTOS */
+  /* ============================================================
+     ESTADOS DE ALIMENTOS
+  ============================================================ */
 
   function diasParaVencer(a) {
-    if (!a.vencimiento) {
-      return Infinity;
-    }
-
-    const vencimiento = new Date(a.vencimiento + "T23:59:59");
-
-    if (Number.isNaN(vencimiento.getTime())) {
-      return Infinity;
-    }
-
-    return Math.ceil((vencimiento.getTime() - Date.now()) / 86400000);
+    return Math.ceil(
+      (new Date(a.vencimiento + "T23:59:59") - new Date()) / 86400000
+    );
   }
 
   function estadoAlimento(a) {
-    const cantidad = Number(a.cantidad) || 0;
-    const dias = diasParaVencer(a);
-
-    if (cantidad <= 15) {
-      return ["Crítico", "bad"];
-    }
-
-    if (dias <= 3) {
-      return ["Por vencer", "bad"];
-    }
-
-    if (cantidad <= 30) {
-      return ["Stock bajo", "warn"];
-    }
-
+    if (a.cantidad <= 15) return ["Crítico", "bad"];
+    if (diasParaVencer(a) <= 3) return ["Por vencer", "bad"];
+    if (a.cantidad <= 30) return ["Stock bajo", "warn"];
     return ["Disponible", "ok"];
   }
 
-  /* SELECT DE PROVEEDORES (formulario de alimentos) */
-
-  function actualizarSelectProveedores() {
-    const select = document.getElementById("alimentoProveedor");
-
-    if (!select) return;
-
-    const seleccionado = select.value;
-
-    select.innerHTML = opcionesProveedores();
-
-    if (seleccionado) {
-      select.value = seleccionado;
-    }
-  }
-
-  /* RENDERIZADO GENERAL */
+  /* ============================================================
+     RENDERIZADO GENERAL
+  ============================================================ */
 
   function renderizarTodo() {
     if (!sesion) return;
 
-    const totalUnidades = datos.alimentos.reduce(
-      (s, a) => s + (Number(a.cantidad) || 0),
-      0
-    );
+    const totalUnidades = datos.alimentos.reduce((s, a) => s + a.cantidad, 0);
 
     const criticos = datos.alimentos.filter(
       a => estadoAlimento(a)[1] === "bad"
     ).length;
 
-    const porVencer = datos.alimentos.filter(
-      a => diasParaVencer(a) <= 3
-    ).length;
+    const porVencer = datos.alimentos.filter(a => diasParaVencer(a) <= 3).length;
 
     const ventas = datos.contabilidad
       .filter(x => x.tipo === "Venta")
-      .reduce((s, x) => s + (Number(x.valor) || 0), 0);
+      .reduce((s, x) => s + Number(x.valor), 0);
 
     const gastos = datos.contabilidad
       .filter(x => x.tipo === "Gasto operativo")
-      .reduce((s, x) => s + (Number(x.valor) || 0), 0);
-
-    /* ESTADÍSTICAS */
+      .reduce((s, x) => s + Number(x.valor), 0);
 
     setText("statProductos", datos.alimentos.length);
     setText("statInventario", totalUnidades);
@@ -1245,174 +1158,168 @@
     setText("totalGastos", formatoMoneda(gastos));
     setText("balance", formatoMoneda(ventas - gastos));
 
-    /* INVERSIONES */
+    /* SINCRONIZACIÓN DE SALDO */
+    if (localStorage.getItem("saldoAdmin") === null) {
+      localStorage.setItem("saldoAdmin", ventas - gastos);
+    }
 
-    const insumos = datos.contabilidad
-      .filter(x => /insumo|inversi/i.test(x.tipo))
-      .reduce((s, x) => s + (Number(x.valor) || 0), 0);
-
-    const aRecuperar = insumos + gastos;
-    const resultado = ventas - aRecuperar;
-    const ganancia = Math.max(0, resultado);
-    const recuperado = Math.min(ventas, aRecuperar);
-    const porRecuperar = Math.max(0, aRecuperar - ventas);
-    const rentabilidad = insumos > 0 ? (ganancia / insumos) * 100 : 0;
-    const progreso = aRecuperar > 0
-      ? Math.min(100, (ventas / aRecuperar) * 100)
-      : 0;
-
-    setText("dashboardInversion", formatoMoneda(insumos));
-    setText("dashboardIngresos", formatoMoneda(ventas));
-    setText("dashboardGanancia", formatoMoneda(ganancia));
-    setText("dashboardRentabilidad", rentabilidad.toFixed(1) + "%");
-    setText("dashboardCostoInsumos", formatoMoneda(insumos));
-    setText("dashboardGastos", formatoMoneda(gastos));
-    setText("dashboardBalance", formatoMoneda(resultado));
-
-    setText("invPorRecuperar", formatoMoneda(porRecuperar));
-    setText("invRecuperado", formatoMoneda(recuperado));
-    setText(
-      "invEstadoTexto",
-      insumos === 0
-        ? "Sin inversión"
-        : porRecuperar > 0
-          ? "Recuperando"
-          : "En ganancias"
-    );
-
-    const barra = document.getElementById("invBarra");
-    if (barra) barra.style.width = progreso + "%";
+    if (typeof window.cargarSaldos === "function") {
+      window.cargarSaldos();
+    } else {
+      const saldoLocal = Number(localStorage.getItem("saldoAdmin") || 0);
+      setText("saldoAdmin", formatoMoneda(saldoLocal));
+    }
 
     /* USUARIOS */
-
     setHTML(
       "tablaUsuarios",
-      datos.usuarios.map(u =>
-        "<tr>" +
-          "<td><strong>" + esc(u.nombre) + "</strong></td>" +
-          "<td>" + esc(u.apellido) + "</td>" +
-          "<td>" + esc(u.login || u.usuario) + "</td>" +
-          "<td>" + esc(u.rol) + "</td>" +
-          '<td><div class="acciones-tabla">' +
-            '<button onclick="editarUsuario(' + Number(u.id) + ')">Editar</button>' +
-            '<button class="eliminar" onclick="eliminarUsuario(' + Number(u.id) + ')">Eliminar</button>' +
-          "</div></td>" +
-        "</tr>"
-      ).join("")
+      datos.usuarios
+        .map(
+          u =>
+            "<tr>" +
+            "<td><strong>" + esc(u.nombre) + "</strong></td>" +
+            "<td>" + esc(u.apellido) + "</td>" +
+            "<td>" + esc(u.login) + "</td>" +
+            "<td>" + esc(u.rol) + "</td>" +
+            '<td><div class="acciones-tabla">' +
+            '<button onclick="editarUsuario(' + u.id + ')">Editar</button>' +
+            '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' +
+            "</div></td>" +
+            "</tr>"
+        )
+        .join("")
     );
 
     /* PROVEEDORES */
-
     setHTML(
       "tablaProveedores",
-      datos.proveedores.length
-        ? datos.proveedores.map(p =>
+      datos.proveedores
+        .map(
+          p =>
             "<tr>" +
-              "<td><strong>" + esc(p.nombre) + "</strong></td>" +
-              "<td>" + esc(p.telefono) + "</td>" +
-              '<td><div class="acciones-tabla">' +
-                '<button onclick="editarProveedor(' + Number(p.id) + ')">Editar</button>' +
-                '<button class="eliminar" onclick="eliminarProveedor(' + Number(p.id) + ')">Eliminar</button>' +
-              "</div></td>" +
+            "<td><strong>" + esc(p.nombre) + "</strong></td>" +
+            "<td>" + esc(p.telefono) + "</td>" +
+            '<td><div class="acciones-tabla">' +
+            '<button onclick="editarProveedor(' + p.id + ')">Editar</button>' +
+            '<button class="eliminar" onclick="eliminarProveedor(' + p.id + ')">Eliminar</button>' +
+            "</div></td>" +
             "</tr>"
-          ).join("")
-        : '<tr><td colspan="3">No hay proveedores registrados.</td></tr>'
+        )
+        .join("")
     );
 
-    /* ALIMENTOS */
+    const comboProv = document.getElementById("alimentoProveedor");
+    if (comboProv) {
+      const sel = comboProv.value;
 
+      comboProv.innerHTML =
+        '<option value="">Seleccionar proveedor</option>' +
+        datos.proveedores
+          .map(p => '<option value="' + p.id + '">' + esc(p.nombre) + "</option>")
+          .join("");
+
+      if (sel) comboProv.value = sel;
+    }
+
+    /* ALIMENTOS */
     setHTML(
       "tablaAlimentos",
-      datos.alimentos.map(a =>
-        "<tr>" +
-          "<td><strong>" + esc(a.nombre) + "</strong></td>" +
-          "<td>" + esc(a.categoria) + "</td>" +
-          "<td>" + (Number(a.cantidad) || 0) + "</td>" +
-          "<td>" + formatoMoneda(a.precio) + "</td>" +
-          "<td>" + fechaBonita(a.vencimiento) + "</td>" +
-          "<td>" + esc(a.proveedor || "Sin proveedor") + "</td>" +
-          '<td><div class="acciones-tabla">' +
-            '<button onclick="editarAlimento(' + Number(a.id) + ')">Editar</button>' +
-            '<button class="eliminar" onclick="eliminarAlimento(' + Number(a.id) + ')">Eliminar</button>' +
-          "</div></td>" +
-        "</tr>"
-      ).join("")
+      datos.alimentos
+        .map(
+          a =>
+            "<tr>" +
+            "<td><strong>" + esc(a.nombre) + "</strong></td>" +
+            "<td>" + esc(a.categoria) + "</td>" +
+            "<td>" + a.cantidad + "</td>" +
+            "<td>" + formatoMoneda(a.precio) + "</td>" +
+            "<td>" + fechaBonita(a.vencimiento) + "</td>" +
+            "<td>" + esc(a.proveedor || "-") + "</td>" +
+            '<td><div class="acciones-tabla">' +
+            '<button onclick="editarAlimento(' + a.id + ')">Editar</button>' +
+            '<button class="eliminar" onclick="eliminarAlimento(' + a.id + ')">Eliminar</button>' +
+            "</div></td>" +
+            "</tr>"
+        )
+        .join("")
     );
 
     /* INVENTARIO */
-
     setHTML(
       "tablaInventario",
-      datos.alimentos.map(a => {
-        const est = estadoAlimento(a);
+      datos.alimentos
+        .map(a => {
+          const est = estadoAlimento(a);
 
-        return (
-          "<tr>" +
+          return (
+            "<tr>" +
             "<td><strong>" + esc(a.nombre) + "</strong></td>" +
             "<td>" + esc(a.categoria) + "</td>" +
-            "<td>" + (Number(a.cantidad) || 0) + " unidades</td>" +
+            "<td>" + a.cantidad + " unidades</td>" +
             "<td>" + fechaBonita(a.vencimiento) + "</td>" +
-            "<td>" + esc(a.proveedor || "Sin proveedor") + "</td>" +
-            '<td><span class="estado-demo ' + est[1] + '">' +
-              esc(est[0]) +
-            "</span></td>" +
-          "</tr>"
-        );
-      }).join("")
+            "<td>" + esc(a.proveedor || "-") + "</td>" +
+            '<td><span class="estado-demo ' + est[1] + '">' + est[0] + "</span></td>" +
+            "</tr>"
+          );
+        })
+        .join("")
     );
 
-    /* COMBO DE PÉRDIDAS */
-
+    /* PÉRDIDAS (combo) */
     const comboPerdida = document.getElementById("perdidaAlimento");
 
     if (comboPerdida) {
       const seleccionado = comboPerdida.value;
 
-      comboPerdida.innerHTML = datos.alimentos.map(a =>
-        '<option value="' + esc(a.id) + '">' +
-          esc(a.nombre) +
-          " (" + (Number(a.cantidad) || 0) + " disponibles)" +
-        "</option>"
-      ).join("");
+      comboPerdida.innerHTML = datos.alimentos
+        .map(
+          a =>
+            '<option value="' + a.id + '">' +
+            esc(a.nombre) + " (" + a.cantidad + " disponibles)" +
+            "</option>"
+        )
+        .join("");
 
-      if (seleccionado) {
-        comboPerdida.value = seleccionado;
-      }
+      if (seleccionado) comboPerdida.value = seleccionado;
     }
 
-    /* CONTABILIDAD */
-
+    /* CONTABILIDAD / VENTAS */
     setHTML(
       "tablaContabilidad",
       datos.contabilidad.length
-        ? datos.contabilidad.slice().reverse().map(x =>
-            "<tr>" +
-              "<td>" + fechaBonita(x.fecha) + "</td>" +
-              '<td><span class="estado-demo ' +
-                (x.tipo === "Venta" ? "ok" : "warn") +
-              '">' + esc(x.tipo) + "</span></td>" +
-              "<td>" + esc(x.descripcion) + "</td>" +
-              "<td><strong>" + formatoMoneda(x.valor) + "</strong></td>" +
-            "</tr>"
-          ).join("")
+        ? datos.contabilidad
+            .slice()
+            .reverse()
+            .map(
+              x =>
+                "<tr>" +
+                "<td>" + fechaBonita(x.fecha) + "</td>" +
+                '<td><span class="estado-demo ' +
+                (x.tipo === "Venta" ? "ok" : "warn") + '">' +
+                esc(x.tipo) + "</span></td>" +
+                "<td>" + esc(x.descripcion) + "</td>" +
+                "<td><strong>" + formatoMoneda(x.valor) + "</strong></td>" +
+                "</tr>"
+            )
+            .join("")
         : '<tr><td colspan="4">No hay operaciones registradas.</td></tr>'
     );
 
     /* SEDES */
-
     setHTML(
       "tablaSedes",
-      datos.sedes.map(s =>
-        "<tr>" +
-          "<td><strong>" + esc(s.nombre) + "</strong></td>" +
-          '<td><span class="estado-demo ok">' + esc(s.estado) + "</span></td>" +
-          "<td>" + esc(s.actualizacion) + "</td>" +
-        "</tr>"
-      ).join("")
+      datos.sedes
+        .map(
+          s =>
+            "<tr>" +
+            "<td><strong>" + esc(s.nombre) + "</strong></td>" +
+            '<td><span class="estado-demo ok">' + esc(s.estado) + "</span></td>" +
+            "<td>" + esc(s.actualizacion) + "</td>" +
+            "</tr>"
+        )
+        .join("")
     );
 
     /* ALERTAS */
-
     const alertas = [];
 
     datos.alimentos.forEach(a => {
@@ -1421,17 +1328,13 @@
       if (estado !== "Disponible") {
         alertas.push(
           '<div class="elemento-alerta alerta-' +
-            (estado === "Crítico" ? "peligro" : "advertencia") +
-          '">' +
-            '<div class="icono-alerta">!</div>' +
-            "<div>" +
-              "<strong>" + esc(a.nombre) + "</strong>" +
-              "<p>" + esc(estado) + ": " +
-                (Number(a.cantidad) || 0) +
-                " unidades disponibles.</p>" +
-              "<small>Actualizado ahora</small>" +
-            "</div>" +
-          "</div>"
+          (estado === "Crítico" ? "peligro" : "advertencia") + '">' +
+          '<div class="icono-alerta">!</div>' +
+          "<div>" +
+          "<strong>" + esc(a.nombre) + "</strong>" +
+          "<p>" + estado + ": " + a.cantidad + " unidades disponibles.</p>" +
+          "<small>Actualizado ahora</small>" +
+          "</div></div>"
         );
       }
     });
@@ -1439,88 +1342,70 @@
     if (!alertas.length) {
       alertas.push(
         '<div class="elemento-alerta alerta-exito">' +
-          '<div class="icono-alerta">✓</div>' +
-          "<div>" +
-            "<strong>Sin alertas críticas</strong>" +
-            "<p>El inventario se encuentra dentro de los niveles configurados.</p>" +
-            "<small>Actualizado ahora</small>" +
-          "</div>" +
-        "</div>"
+        '<div class="icono-alerta">✓</div>' +
+        "<div>" +
+        "<strong>Sin alertas críticas</strong>" +
+        "<p>El inventario se encuentra dentro de los niveles configurados.</p>" +
+        "<small>Actualizado ahora</small>" +
+        "</div></div>"
       );
     }
 
     setHTML("dashboardAlertas", alertas.join(""));
     setText("contadorAlertas", alertas.length);
 
-    /* DASHBOARD DE INVENTARIO */
-
+    /* DASHBOARD INVENTARIO */
     setHTML(
       "dashboardInventario",
-      datos.alimentos.slice(0, 5).map(a => {
-        const cantidad = Number(a.cantidad) || 0;
-        const porcentaje = Math.min(100, Math.max(5, cantidad));
+      datos.alimentos
+        .slice(0, 5)
+        .map(a => {
+          const porcentaje = Math.min(100, Math.max(5, a.cantidad));
+          const est = estadoAlimento(a);
+          const clase = est[1];
 
-        const est = estadoAlimento(a);
-        const clase = est[1];
-
-        return (
-          '<div class="fila-inventario">' +
+          return (
+            '<div class="fila-inventario">' +
             '<div class="producto">' +
-              '<div class="icono-producto">▤</div>' +
-              "<div>" +
-                "<strong>" + esc(a.nombre) + "</strong>" +
-                "<span>" + esc(a.categoria) + "</span>" +
-              "</div>" +
+            '<div class="icono-producto">▤</div>' +
+            "<div><strong>" + esc(a.nombre) + "</strong><span>" + esc(a.categoria) + "</span></div>" +
             "</div>" +
-
             '<div class="existencias">' +
-              '<div class="texto-existencias">' +
-                "<span>" + cantidad + " unidades</span>" +
-                "<strong>" + porcentaje + "%</strong>" +
-              "</div>" +
-
-              '<div class="progreso ' +
-                (clase === "warn"
-                  ? "advertencia"
-                  : clase === "bad"
-                    ? "peligro"
-                    : "") +
-              '">' +
-                '<span style="width:' + porcentaje + '%"></span>' +
-              "</div>" +
+            '<div class="texto-existencias">' +
+            "<span>" + a.cantidad + " unidades</span>" +
+            "<strong>" + porcentaje + "%</strong>" +
             "</div>" +
-
+            '<div class="progreso ' +
+            (clase === "warn" ? "advertencia" : clase === "bad" ? "peligro" : "") + '">' +
+            '<span style="width:' + porcentaje + '%"></span>' +
+            "</div></div>" +
             '<span class="estado ' +
-              (clase === "ok"
-                ? "exito"
-                : clase === "warn"
-                  ? "advertencia"
-                  : "peligro") +
-            '">' +
-              esc(est[0]) +
-            "</span>" +
-          "</div>"
-        );
-      }).join("")
+            (clase === "ok" ? "exito" : clase === "warn" ? "advertencia" : "peligro") + '">' +
+            est[0] + "</span>" +
+            "</div>"
+          );
+        })
+        .join("")
     );
 
     /* GRÁFICA */
-
     const alturas = [45, 68, 54, 82, 61, 90, 72];
     const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
     setHTML(
       "graficaBarras",
-      alturas.map((h, i) =>
-        '<div class="contenedor-barra">' +
-          '<div class="barra" style="height:' + h + '%"></div>' +
-          "<small>" + dias[i] + "</small>" +
-        "</div>"
-      ).join("")
+      alturas
+        .map(
+          (h, i) =>
+            '<div class="contenedor-barra">' +
+            '<div class="barra" style="height:' + h + '%"></div>' +
+            "<small>" + dias[i] + "</small>" +
+            "</div>"
+        )
+        .join("")
     );
 
     /* ÚLTIMA SINCRONIZACIÓN */
-
     const primera = datos.sedes[0];
 
     setText(
@@ -1530,22 +1415,17 @@
         : "Aún no se ha ejecutado una sincronización."
     );
 
-    /* SELECT DE PROVEEDORES */
-
-    actualizarSelectProveedores();
-
     /* MESAS */
-
     actualizarProductosOrden();
     actualizarVisualMesas();
-    renderizarOrden();
   }
 
-  /* REPORTES */
+  /* ============================================================
+     REPORTES
+  ============================================================ */
 
   function generarReporte() {
     const tipo = document.getElementById("tipoReporte").value;
-
     const fecha = document.getElementById("fechaReporte").value || hoyISO();
 
     let texto = "";
@@ -1555,62 +1435,62 @@
         "Fecha: " + fechaBonita(fecha) +
         "\nProductos registrados: " + datos.alimentos.length +
         "\nUnidades disponibles: " +
-        datos.alimentos.reduce(
-          (s, a) => s + (Number(a.cantidad) || 0),
-          0
-        ) +
+        datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
         "\nPérdidas registradas: " + datos.perdidas.length +
         "\nOperaciones contables: " + datos.contabilidad.length;
     } else if (tipo === "Inventario general") {
-      texto = datos.alimentos.map(a =>
-        a.nombre +
-        " | " + a.categoria +
-        " | " + a.cantidad + " unidades" +
-        " | " + (a.proveedor || "Sin proveedor")
-      ).join("\n") || "No hay alimentos registrados.";
+      texto =
+        datos.alimentos
+          .map(a => a.nombre + " | " + a.categoria + " | " + a.cantidad + " unidades")
+          .join("\n") || "No hay alimentos registrados.";
     } else if (tipo === "Pérdida de alimentos") {
       texto = datos.perdidas.length
-        ? datos.perdidas.map(p =>
-            fechaBonita(p.fecha) +
-            " | " + p.alimento +
-            " | " + p.cantidad + " unidades" +
-            " | " + p.motivo
-          ).join("\n")
+        ? datos.perdidas
+            .map(
+              p =>
+                fechaBonita(p.fecha) + " | " + p.alimento + " | " +
+                p.cantidad + " unidades | " + p.motivo
+            )
+            .join("\n")
         : "No hay pérdidas registradas.";
     } else if (tipo === "Consumo") {
       texto =
         "Consumo estimado a partir de las salidas registradas.\n\n" +
-        (
-          datos.perdidas.length
-            ? datos.perdidas.map(p =>
-                p.alimento +
-                ": " + p.cantidad +
-                " unidades registradas como salida/pérdida"
-              ).join("\n")
-            : "No hay registros de consumo/salidas disponibles."
-        );
+        (datos.perdidas.length
+          ? datos.perdidas
+              .map(
+                p =>
+                  p.alimento + ": " + p.cantidad +
+                  " unidades registradas como salida/pérdida"
+              )
+              .join("\n")
+          : "No hay registros de consumo/salidas disponibles.");
     } else {
-      texto = datos.contabilidad.map(x =>
-        fechaBonita(x.fecha) +
-        " | " + x.tipo +
-        " | " + x.descripcion +
-        " | " + formatoMoneda(x.valor)
-      ).join("\n") || "No hay operaciones contables registradas.";
+      texto =
+        datos.contabilidad
+          .map(
+            x =>
+              fechaBonita(x.fecha) + " | " + x.tipo + " | " +
+              x.descripcion + " | " + formatoMoneda(x.valor)
+          )
+          .join("\n") || "No hay operaciones contables registradas.";
     }
 
     setHTML(
       "resultadoReporte",
-      "<h4>" + esc(tipo) + "</h4><p>" +
-      esc(texto).replace(/\n/g, "<br>") +
-      "</p>"
+      "<h4>" + esc(tipo) + "</h4><p>" + esc(texto).replace(/\n/g, "<br>") + "</p>"
     );
   }
 
   window.generarReporte = generarReporte;
 
-  /* INICIALIZACIÓN */
+  /* ============================================================
+     INICIALIZACIÓN
+  ============================================================ */
 
-  inicializarMesas();
+  document.addEventListener("DOMContentLoaded", () => {
+    inicializarMesas();
+  });
 
   /* RESTAURAR SESIÓN */
 
@@ -1620,8 +1500,6 @@
         return iniciarSesion(r.usuario);
       }
     })
-    .catch(err => {
-      console.error("No se pudo restaurar la sesión:", err);
-    });
+    .catch(err => console.error(err));
 
 })();
