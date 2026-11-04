@@ -295,7 +295,24 @@
               <input type="hidden" id="alimentoId">
               <div class="form-grid">
                 <div class="campo"><label>Nombre del alimento</label><input id="alimentoNombre" required></div>
-                <div class="campo"><label>Categoría</label><select id="alimentoCategoria"><option>Lácteos</option><option>Granos</option><option>Verduras</option><option>Frutas</option><option>Cárnicos</option><option>Otros</option></select></div>
+                <div class="campo">
+                  <label for="alimentoCategoria">Categoría</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <select id="alimentoCategoria" required style="flex:1;min-width:0;">
+                      <option value="">Seleccionar categoría</option>
+                      <option value="Lácteos">Lácteos</option>
+                      <option value="Granos">Granos</option>
+                      <option value="Verduras">Verduras</option>
+                      <option value="Frutas">Frutas</option>
+                      <option value="Cárnicos">Cárnicos</option>
+                      <option value="Otros">Otros</option>
+                    </select>
+                    <button type="button" class="boton-secundario"
+                       id="btnAdministrarCategorias"
+                              aria-haspopup="dialog" aria-controls="modalCategorias"
+                                style="white-space:nowrap;padding:10px 12px;">+ Agregar categoría</button>
+                  </div>
+                </div>
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
                 <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
@@ -968,13 +985,67 @@
 
   <!--fin de editar alimentos-->
   
+
+  <!-- ADMINISTRAR CATEGORÍAS -->
+  <div class="modal-fondo" id="modalCategorias" aria-hidden="true">
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloModalCategorias">
+      <h3 id="tituloModalCategorias">Administrar categorías</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin:8px 0 18px;">
+        Registra nuevas categorías o modifica y elimina las existentes.
+      </p>
+
+      <form id="formCategoria">
+        <input type="hidden" id="categoriaId">
+        <div class="form-grid">
+          <div class="campo form-full">
+            <label for="categoriaNombre">Nombre de la categoría</label>
+            <input id="categoriaNombre" type="text" maxlength="60"
+              placeholder="Ej. Bebidas" autocomplete="off" required>
+          </div>
+        </div>
+        <div class="acciones">
+          <button class="boton-principal" type="submit" id="btnGuardarCategoria">Guardar categoría</button>
+          <button class="boton-secundario" type="button" id="btnLimpiarCategoria">Limpiar</button>
+        </div>
+        <div id="mensajeCategoria" class="mensaje" role="status" aria-live="polite"></div>
+      </form>
+
+      <div style="margin-top:22px;">
+        <div class="encabezado-panel" style="margin-bottom:12px;">
+          <h4 style="margin:0;">Categorías registradas</h4>
+        </div>
+
+        <div class="campo" style="margin-bottom:10px;">
+          <input id="categoriaBuscar" type="search" placeholder="Buscar categoría..." autocomplete="off">
+        </div>
+        <div id="categoriaContador" style="color:var(--text-secondary);font-size:9px;margin-bottom:8px;"></div>
+
+
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <thead><tr><th>Categoría</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaCategorias">
+              <tr><td colspan="2">Cargando categorías...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button type="button" class="boton-secundario" id="btnCerrarCategorias">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- fin de administrar categoria -->
+
   <!-- conexion con mis archivos js en la carpeta static -->
   <script src="{{ url_for('static', filename='js/app.js') }}?v=8"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
   <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/categorias.js') }}"></script>
 
 
 

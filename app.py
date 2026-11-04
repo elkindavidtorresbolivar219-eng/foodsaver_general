@@ -243,6 +243,104 @@ def proveedores_eliminar(pid):
     db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
     return jsonify({"ok": True})
 
+# rutas del crud para categorias
+
+@app.get("/api/categorias")
+@login_requerido
+def categorias_listar():
+    return jsonify(
+        db.consultar("SELECT id, nombre FROM categorias ORDER BY id")
+    )
+
+# crear y modificar categoria
+@app.post("/api/categorias")
+@login_requerido
+def categorias_guardar():
+    d = datos_json()
+    cid = entero(d.get("id"), 1)
+    nombre = (d.get("nombre") or "").strip()
+
+    if not nombre:
+        return error("El nombre de la categoría es obligatorio.")
+    if len(nombre) > 30:
+        return error("El nombre no puede superar los 30 caracteres.")
+
+    try:
+        if cid:
+            fila = db.ejecutar(
+                """
+                UPDATE categorias
+                SET nombre = %s
+                WHERE id = %s
+                RETURNING id
+                """,
+                (nombre, cid),
+                retornar=True
+            )
+            if not fila:
+                return error("La categoría no existe.", 404)
+            return jsonify({
+                "ok": True,
+                "mensaje": "Categoría modificada correctamente."
+            })
+
+        db.ejecutar(
+            """
+            INSERT INTO categorias (nombre)
+            VALUES (%s)
+            """,
+            (nombre,)
+        )
+        return jsonify({
+            "ok": True,
+            "mensaje": "Categoría creada correctamente."
+        })
+
+    except pg_errors.UniqueViolation:
+        return error("Esta categoría ya está registrada.", 409)
+
+# eliminar categoria
+@app.post("/api/categorias/<int:cid>/eliminar")
+@login_requerido
+def categorias_eliminar(cid):
+    try:
+        uso = db.consultar_uno(
+            """
+            SELECT COUNT(*) AS total
+            FROM alimentos
+            WHERE LOWER(TRIM(categoria)) = LOWER(
+                (SELECT nombre FROM categorias WHERE id = %s)
+            )
+            """,
+            (cid,)
+        )
+
+        if not uso or uso["total"] > 0:
+            return error(
+                "No puedes eliminar esta categoría porque está asociada a alimentos.",
+                409
+            )
+
+        fila = db.ejecutar(
+            """
+            DELETE FROM categorias
+            WHERE id = %s
+            RETURNING id
+            """,
+            (cid,),
+            retornar=True
+        )
+
+        if not fila:
+            return error("La categoría no existe.", 404)
+
+        return jsonify({
+            "ok": True,
+            "mensaje": "Categoría eliminada correctamente."
+        })
+
+    except pg_errors.ForeignKeyViolation:
+        return error("No se pudo eliminar la categoría.", 409)
 
 # RUTAS DE ALIMENTOS E INVENTARIO (RF 3)
 @app.get("/api/alimentos")
