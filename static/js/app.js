@@ -1320,7 +1320,7 @@ if (comboProv) {
     }
 }
 
-    /* ALIMENTOS */
+    /* ALIMENTOS  Jose */
     setHTML(
       "tablaAlimentos",
       datos.alimentos
