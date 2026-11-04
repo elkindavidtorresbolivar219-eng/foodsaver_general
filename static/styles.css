@@ -2583,3 +2583,75 @@ footer {
 
 .stock-delta.sube { color: var(--success); }
 .stock-delta.baja { color: var(--error); }
+
+
+/* =========================================
+   MODAL DE PROVEEDORES
+========================================= */
+
+.modal-proveedores-caja {
+    width: 90%;
+    max-width: 850px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-proveedores-caja .encabezado-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.boton-cerrar-modal {
+    border: none;
+    background: #f1f1f1;
+    color: #333;
+    font-size: 26px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.boton-cerrar-modal:hover {
+    background: #e1e1e1;
+}
+
+.selector-proveedor {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.selector-proveedor select {
+    flex: 1;
+    min-width: 0;
+}
+
+.selector-proveedor button {
+    white-space: nowrap;
+}
+
+.separador-modal {
+    height: 1px;
+    background: #e5e5e5;
+    margin: 25px 0;
+}
+
+@media (max-width: 600px) {
+    .modal-proveedores-caja {
+        width: 95%;
+        padding: 18px;
+    }
+
+    .selector-proveedor {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .selector-proveedor button {
+        width: 100%;
+    }
+}
+

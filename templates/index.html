@@ -236,48 +236,7 @@
           </article>
         </div>
 
-        <!-- PROVEEDORES (visible para todos los roles) -->
-        <div class="titulo-vista" style="margin-top:36px;">
-          <span class="etiqueta-seccion">GESTIÓN DE PROVEEDORES</span>
-          <h2>Proveedores</h2>
-          <p>Creación, modificación, eliminación e informes de proveedores.</p>
-        </div>
-
-        <div class="modulo-grid">
-          <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.1 / 4.2</span><h3>Crear o modificar proveedor</h3></div></div>
-            <form id="formProveedor" style="padding-top:18px;">
-              <input type="hidden" id="proveedorId">
-              <div class="form-grid">
-                <div class="campo"><label>Nombre del local</label><input id="proveedorNombre" required></div>
-                <div class="campo"><label>Teléfono</label><input id="proveedorTelefono" type="tel" required></div>
-              </div>
-              <div class="acciones">
-                <button class="boton-principal" type="submit">Guardar proveedor</button>
-                <button class="boton-secundario" type="button" onclick="limpiarProveedor()">Limpiar</button>
-              </div>
-              <div id="mensajeProveedor" class="mensaje"></div>
-            </form>
-          </article>
-
-          <article class="panel">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.3</span><h3>Proveedores registrados</h3></div></div>
-            <div class="tabla-contenedor">
-              <table class="tabla">
-                <thead><tr><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
-                <tbody id="tablaProveedores"></tbody>
-              </table>
-            </div>
-          </article>
-        </div>
-
-        <article class="panel" style="margin-top:20px;">
-          <div class="encabezado-panel">
-            <div><span class="etiqueta-seccion">4.4</span><h3>Informe de proveedores</h3></div>
-            <button class="boton-secundario" onclick="generarInformeProveedores()">Generar informe</button>
-          </div>
-          <div id="informeProveedores" class="panel-form"></div>
-        </article>
+       
       </section>
 
       <!-- ALIMENTOS -->
@@ -294,7 +253,22 @@
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
                 <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
-                <div class="campo"><label>Proveedor de origen</label><select id="alimentoProveedor" required><option value="">Seleccionar proveedor</option></select></div>
+                <div class="campo form-full">
+    <label>Proveedor de origen</label>
+
+    <div class="selector-proveedor">
+        <select id="alimentoProveedor" required>
+            <option value="">Seleccionar proveedor</option>
+        </select>
+
+        <button
+            type="button"
+            class="boton-secundario"
+            onclick="abrirModalProveedores()">
+            + Gestionar proveedores
+        </button>
+    </div>
+</div>
               </div>
               <div class="acciones"><button class="boton-principal" type="submit">Guardar alimento</button><button class="boton-secundario" type="button" onclick="limpiarAlimento()">Limpiar</button></div>
               <div id="mensajeAlimento" class="mensaje"></div>
@@ -944,6 +918,104 @@
       <div id="mensajeEdicion" class="mensaje"></div>
     </div>
   </div>
+  <!-- MODAL GESTIÓN DE PROVEEDORES -->
+<div class="modal-fondo" id="modalProveedores" aria-hidden="true">
+
+    <div class="modal-caja modal-proveedores-caja"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="tituloModalProveedores">
+
+        <div class="encabezado-panel">
+            <div>
+                <span class="etiqueta-seccion">GESTIÓN DE PROVEEDORES</span>
+                <h3 id="tituloModalProveedores">Administrar proveedores</h3>
+                <p>Registra y administra los proveedores de tus alimentos.</p>
+            </div>
+
+            <button type="button"
+                    class="boton-cerrar-modal"
+                    onclick="cerrarModalProveedores()">
+                ×
+            </button>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form id="formProveedor" style="padding-top:18px;">
+
+            <input type="hidden" id="proveedorId">
+
+            <div class="form-grid">
+
+                <div class="campo">
+                    <label>Nombre del proveedor</label>
+                    <input
+                        type="text"
+                        id="proveedorNombre"
+                        placeholder="Nombre del establecimiento"
+                        required>
+                </div>
+
+                <div class="campo">
+                    <label>Teléfono</label>
+                    <input
+                        type="tel"
+                        id="proveedorTelefono"
+                        placeholder="Número de contacto"
+                        required>
+                </div>
+
+            </div>
+
+            <div class="acciones">
+
+                <button class="boton-principal" type="submit">
+                    Guardar proveedor
+                </button>
+
+                <button class="boton-secundario"
+                        type="button"
+                        onclick="limpiarProveedor()">
+                    Limpiar
+                </button>
+
+            </div>
+
+            <div id="mensajeProveedor" class="mensaje"></div>
+
+        </form>
+
+        <div class="separador-modal"></div>
+
+        <!-- TABLA -->
+        <div class="encabezado-panel">
+            <div>
+                <span class="etiqueta-seccion">REGISTROS</span>
+                <h3>Proveedores registrados</h3>
+            </div>
+        </div>
+
+        <div class="tabla-contenedor">
+
+            <table class="tabla">
+
+                <thead>
+                    <tr>
+                        <th>Proveedor</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaProveedores"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
   <!-- Archivos JS en la carpeta static (subí la versión para evitar caché) -->
   <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>

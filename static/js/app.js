@@ -425,6 +425,80 @@
      PROVEEDORES
   ============================================================ */
 
+  
+  /* ============================================================
+     MODAL Y CRUD DE PROVEEDORES
+  ============================================================ */
+
+  function abrirModalProveedores() {
+    const modal = document.getElementById("modalProveedores");
+
+    modal.classList.add("abierto");
+    modal.setAttribute("aria-hidden", "false");
+
+    renderizarProveedores();
+  }
+
+  window.abrirModalProveedores = abrirModalProveedores;
+
+  function cerrarModalProveedores() {
+    const modal = document.getElementById("modalProveedores");
+
+    modal.classList.remove("abierto");
+    modal.setAttribute("aria-hidden", "true");
+
+    limpiarProveedor();
+  }
+
+  window.cerrarModalProveedores = cerrarModalProveedores;
+
+
+  // CERRAR AL HACER CLIC FUERA DEL MODAL
+
+  document.getElementById("modalProveedores").addEventListener("click", e => {
+    if (e.target.id === "modalProveedores") {
+      cerrarModalProveedores();
+    }
+  });
+
+
+  // MOSTRAR PROVEEDORES EN LA TABLA
+
+  function renderizarProveedores() {
+    const tabla = document.getElementById("tablaProveedores");
+
+    if (!datos.proveedores.length) {
+      tabla.innerHTML = `
+        <tr>
+          <td colspan="3">No hay proveedores registrados.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tabla.innerHTML = datos.proveedores.map(p => `
+      <tr>
+        <td><strong>${esc(p.nombre)}</strong></td>
+        <td>${esc(p.telefono)}</td>
+        <td>
+          <div class="acciones-tabla">
+            <button type="button" onclick="editarProveedor(${p.id})">
+              Editar
+            </button>
+
+            <button type="button" class="eliminar"
+                    onclick="eliminarProveedor(${p.id})">
+              Eliminar
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+
+  // GUARDAR PROVEEDOR
+
   document.getElementById("formProveedor").addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -435,14 +509,25 @@
         telefono: document.getElementById("proveedorTelefono").value.trim()
       });
 
-      mensaje("mensajeProveedor", r.mensaje || "Proveedor guardado correctamente.", "ok");
+      mensaje(
+        "mensajeProveedor",
+        r.mensaje || "Proveedor guardado correctamente.",
+        "ok"
+      );
 
       limpiarProveedor();
+
       await recargar();
+
+      renderizarProveedores();
+
     } catch (err) {
       mensaje("mensajeProveedor", err.message, "error");
     }
   });
+
+
+  // LIMPIAR FORMULARIO
 
   function limpiarProveedor() {
     document.getElementById("formProveedor").reset();
@@ -451,8 +536,13 @@
 
   window.limpiarProveedor = limpiarProveedor;
 
+
+  // EDITAR PROVEEDOR
+
   function editarProveedor(id) {
-    const p = datos.proveedores.find(x => Number(x.id) === Number(id));
+    const p = datos.proveedores.find(
+      x => Number(x.id) === Number(id)
+    );
 
     if (!p) {
       mensaje("mensajeProveedor", "No se encontró el proveedor.", "error");
@@ -463,20 +553,30 @@
     document.getElementById("proveedorNombre").value = p.nombre || "";
     document.getElementById("proveedorTelefono").value = p.telefono || "";
 
-    document
-      .getElementById("formProveedor")
-      .scrollIntoView({ behavior: "smooth", block: "center" });
+    document.getElementById("proveedorNombre").focus();
   }
 
   window.editarProveedor = editarProveedor;
+
+
+  // ELIMINAR PROVEEDOR
 
   async function eliminarProveedor(id) {
     if (!confirm("¿Deseas eliminar este proveedor?")) return;
 
     try {
       await POST("/api/proveedores/" + id + "/eliminar");
-      mensaje("mensajeProveedor", "Proveedor eliminado correctamente.", "ok");
+
       await recargar();
+
+      renderizarProveedores();
+
+      mensaje(
+        "mensajeProveedor",
+        "Proveedor eliminado correctamente.",
+        "ok"
+      );
+
     } catch (err) {
       mensaje("mensajeProveedor", err.message, "error");
     }
@@ -484,9 +584,13 @@
 
   window.eliminarProveedor = eliminarProveedor;
 
+
+  // INFORME DE PROVEEDORES
+
   function generarInformeProveedores() {
     const html = datos.proveedores.length
-      ? "<h4>Total: " + datos.proveedores.length + " proveedores</h4><p>" +
+      ? "<h4>Total: " + datos.proveedores.length +
+        " proveedores</h4><p>" +
         datos.proveedores
           .map(p => esc(p.nombre) + " | " + esc(p.telefono))
           .join("<br>") +
@@ -497,6 +601,7 @@
   }
 
   window.generarInformeProveedores = generarInformeProveedores;
+
 
   /* ============================================================
      ALIMENTOS
@@ -1191,35 +1296,29 @@
     );
 
     /* PROVEEDORES */
-    setHTML(
-      "tablaProveedores",
-      datos.proveedores
-        .map(
-          p =>
-            "<tr>" +
-            "<td><strong>" + esc(p.nombre) + "</strong></td>" +
-            "<td>" + esc(p.telefono) + "</td>" +
-            '<td><div class="acciones-tabla">' +
-            '<button onclick="editarProveedor(' + p.id + ')">Editar</button>' +
-            '<button class="eliminar" onclick="eliminarProveedor(' + p.id + ')">Eliminar</button>' +
-            "</div></td>" +
-            "</tr>"
-        )
-        .join("")
-    );
+   /* PROVEEDORES */
 
-    const comboProv = document.getElementById("alimentoProveedor");
-    if (comboProv) {
-      const sel = comboProv.value;
+renderizarProveedores();
 
-      comboProv.innerHTML =
+const comboProv = document.getElementById("alimentoProveedor");
+
+if (comboProv) {
+    const seleccionado = comboProv.value;
+
+    comboProv.innerHTML =
         '<option value="">Seleccionar proveedor</option>' +
         datos.proveedores
-          .map(p => '<option value="' + p.id + '">' + esc(p.nombre) + "</option>")
-          .join("");
+            .map(p =>
+                '<option value="' + p.id + '">' +
+                esc(p.nombre) +
+                '</option>'
+            )
+            .join("");
 
-      if (sel) comboProv.value = sel;
+    if (datos.proveedores.some(p => String(p.id) === String(seleccionado))) {
+        comboProv.value = seleccionado;
     }
+}
 
     /* ALIMENTOS */
     setHTML(
