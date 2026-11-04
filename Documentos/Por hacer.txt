@@ -1,0 +1,34 @@
+
+R.F VENTAS 
+1. las ventas descuenten los productos de inventario por los platos pedidos 
+2. el precio de ventas se añaden al salario 
+
+
+R.F ALIMENTOS
+3. añadir apartado de agregar categoría en registrar alimento al momento de buscar la categoría 
+4.añadir apartado de agregar proveedor en registrar alimento al momento de buscar la categoría 
+5. añadir filtro de búsqueda en alimentos
+
+
+DASHBOARD 
+6. al momento de entrar en vez de decir "bienvenido de nueva" agregar el nombre de la persona entrando 
+
+USUARIOS
+7. poner apartado proveedor en agregar usuario
+
+VENTAS 
+8. arreglar meta de mesas, únicas por mesas
+
+INVERSIONES  
+9. añadir crud en inversiones
+
+SALDOS 
+10.conectar deuda provedores con provedores totales 
+11. Agregar perfil de trabajador y que tengas diferentes saldos
+
+
+12. no rendirse :)
+
+
+
+

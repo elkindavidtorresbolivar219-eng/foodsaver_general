@@ -11,7 +11,6 @@
   <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
 
-    <!-- Fondo con fotos que cambian con transición -->
     <div class="login-fondo" aria-hidden="true">
       <div class="slide"></div>
       <div class="slide"></div>
@@ -24,7 +23,6 @@
       <p>Sistema de Gestión Alimentaria</p>
 
       <form id="formLogin">
-
         <div class="campo">
           <label for="loginUsuario">Usuario</label>
           <input id="loginUsuario" type="text" autocomplete="username" required placeholder="Ingrese su usuario">
@@ -45,7 +43,6 @@
       </div>
 
       <form id="formRestablecer" class="oculto" style="margin-top:18px;">
-
         <div class="campo">
           <label for="recUsuario">Usuario</label>
           <input id="recUsuario" type="text" required>
@@ -58,7 +55,6 @@
 
         <button class="boton-secundario" type="submit">Guardar nueva contraseña</button>
         <div id="mensajeReset" class="mensaje"></div>
-
       </form>
     </div>
   </section>
@@ -79,16 +75,13 @@
           <span class="icono">⌂</span><span>Dashboard</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="usuarios">
-          <span class="icono">▣</span><span>Usuarios</span>
-        </a>
-        <a href="#" class="elemento-menu" data-vista="proveedores">
-          <span class="icono">▦</span><span>Proveedores</span>
+          <span class="icono">▣</span><span>Usuarios y Proveedores</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="alimentos">
           <span class="icono">▤</span><span>Alimentos</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="platos">
-        <span class="icono">🍽️</span><span>Platos</span>
+          <span class="icono">🍔</span><span>Platos</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="inventario">
           <span class="icono">◫</span><span>Inventario</span>
@@ -203,86 +196,47 @@
           <div class="cuadricula-accesos">
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('proveedores');return false;"><span class="icono-acceso">▦</span><strong>Gestionar proveedores</strong><small>Registrar, modificar y eliminar proveedores</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('usuarios');return false;"><span class="icono-acceso">▦</span><strong>Gestionar proveedores</strong><small>Registrar, modificar y eliminar proveedores</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
         </section>
       </section>
 
-      <!-- USUARIOS -->
+      <!-- USUARIOS Y PROVEEDORES -->
       <section id="vista-usuarios" class="vista">
-        <div class="titulo-vista"><span class="etiqueta-seccion">GESTIÓN DE USUARIOS</span><h2>Usuarios del sistema</h2><p>Creación, modificación, eliminación e informes de usuarios.</p></div>
-        <div class="modulo-grid">
-          <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.1 / 2.2</span><h3>Crear o modificar usuario</h3></div></div>
-            <form id="formUsuario" style="padding-top:18px;">
-              <input type="hidden" id="usuarioId">
-              <div class="form-grid">
-                <div class="campo"><label>Nombre</label><input id="usuarioNombre" required></div>
-                <div class="campo"><label>Apellido</label><input id="usuarioApellido" required></div>
-                <div class="campo"><label>Usuario</label><input id="usuarioLogin" required></div>
-                <div class="campo"><label>Contraseña</label><input id="usuarioClave" type="password" minlength="4" required></div>
-                <div class="campo"><label>Rol</label><select id="usuarioRol"><option>Administrador</option><option>Operador</option><option>Contador</option><option>Consulta</option></select></div>
-              </div>
-              <div class="acciones"><button class="boton-principal" type="submit">Guardar usuario</button><button class="boton-secundario" type="button" onclick="limpiarUsuario()">Limpiar</button></div>
-              <div id="mensajeUsuario" class="mensaje"></div>
-            </form>
-          </article>
-          <article class="panel">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.3</span><h3>Usuarios registrados</h3></div></div>
-            <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Nombre</th><th>Apellido</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tablaUsuarios"></tbody></table></div>
-          </article>
-        </div>
-        <article class="panel" style="margin-top:20px;">
-          <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
-          <div id="informeUsuarios" class="panel-form"></div>
-        </article>
-      </section>
 
-      <!-- PROVEEDORES -->
-      <section id="vista-proveedores" class="vista">
-        <div class="titulo-vista">
-          <span class="etiqueta-seccion">GESTIÓN DE PROVEEDORES</span>
-          <h2>Proveedores</h2>
-          <p>Creación, modificación, eliminación e informes de proveedores.</p>
-        </div>
-
-        <div class="modulo-grid">
-          <article class="panel panel-form">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.1 / 4.2</span><h3>Crear o modificar proveedor</h3></div></div>
-            <form id="formProveedor" style="padding-top:18px;">
-              <input type="hidden" id="proveedorId">
-              <div class="form-grid">
-                <div class="campo"><label>Nombre del local</label><input id="proveedorNombre" required></div>
-                <div class="campo"><label>Teléfono</label><input id="proveedorTelefono" type="tel" required></div>
-              </div>
-              <div class="acciones">
-                <button class="boton-principal" type="submit">Guardar proveedor</button>
-                <button class="boton-secundario" type="button" onclick="limpiarProveedor()">Limpiar</button>
-              </div>
-              <div id="mensajeProveedor" class="mensaje"></div>
-            </form>
-          </article>
-
-          <article class="panel">
-            <div class="encabezado-panel"><div><span class="etiqueta-seccion">4.3</span><h3>Proveedores registrados</h3></div></div>
-            <div class="tabla-contenedor">
-              <table class="tabla">
-                <thead><tr><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
-                <tbody id="tablaProveedores"></tbody>
-              </table>
-            </div>
-          </article>
-        </div>
-
-        <article class="panel" style="margin-top:20px;">
-          <div class="encabezado-panel">
-            <div><span class="etiqueta-seccion">4.4</span><h3>Informe de proveedores</h3></div>
-            <button class="boton-secundario" onclick="generarInformeProveedores()">Generar informe</button>
+        <!-- Bloque solo para Administrador -->
+        <div id="bloqueUsuarios">
+          <div class="titulo-vista"><span class="etiqueta-seccion">GESTIÓN DE USUARIOS</span><h2>Usuarios del sistema</h2><p>Creación, modificación, eliminación e informes de usuarios.</p></div>
+          <div class="modulo-grid">
+            <article class="panel panel-form">
+              <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.1 / 2.2</span><h3>Crear o modificar usuario</h3></div></div>
+              <form id="formUsuario" style="padding-top:18px;">
+                <input type="hidden" id="usuarioId">
+                <div class="form-grid">
+                  <div class="campo"><label>Nombre</label><input id="usuarioNombre" required></div>
+                  <div class="campo"><label>Apellido</label><input id="usuarioApellido" required></div>
+                  <div class="campo"><label>Usuario</label><input id="usuarioLogin" required></div>
+                  <div class="campo"><label>Contraseña</label><input id="usuarioClave" type="password" minlength="4" required></div>
+                  <div class="campo"><label>Rol</label><select id="usuarioRol"><option>Administrador</option><option>Operador</option><option>Contador</option><option>Consulta</option></select></div>
+                </div>
+                <div class="acciones"><button class="boton-principal" type="submit">Guardar usuario</button><button class="boton-secundario" type="button" onclick="limpiarUsuario()">Limpiar</button></div>
+                <div id="mensajeUsuario" class="mensaje"></div>
+              </form>
+            </article>
+            <article class="panel">
+              <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.3</span><h3>Usuarios registrados</h3></div></div>
+              <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Nombre</th><th>Apellido</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tablaUsuarios"></tbody></table></div>
+            </article>
           </div>
-          <div id="informeProveedores" class="panel-form"></div>
-        </article>
+          <article class="panel" style="margin-top:20px;">
+            <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
+            <div id="informeUsuarios" class="panel-form"></div>
+          </article>
+        </div>
+
+       
       </section>
 
       <!-- ALIMENTOS -->
@@ -316,7 +270,22 @@
                 <div class="campo"><label>Cantidad</label><input id="alimentoCantidad" type="number" min="0" required></div>
                 <div class="campo"><label>Precio</label><input id="alimentoPrecio" type="number" min="0" required></div>
                 <div class="campo"><label>Fecha de vencimiento</label><input id="alimentoVencimiento" type="date" required></div>
-                <div class="campo"><label>Proveedor de origen</label><select id="alimentoProveedor" required><option value="">Seleccionar proveedor</option></select></div>
+                <div class="campo form-full">
+    <label>Proveedor de origen</label>
+
+    <div class="selector-proveedor">
+        <select id="alimentoProveedor" required>
+            <option value="">Seleccionar proveedor</option>
+        </select>
+
+        <button
+            type="button"
+            class="boton-secundario"
+            onclick="abrirModalProveedores()">
+            + Gestionar proveedores
+        </button>
+    </div>
+</div>
               </div>
               <div class="acciones"><button class="boton-principal" type="submit">Guardar alimento</button><button class="boton-secundario" type="button" onclick="limpiarAlimento()">Limpiar</button></div>
               <div id="mensajeAlimento" class="mensaje"></div>
@@ -462,6 +431,83 @@
   </article>
 </section>
 
+      <!-- PLATOS -->
+      <section id="vista-platos" class="vista">
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">MENÚ</span>
+          <h2>Platos</h2>
+          <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
+        </div>
+
+        <div class="platos-grid" id="platosGrid">
+
+          <div class="plato-carta" tabindex="0" role="button" data-nombre="MERAKI" data-precio="16000" aria-label="Ver ingredientes de la hamburguesa Meraki">
+            <div class="plato-carta-interior">
+
+              <div class="plato-cara plato-frente">
+                <img src="{{ url_for('static', filename='img/hamburguesa1.jpg') }}" alt="Hamburguesa Meraki">
+                <div class="plato-pie">
+                  <strong>MERAKI</strong>
+                  <span>$16.000</span>
+                </div>
+              </div>
+
+              <div class="plato-cara plato-reverso">
+                <div class="plato-reverso-cab">
+                  <div>
+                    <h3>MERAKI</h3>
+                    <span class="plato-precio">$16.000</span>
+                  </div>
+                  <button type="button" class="plato-volver">↺ Volver</button>
+                </div>
+
+                <p class="plato-subtitulo">Ingredientes</p>
+                <ul class="plato-ingredientes" id="ingredientesMeraki">
+                  <li data-fijo>Pan Brioche</li>
+                  <li>Salsa de ajo</li>
+                  <li>Lechuga</li>
+                  <li>Tomate</li>
+                  <li>Cebolla</li>
+                  <li>Queso mozzarella</li>
+                  <li data-fijo>150 g de carne 100% res</li>
+                  <li>Tocineta</li>
+                  <li>100 g de papas a la francesa</li>
+                </ul>
+                <button type="button" class="btn-agregar plato-agregar">+ Agregar al pedido</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <article class="panel pedido-panel">
+          <div class="encabezado-panel">
+            <div>
+              <span class="etiqueta-seccion">PEDIDO</span>
+              <h3>Productos pedidos</h3>
+            </div>
+            <span class="estado-orden" id="pedidoContador">0 productos</span>
+          </div>
+
+          <div class="pedido-lista" id="pedidoLista"></div>
+
+          <div class="orden-footer">
+            <div class="orden-total">
+              <span>Total del pedido</span>
+              <strong id="pedidoTotal">$0</strong>
+            </div>
+
+            <button type="button" id="btnHacerPedido" class="btn-venta">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              Hacer pedido
+            </button>
+          </div>
+
+          <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
+        </article>
+      </section>
+
       <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
@@ -471,10 +517,8 @@
           <p>Gestiona las órdenes de las mesas y registra las ventas. Pasa el mouse sobre las mesas para ver la meta de ventas.</p>
         </div>
 
-        <!-- MESAS + META DE VENTAS (la meta aparece al pasar el mouse) -->
         <div class="mesas-zona">
 
-          <!-- MESAS -->
           <div class="mesas-container">
 
             <div class="mesa-card disponible" data-mesa="1">
@@ -502,7 +546,7 @@
             </div>
 
           </div>
-          <!-- META DE VENTAS -->
+
           <div class="meta-container">
             <div class="meta-header">
               <div>
@@ -546,12 +590,10 @@
             <span id="estadoOrden" class="estado-orden">Sin orden</span>
           </div>
 
-          <!-- AGREGAR PRODUCTO -->
           <div class="orden-form">
 
             <div class="campo">
               <label for="productoOrden">Producto</label>
-
               <select id="productoOrden">
                 <option value="">Seleccionar producto</option>
               </select>
@@ -559,7 +601,6 @@
 
             <div class="campo campo-cantidad">
               <label for="cantidadOrden">Cantidad</label>
-
               <input type="number" id="cantidadOrden" min="1" value="1">
             </div>
 
@@ -570,7 +611,6 @@
 
           </div>
 
-          <!-- PRODUCTOS DE LA ORDEN -->
           <div class="orden-productos">
 
             <div class="orden-productos-header">
@@ -589,7 +629,6 @@
 
           </div>
 
-          <!-- TOTAL -->
           <div class="orden-footer">
 
             <div class="orden-total">
@@ -646,9 +685,7 @@
           </div>
 
           <div class="tabla-wrapper">
-
             <table>
-
               <thead>
                 <tr>
                   <th>Fecha</th>
@@ -663,16 +700,14 @@
                   <td colspan="4">No hay operaciones registradas.</td>
                 </tr>
               </tbody>
-
             </table>
-
           </div>
 
         </div>
 
       </section>
 
-      <!-- SECCIÓN DE SALDOS Y PROVEEDORES -->
+      <!-- SALDOS -->
       <section id="vista-saldos" class="vista">
 
         <div class="titulo-vista">
@@ -681,7 +716,6 @@
           <p>Controla los saldos del administrador, trabajador y las deudas con proveedores.</p>
         </div>
 
-        <!-- CARDS RESUMEN DE SALDOS -->
         <div class="ventas-resumen">
 
           <div class="resumen-card">
@@ -702,7 +736,7 @@
 
         </div>
 
-        <!-- PANEL 1: REGISTRAR COMPRA A CRÉDITO -->
+        <!-- PANEL 1: COMPRA A CRÉDITO -->
         <div class="orden-container" style="margin-bottom: 25px;">
           <div class="orden-header">
             <div>
@@ -730,7 +764,7 @@
           </form>
         </div>
 
-        <!-- PANEL 2: PAGAR DEUDA DE PROVEEDOR -->
+        <!-- PANEL 2: PAGAR DEUDA -->
         <div class="orden-container" style="margin-bottom: 25px;">
           <div class="orden-header">
             <div>
@@ -755,7 +789,7 @@
           </form>
         </div>
 
-        <!-- PANEL 3: AJUSTE MANUAL DE SALDOS -->
+        <!-- PANEL 3: AJUSTE MANUAL -->
         <div class="orden-container" style="margin-bottom: 25px;">
           <div class="orden-header">
             <div>
@@ -795,7 +829,6 @@
           </form>
         </div>
 
-        <!-- HISTORIAL DE MOVIMIENTOS -->
         <div class="tabla-ventas">
           <div class="tabla-header">
             <div>
@@ -850,7 +883,6 @@
           <p>Controla el dinero invertido y las ganancias generadas.</p>
         </div>
 
-        <!-- REGISTRAR INVERSIÓN -->
         <article class="panel panel-form" style="margin-bottom:20px;">
           <div class="encabezado-panel">
             <div>
@@ -1008,116 +1040,111 @@
       <div id="mensajeEdicion" class="mensaje"></div>
     </div>
   </div>
+  <!-- MODAL GESTIÓN DE PROVEEDORES -->
+<div class="modal-fondo" id="modalProveedores" aria-hidden="true">
 
-  <!--fin de editar alimentos-->
+    <div class="modal-caja modal-proveedores-caja"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="tituloModalProveedores">
 
-  <!-- AGREGAR PRODUCTO (plato) -->
-  <div class="modal-fondo" id="modalNuevoPlato" aria-hidden="true">
-    <div class="modal-caja modal-plato" role="dialog" aria-modal="true" aria-labelledby="tituloNuevoPlato">
-      <h3 id="tituloNuevoPlato">Agregar producto</h3>
-
-      <form id="formNuevoPlato" novalidate>
-        <div class="form-grid">
-          <div class="campo">
-            <label for="nuevoPlatoNombre">Nombre del producto</label>
-            <input id="nuevoPlatoNombre" type="text" maxlength="40" placeholder="Ej: Hamburguesa Meraki">
-          </div>
-          <div class="campo">
-            <label for="nuevoPlatoPrecio">Precio</label>
-            <input id="nuevoPlatoPrecio" type="number" min="1" placeholder="Ej: 16000">
-          </div>
-
-          <div class="campo form-full">
-            <label for="nuevoPlatoFoto">Foto</label>
-            <input id="nuevoPlatoFoto" type="file" accept="image/*">
-            <div class="foto-previa" id="nuevoPlatoPrevia">Sin foto seleccionada</div>
-          </div>
-
-          <div class="campo form-full">
-            <label for="nuevoPlatoIngrediente">Ingredientes (del inventario)</label>
-            <div class="ing-selector">
-              <select id="nuevoPlatoIngrediente"></select>
-              <input id="nuevoPlatoCantidad" type="text" maxlength="20" placeholder="Cantidad (opcional) Ej: 150 g">
-              <button type="button" class="boton-secundario" id="btnAgregarIngrediente">+ Añadir</button>
+        <div class="encabezado-panel">
+            <div>
+                <span class="etiqueta-seccion">GESTIÓN DE PROVEEDORES</span>
+                <h3 id="tituloModalProveedores">Administrar proveedores</h3>
+                <p>Registra y administra los proveedores de tus alimentos.</p>
             </div>
-            <ul class="ing-elegidos" id="nuevoPlatoLista"></ul>
-            <small class="ing-ayuda">Marca “Base” en los ingredientes que el cliente no podrá quitar.</small>
-          </div>
+
+            <button type="button"
+                    class="boton-cerrar-modal"
+                    onclick="cerrarModalProveedores()">
+                ×
+            </button>
         </div>
 
-        <div class="acciones">
-          <button type="button" class="boton-secundario" id="btnCancelarNuevoPlato">Cancelar</button>
-          <button type="submit" class="boton-principal">Guardar producto</button>
-        </div>
-        <div id="mensajeNuevoPlato" class="mensaje"></div>
-      </form>
-    </div>
-  </div>
-  <!-- fin agregar producto -->
-  
+        <!-- FORMULARIO -->
+        <form id="formProveedor" style="padding-top:18px;">
 
-  <!-- ADMINISTRAR CATEGORÍAS -->
-  <div class="modal-fondo" id="modalCategorias" aria-hidden="true">
-    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloModalCategorias">
-      <h3 id="tituloModalCategorias">Administrar categorías</h3>
-      <p style="color:var(--text-secondary);font-size:12px;margin:8px 0 18px;">
-        Registra nuevas categorías o modifica y elimina las existentes.
-      </p>
+            <input type="hidden" id="proveedorId">
 
-      <form id="formCategoria">
-        <input type="hidden" id="categoriaId">
-        <div class="form-grid">
-          <div class="campo form-full">
-            <label for="categoriaNombre">Nombre de la categoría</label>
-            <input id="categoriaNombre" type="text" maxlength="60"
-              placeholder="Ej. Bebidas" autocomplete="off" required>
-          </div>
-        </div>
-        <div class="acciones">
-          <button class="boton-principal" type="submit" id="btnGuardarCategoria">Guardar categoría</button>
-          <button class="boton-secundario" type="button" id="btnLimpiarCategoria">Limpiar</button>
-        </div>
-        <div id="mensajeCategoria" class="mensaje" role="status" aria-live="polite"></div>
-      </form>
+            <div class="form-grid">
 
-      <div style="margin-top:22px;">
-        <div class="encabezado-panel" style="margin-bottom:12px;">
-          <h4 style="margin:0;">Categorías registradas</h4>
-        </div>
+                <div class="campo">
+                    <label>Nombre del proveedor</label>
+                    <input
+                        type="text"
+                        id="proveedorNombre"
+                        placeholder="Nombre del establecimiento"
+                        required>
+                </div>
 
-        <div class="campo" style="margin-bottom:10px;">
-          <input id="categoriaBuscar" type="search" placeholder="Buscar categoría..." autocomplete="off">
-        </div>
-        <div id="categoriaContador" style="color:var(--text-secondary);font-size:9px;margin-bottom:8px;"></div>
+                <div class="campo">
+                    <label>Teléfono</label>
+                    <input
+                        type="tel"
+                        id="proveedorTelefono"
+                        placeholder="Número de contacto"
+                        required>
+                </div>
 
+            </div>
+
+            <div class="acciones">
+
+                <button class="boton-principal" type="submit">
+                    Guardar proveedor
+                </button>
+
+                <button class="boton-secundario"
+                        type="button"
+                        onclick="limpiarProveedor()">
+                    Limpiar
+                </button>
+
+            </div>
+
+            <div id="mensajeProveedor" class="mensaje"></div>
+
+        </form>
+
+        <div class="separador-modal"></div>
+
+        <!-- TABLA -->
+        <div class="encabezado-panel">
+            <div>
+                <span class="etiqueta-seccion">REGISTROS</span>
+                <h3>Proveedores registrados</h3>
+            </div>
+        </div>
 
         <div class="tabla-contenedor">
-          <table class="tabla">
-            <thead><tr><th>Categoría</th><th>Acciones</th></tr></thead>
-            <tbody id="tablaCategorias">
-              <tr><td colspan="2">Cargando categorías...</td></tr>
-            </tbody>
-          </table>
+
+            <table class="tabla">
+
+                <thead>
+                    <tr>
+                        <th>Proveedor</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaProveedores"></tbody>
+
+            </table>
+
         </div>
-      </div>
 
-      <div class="acciones">
-        <button type="button" class="boton-secundario" id="btnCerrarCategorias">Cerrar</button>
-      </div>
     </div>
-  </div>
 
-  <!-- fin de administrar categoria -->
+</div>
 
-  <!-- conexion con mis archivos js en la carpeta static -->
+  <!-- Archivos JS en la carpeta static (subí la versión para evitar caché joselin) -->
   <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/platos.js') }}?v=2"></script>
-
-
-
+  <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
 
 </body>
 </html> 
