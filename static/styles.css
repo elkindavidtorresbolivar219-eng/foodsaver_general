@@ -2583,3 +2583,41 @@ footer {
 
 .stock-delta.sube { color: var(--success); }
 .stock-delta.baja { color: var(--error); }
+
+.filtros-alimentos {
+  padding: 16px 22px;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filtros-alimentos .campo {
+  flex: 1;
+  min-width: 180px;
+}
+
+.filtros-alimentos .campo-buscar {
+  flex: 2;
+  min-width: 220px;
+}
+
+.filtros-alimentos .campo input,
+.filtros-alimentos .campo select {
+  height: 38px;
+}
+
+.filtros-alimentos .boton-secundario {
+  height: 38px;
+}
+
+.filtros-alimentos .estado-orden {
+  align-self: center;
+}
+
+.fila-sin-resultados td {
+  padding: 28px 10px;
+  text-align: center;
+  color: #777481;
+}
