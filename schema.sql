@@ -104,7 +104,14 @@ CREATE TABLE IF NOT EXISTS movimientos_proveedor (
     concepto VARCHAR(200),
     fecha TIMESTAMP NOT NULL DEFAULT now()
 );
-
+CREATE TABLE IF NOT EXISTS platos (
+    id           SERIAL PRIMARY KEY,
+    nombre       VARCHAR(100) NOT NULL,
+    precio       BIGINT       NOT NULL CHECK (precio > 0),
+    foto         BYTEA        NOT NULL,
+    foto_tipo    VARCHAR(50)  NOT NULL,
+    ingredientes JSONB        NOT NULL
+);
 -- Seguridad: bloquea el acceso por la API pública de Supabase.
 -- Tu backend (rol postgres) no se ve afectado.
 ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
@@ -118,5 +125,5 @@ ALTER TABLE perdidas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contabilidad ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE movimientos_proveedor ENABLE ROW LEVEL SECURITY;
-
+ALTER TABLE platos                ENABLE ROW LEVEL SECURITY;
 --  joselin pinguin

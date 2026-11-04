@@ -88,7 +88,7 @@
           <span class="icono">▤</span><span>Alimentos</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="platos">
-        <span class="icono">🍔</span><span>Platos</span>
+        <span class="icono">🍽️</span><span>Platos</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="inventario">
           <span class="icono">◫</span><span>Inventario</span>
@@ -380,10 +380,13 @@
         </article>
       </section>
     <section id="vista-platos" class="vista">
-  <div class="titulo-vista">
-    <span class="etiqueta-seccion">MENÚ</span>
-    <h2>Platos</h2>
-    <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
+    <div class="titulo-vista titulo-vista-fila">
+    <div>
+      <span class="etiqueta-seccion">MENÚ</span>
+      <h2>Platos</h2>
+      <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
+    </div>
+    <button type="button" class="boton-principal" id="btnAbrirNuevoPlato">+ Agregar producto</button>
   </div>
 
   <div class="platos-grid" id="platosGrid">
@@ -458,7 +461,7 @@
     <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
   </article>
 </section>
-</section>
+
       <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
@@ -1007,6 +1010,50 @@
   </div>
 
   <!--fin de editar alimentos-->
+
+  <!-- AGREGAR PRODUCTO (plato) -->
+  <div class="modal-fondo" id="modalNuevoPlato" aria-hidden="true">
+    <div class="modal-caja modal-plato" role="dialog" aria-modal="true" aria-labelledby="tituloNuevoPlato">
+      <h3 id="tituloNuevoPlato">Agregar producto</h3>
+
+      <form id="formNuevoPlato" novalidate>
+        <div class="form-grid">
+          <div class="campo">
+            <label for="nuevoPlatoNombre">Nombre del producto</label>
+            <input id="nuevoPlatoNombre" type="text" maxlength="40" placeholder="Ej: Hamburguesa Meraki">
+          </div>
+          <div class="campo">
+            <label for="nuevoPlatoPrecio">Precio</label>
+            <input id="nuevoPlatoPrecio" type="number" min="1" placeholder="Ej: 16000">
+          </div>
+
+          <div class="campo form-full">
+            <label for="nuevoPlatoFoto">Foto</label>
+            <input id="nuevoPlatoFoto" type="file" accept="image/*">
+            <div class="foto-previa" id="nuevoPlatoPrevia">Sin foto seleccionada</div>
+          </div>
+
+          <div class="campo form-full">
+            <label for="nuevoPlatoIngrediente">Ingredientes (del inventario)</label>
+            <div class="ing-selector">
+              <select id="nuevoPlatoIngrediente"></select>
+              <input id="nuevoPlatoCantidad" type="text" maxlength="20" placeholder="Cantidad (opcional) Ej: 150 g">
+              <button type="button" class="boton-secundario" id="btnAgregarIngrediente">+ Añadir</button>
+            </div>
+            <ul class="ing-elegidos" id="nuevoPlatoLista"></ul>
+            <small class="ing-ayuda">Marca “Base” en los ingredientes que el cliente no podrá quitar.</small>
+          </div>
+        </div>
+
+        <div class="acciones">
+          <button type="button" class="boton-secundario" id="btnCancelarNuevoPlato">Cancelar</button>
+          <button type="submit" class="boton-principal">Guardar producto</button>
+        </div>
+        <div id="mensajeNuevoPlato" class="mensaje"></div>
+      </form>
+    </div>
+  </div>
+  <!-- fin agregar producto -->
   
 
   <!-- ADMINISTRAR CATEGORÍAS -->
@@ -1067,8 +1114,9 @@
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
-  
+  <script src="{{ url_for('static', filename='js/platos.js') }}?v=2"></script>
+
+
 
 
 </body>
