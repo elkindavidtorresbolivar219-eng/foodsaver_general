@@ -31,7 +31,9 @@
   const POST = (url, cuerpo) =>
     api(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(cuerpo || {})
     });
 
@@ -177,9 +179,14 @@
     const vista = document.getElementById("vista-" + nombre);
     if (vista) vista.classList.add("activa");
 
-    document.querySelectorAll(".elemento-menu").forEach(a => {
-      a.classList.toggle("activo", a.dataset.vista === nombre);
-    });
+    document
+      .querySelectorAll(".elemento-menu")
+      .forEach(a => {
+        a.classList.toggle(
+          "activo",
+          a.dataset.vista === nombre
+        );
+      });
 
     const titulos = {
       dashboard: ["Inicio / Dashboard", "Panel principal"],
@@ -202,7 +209,10 @@
 
     recargar();
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
   window.mostrarVista = mostrarVista;
@@ -266,12 +276,17 @@
 
   window.cerrarSesion = cerrarSesion;
 
-  document.querySelectorAll(".elemento-menu").forEach(enlace => {
-    enlace.addEventListener("click", e => {
-      e.preventDefault();
-      mostrarVista(enlace.dataset.vista);
+  document
+    .querySelectorAll(".elemento-menu")
+    .forEach(enlace => {
+      enlace.addEventListener("click", e => {
+        e.preventDefault();
+
+        mostrarVista(
+          enlace.dataset.vista
+        );
+      });
     });
-  });
 
   /* ============================================================
      LOGIN
@@ -335,14 +350,14 @@
       const clave = document.getElementById("usuarioClave").value;
       const rol = document.getElementById("usuarioRol").value;
 
-      if (!nombre || !apellido || !usuario || !rol) {
-        mensaje("mensajeUsuario", "Completa todos los campos obligatorios.", "error");
-        return;
-      }
+        await recargar();
 
-      if (!id && clave.length < 4) {
-        mensaje("mensajeUsuario", "La contraseña debe tener mínimo 4 caracteres.", "error");
-        return;
+      } catch (err) {
+        mensaje(
+          "mensajeUsuario",
+          err.message,
+          "error"
+        );
       }
 
       const r = await POST("/api/usuarios", {
@@ -370,28 +385,61 @@
     document.getElementById("usuarioClave").required = true;
   }
 
-  window.limpiarUsuario = limpiarUsuario;
+  window.limpiarUsuario =
+    limpiarUsuario;
 
   function editarUsuario(id) {
     const u = datos.usuarios.find(x => Number(x.id) === Number(id));
 
     if (!u) {
-      mensaje("mensajeUsuario", "No se encontró el usuario.", "error");
+      mensaje(
+        "mensajeUsuario",
+        "No se encontró el usuario.",
+        "error"
+      );
+
       return;
     }
 
-    document.getElementById("usuarioId").value = u.id || "";
-    document.getElementById("usuarioNombre").value = u.nombre || "";
-    document.getElementById("usuarioApellido").value = u.apellido || "";
-    document.getElementById("usuarioLogin").value = u.login || u.usuario || "";
-    document.getElementById("usuarioClave").value = "";
-    document.getElementById("usuarioClave").required = false;
-    document.getElementById("usuarioRol").value = u.rol || "";
+    document
+      .getElementById("usuarioId")
+      .value = u.id || "";
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document
+      .getElementById("usuarioNombre")
+      .value = u.nombre || "";
+
+    document
+      .getElementById("usuarioApellido")
+      .value = u.apellido || "";
+
+    document
+      .getElementById("usuarioLogin")
+      .value =
+        u.login ||
+        u.usuario ||
+        "";
+
+    document
+      .getElementById("usuarioClave")
+      .value = "";
+
+    document
+      .getElementById("usuarioClave")
+      .required = false;
+
+    document
+      .getElementById("usuarioRol")
+      .value = u.rol || "";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
-  window.editarUsuario = editarUsuario;
+  window.editarUsuario =
+    editarUsuario;
 
   async function eliminarUsuario(id) {
     if (!confirm("¿Deseas eliminar este usuario?")) return;
@@ -400,12 +448,18 @@
       await POST("/api/usuarios/" + id + "/eliminar");
       mensaje("mensajeUsuario", "Usuario eliminado correctamente.", "ok");
       await recargar();
+
     } catch (err) {
-      mensaje("mensajeUsuario", err.message, "error");
+      mensaje(
+        "mensajeUsuario",
+        err.message,
+        "error"
+      );
     }
   }
 
-  window.eliminarUsuario = eliminarUsuario;
+  window.eliminarUsuario =
+    eliminarUsuario;
 
   function generarInformeUsuarios() {
     const html = datos.usuarios.length
@@ -502,12 +556,10 @@
   document.getElementById("formProveedor").addEventListener("submit", async e => {
     e.preventDefault();
 
-    try {
-      const r = await POST("/api/proveedores", {
-        id: Number(document.getElementById("proveedorId").value) || null,
-        nombre: document.getElementById("proveedorNombre").value.trim(),
-        telefono: document.getElementById("proveedorTelefono").value.trim()
-      });
+  function limpiarAlimento() {
+    document
+      .getElementById("formAlimento")
+      .reset();
 
       mensaje(
         "mensajeProveedor",
@@ -534,7 +586,8 @@
     document.getElementById("proveedorId").value = "";
   }
 
-  window.limpiarProveedor = limpiarProveedor;
+  function renderizarTablaAlimentos() {
+    const lista = alimentosFiltrados();
 
 
   // EDITAR PROVEEDOR
@@ -544,8 +597,6 @@
       x => Number(x.id) === Number(id)
     );
 
-    if (!p) {
-      mensaje("mensajeProveedor", "No se encontró el proveedor.", "error");
       return;
     }
 
@@ -556,7 +607,9 @@
     document.getElementById("proveedorNombre").focus();
   }
 
-  window.editarProveedor = editarProveedor;
+            "<td>" +
+            esc(a.categoria) +
+            "</td>" +
 
 
   // ELIMINAR PROVEEDOR
@@ -564,8 +617,9 @@
   async function eliminarProveedor(id) {
     if (!confirm("¿Deseas eliminar este proveedor?")) return;
 
-    try {
-      await POST("/api/proveedores/" + id + "/eliminar");
+            "<td>" +
+            formatoMoneda(a.precio) +
+            "</td>" +
 
       await recargar();
 
@@ -582,7 +636,7 @@
     }
   }
 
-  window.eliminarProveedor = eliminarProveedor;
+            "<td>" +
 
 
   // INFORME DE PROVEEDORES
@@ -600,7 +654,9 @@
     setHTML("informeProveedores", html);
   }
 
-  window.generarInformeProveedores = generarInformeProveedores;
+  function limpiarFiltroAlimentos() {
+    const inputTexto = document.getElementById("filtroAlimentoTexto");
+    const selectCat = document.getElementById("filtroAlimentoCategoria");
 
 
   /* ============================================================
@@ -610,32 +666,22 @@
   document.getElementById("formAlimento").addEventListener("submit", async e => {
     e.preventDefault();
 
-    try {
-      const r = await POST("/api/alimentos", {
-        id: Number(document.getElementById("alimentoId").value) || null,
-        nombre: document.getElementById("alimentoNombre").value.trim(),
-        categoria: document.getElementById("alimentoCategoria").value,
-        cantidad: Number(document.getElementById("alimentoCantidad").value),
-        precio: Number(document.getElementById("alimentoPrecio").value),
-        vencimiento: document.getElementById("alimentoVencimiento").value,
-        proveedor_id: Number(document.getElementById("alimentoProveedor").value) || null
-      });
+  window.limpiarFiltroAlimentos = limpiarFiltroAlimentos;
 
       mensaje("mensajeAlimento", r.mensaje, "ok");
 
-      limpiarAlimento();
-      await recargar();
-    } catch (err) {
-      mensaje("mensajeAlimento", err.message, "error");
-    }
-  });
+  document
+    .getElementById("filtroAlimentoCategoria")
+    ?.addEventListener("change", renderizarTablaAlimentos);
 
   function limpiarAlimento() {
     document.getElementById("formAlimento").reset();
     document.getElementById("alimentoId").value = "";
   }
 
-  window.limpiarAlimento = limpiarAlimento;
+  const modal = document.getElementById("modalEditarAlimento");
+  const categoria = document.getElementById("editCategoria");
+  const proveedor = document.getElementById("editProveedor");
 
   /* ---------- MODAL EDITAR ALIMENTOS ---------- */
 
@@ -839,8 +885,8 @@
       mensaje("mensajeAlimento", err.message, "error");
     }
   }
+}
 
-  window.eliminarAlimento = eliminarAlimento;
 
   /* ============================================================
      PÉRDIDAS
@@ -849,22 +895,23 @@
   document.getElementById("formPerdida").addEventListener("submit", async e => {
     e.preventDefault();
 
-    const formulario = e.target;
+document.getElementById("editCantidad")
+  ?.addEventListener("input", actualizarDeltaStock);
 
-    try {
-      const r = await POST("/api/perdidas", {
-        alimento_id: Number(document.getElementById("perdidaAlimento").value),
-        cantidad: Number(document.getElementById("perdidaCantidad").value),
-        motivo: document.getElementById("perdidaMotivo").value,
-        observacion: document.getElementById("perdidaObservacion").value
-      });
+document.getElementById("editPaso")
+  ?.addEventListener("input", () => {
+    const paso = document.getElementById("editPaso");
+    if (Number(paso.value) < 1) paso.value = 1;
+  });
 
       formulario.reset();
       mensaje("mensajePerdida", r.mensaje, "ok");
 
-      await recargar();
-    } catch (err) {
-      mensaje("mensajePerdida", err.message, "error");
+// Cerrar al hacer clic fuera de la ventana
+document.getElementById("modalEditarAlimento")
+  ?.addEventListener("click", evento => {
+    if (evento.target.id === "modalEditarAlimento") {
+      cerrarModalAlimento();
     }
   });
 
@@ -873,11 +920,10 @@
   ============================================================ */
 
   function inicializarMesas() {
-    document.querySelectorAll(".mesa-card").forEach(mesa => {
-      mesa.addEventListener("click", () => {
-        seleccionarMesa(Number(mesa.dataset.mesa));
-      });
-    });
+    const tarjetas =
+      document.querySelectorAll(
+        ".mesa-card"
+      );
 
     const btnAgregar = document.getElementById("btnAgregarProducto");
     if (btnAgregar) btnAgregar.addEventListener("click", agregarProductoOrden);
@@ -892,8 +938,12 @@
     actualizarVisualMesas();
   }
 
-  function seleccionarMesa(numero) {
-    if (!mesas[numero]) return;
+    if (btnAgregar) {
+      btnAgregar.addEventListener(
+        "click",
+        agregarProductoOrden
+      );
+    }
 
     mesaSeleccionada = numero;
     window.mesaSeleccionada = numero;
@@ -904,7 +954,7 @@
       mesas[numero].estado === "ocupada" ? "Orden activa" : "Mesa disponible"
     );
 
-    renderizarOrden();
+    actualizarProductosOrden();
     actualizarVisualMesas();
 
     // Notifica al módulo de meta que la mesa cambió
@@ -912,6 +962,8 @@
       window.actualizarMeta();
     }
   }
+function seleccionarMesa(numero) {
+  if (!mesas[numero]) return;
 
   function actualizarVisualMesas() {
     document.querySelectorAll(".mesa-card").forEach(card => {
@@ -921,9 +973,29 @@
       card.classList.remove("disponible", "ocupada", "seleccionada");
       card.classList.add(mesa.estado);
 
-      if (numero === mesaSeleccionada) {
-        card.classList.add("seleccionada");
-      }
+  renderizarOrden();
+  actualizarVisualMesas();
+  
+  // Notifica al módulo de meta que la mesa cambió
+  if (typeof window.actualizarMeta === "function") {
+    window.actualizarMeta();
+  }
+}
+  function actualizarVisualMesas() {
+    document
+      .querySelectorAll(".mesa-card")
+      .forEach(card => {
+        const numero =
+          Number(card.dataset.mesa);
+
+        const mesa =
+          mesas[numero];
+
+        card.classList.remove(
+          "disponible",
+          "ocupada",
+          "seleccionada"
+        );
 
       const estado = card.querySelector(".mesa-estado");
       if (estado) {
@@ -946,7 +1018,8 @@
     const select = document.getElementById("productoOrden");
     if (!select) return;
 
-    const seleccionado = select.value;
+    const seleccionado =
+      select.value;
 
     select.innerHTML =
       '<option value="">Seleccionar producto</option>' +
@@ -966,37 +1039,81 @@
 
   function agregarProductoOrden() {
     if (!mesaSeleccionada) {
-      alert("Primero selecciona una mesa.");
+      alert(
+        "Primero selecciona una mesa."
+      );
+
       return;
     }
 
-    const productoId = Number(document.getElementById("productoOrden").value);
-    const cantidad = Number(document.getElementById("cantidadOrden").value);
+    const productoId =
+      Number(
+        document
+          .getElementById("productoOrden")
+          .value
+      );
+
+    const cantidad =
+      Number(
+        document
+          .getElementById("cantidadOrden")
+          .value
+      );
 
     if (!productoId) {
-      alert("Selecciona un producto.");
+      alert(
+        "Selecciona un producto."
+      );
+
       return;
     }
 
-    if (!cantidad || cantidad < 1) {
-      alert("La cantidad debe ser mayor a 0.");
+    if (
+      !cantidad ||
+      cantidad < 1
+    ) {
+      alert(
+        "La cantidad debe ser mayor a 0."
+      );
+
       return;
     }
 
-    const producto = datos.alimentos.find(a => Number(a.id) === productoId);
+    const producto =
+      datos.alimentos.find(
+        a =>
+          Number(a.id) ===
+          productoId
+      );
 
     if (!producto) {
-      alert("No se encontró el producto.");
+      alert(
+        "No se encontró el producto."
+      );
+
       return;
     }
 
-    const precio = obtenerPrecioProducto(producto);
-    const orden = mesas[mesaSeleccionada];
+    const precio =
+      obtenerPrecioProducto(
+        producto
+      );
 
-    const existente = orden.productos.find(p => Number(p.id) === productoId);
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
+
+    const existente =
+      orden.productos.find(
+        p =>
+          Number(p.id) ===
+          productoId
+      );
 
     if (existente) {
-      existente.cantidad += cantidad;
+      existente.cantidad +=
+        cantidad;
     } else {
       orden.productos.push({
         id: producto.id,
@@ -1008,8 +1125,17 @@
 
     orden.estado = "ocupada";
 
-    document.getElementById("cantidadOrden").value = 1;
-    document.getElementById("productoOrden").value = "";
+    document
+      .getElementById(
+        "cantidadOrden"
+      )
+      .value = 1;
+
+    document
+      .getElementById(
+        "productoOrden"
+      )
+      .value = "";
 
     setText("estadoOrden", "Orden activa");
 
@@ -1032,9 +1158,15 @@
       return;
     }
 
-    const orden = mesas[mesaSeleccionada];
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
 
-    if (!orden || !orden.productos.length) {
+    if (
+      !orden ||
+      !orden.productos.length
+    ) {
       lista.innerHTML = `
         <div class="orden-vacia">
           <span>🍽️</span>
@@ -1062,7 +1194,12 @@
       })
       .join("");
 
-    setText("totalOrden", formatoMoneda(calcularTotalOrden()));
+    setText(
+      "totalOrden",
+      formatoMoneda(
+        calcularTotalOrden()
+      )
+    );
   }
 
   function calcularTotalOrden() {
@@ -1089,7 +1226,8 @@
     actualizarVisualMesas();
   }
 
-  window.eliminarProductoOrden = eliminarProductoOrden;
+  window.eliminarProductoOrden =
+    eliminarProductoOrden;
 
   /* ============================================================
      REGISTRAR VENTA (CONECTADO A SALDOS)
@@ -1097,29 +1235,55 @@
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
-      alert("Selecciona una mesa.");
+      alert(
+        "Selecciona una mesa."
+      );
+
       return;
     }
 
-    const orden = mesas[mesaSeleccionada];
+    const orden =
+      mesas[
+        mesaSeleccionada
+      ];
 
-    if (!orden || !orden.productos.length) {
-      alert("La mesa no tiene productos.");
+    if (
+      !orden ||
+      !orden.productos.length
+    ) {
+      alert(
+        "La mesa no tiene productos."
+      );
+
       return;
     }
 
-    const total = calcularTotalOrden();
+    const total =
+      calcularTotalOrden();
 
     if (total <= 0) {
-      alert("El total de la orden debe ser mayor a $0.");
+      alert(
+        "El total de la orden debe ser mayor a $0."
+      );
+
       return;
     }
 
-    const numeroMesa = mesaSeleccionada;
+    const numeroMesa =
+      mesaSeleccionada;
 
     const descripcion =
-      "Venta Mesa " + numeroMesa + ": " +
-      orden.productos.map(p => p.cantidad + "x " + p.nombre).join(", ");
+      "Venta Mesa " +
+      numeroMesa +
+      ": " +
+      orden.productos
+        .map(
+          p =>
+            p.cantidad +
+            "x " +
+            p.nombre
+        )
+        .join(", ");
 
     try {
       await POST("/api/contabilidad", {
@@ -1140,13 +1304,16 @@
       mesaSeleccionada = null;
       window.mesaSeleccionada = null;
 
-      setText("mesaSeleccionada", "Selecciona una mesa para comenzar");
-      setText("estadoOrden", "Sin orden");
+      setText(
+        "estadoOrden",
+        "Sin orden"
+      );
 
       renderizarOrden();
       actualizarVisualMesas();
 
       await recargar();
+
     } catch (err) {
       console.error(err);
       alert("No se pudo registrar la venta:\n" + err.message);
@@ -1159,7 +1326,10 @@
 
   function liberarMesa() {
     if (!mesaSeleccionada) {
-      alert("Selecciona una mesa.");
+      alert(
+        "Selecciona una mesa."
+      );
+
       return;
     }
 
@@ -1169,7 +1339,10 @@
       "?\n\nLa orden actual se eliminará."
     );
 
-    if (!confirmar) return;
+    setText(
+      "estadoOrden",
+      "Sin orden"
+    );
 
     mesas[mesaSeleccionada] = { estado: "disponible", productos: [] };
 
@@ -1188,13 +1361,19 @@
   ============================================================ */
 
   async function sincronizar() {
-    setText("estadoSync", "Sincronizando información...");
+    setText(
+      "estadoSync",
+      "Sincronizando información..."
+    );
 
     const punto = document.getElementById("puntoSync");
     if (punto) punto.style.background = "var(--warning)";
 
     try {
-      const r = await POST("/api/sincronizar");
+      const r =
+        await POST(
+          "/api/sincronizar"
+        );
 
       await cargarDatos();
 
@@ -1208,7 +1387,8 @@
     }
   }
 
-  window.sincronizar = sincronizar;
+  window.sincronizar =
+    sincronizar;
 
   /* ============================================================
      ESTADOS DE ALIMENTOS
@@ -1422,9 +1602,13 @@ if (comboProv) {
     const alertas = [];
 
     datos.alimentos.forEach(a => {
-      const estado = estadoAlimento(a)[0];
+      const estado =
+        estadoAlimento(a)[0];
 
-      if (estado !== "Disponible") {
+      if (
+        estado !==
+        "Disponible"
+      ) {
         alertas.push(
           '<div class="elemento-alerta alerta-' +
           (estado === "Crítico" ? "peligro" : "advertencia") + '">' +
@@ -1450,8 +1634,15 @@ if (comboProv) {
       );
     }
 
-    setHTML("dashboardAlertas", alertas.join(""));
-    setText("contadorAlertas", alertas.length);
+    setHTML(
+      "dashboardAlertas",
+      alertas.join("")
+    );
+
+    setText(
+      "contadorAlertas",
+      alertas.length
+    );
 
     /* DASHBOARD INVENTARIO */
     setHTML(
@@ -1489,7 +1680,16 @@ if (comboProv) {
 
     /* GRÁFICA */
     const alturas = [45, 68, 54, 82, 61, 90, 72];
-    const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+    const dias = [
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb",
+      "Dom"
+    ];
 
     setHTML(
       "graficaBarras",
@@ -1509,10 +1709,9 @@ if (comboProv) {
 
     setText(
       "ultimaSync",
-      primera && primera.actualizacion !== "Pendiente"
-        ? "Última sincronización: " + primera.actualizacion
-        : "Aún no se ha ejecutado una sincronización."
-    );
+      primera &&
+      primera.actualizacion !==
+      "Pendiente"
 
     /* MESAS */
     actualizarProductosOrden();
@@ -1529,10 +1728,17 @@ if (comboProv) {
 
     let texto = "";
 
-    if (tipo === "Reporte diario") {
+    if (
+      tipo ===
+      "Reporte diario"
+    ) {
       texto =
-        "Fecha: " + fechaBonita(fecha) +
-        "\nProductos registrados: " + datos.alimentos.length +
+        "Fecha: " +
+        fechaBonita(fecha) +
+
+        "\nProductos registrados: " +
+        datos.alimentos.length +
+
         "\nUnidades disponibles: " +
         datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
         "\nPérdidas registradas: " + datos.perdidas.length +
@@ -1581,7 +1787,8 @@ if (comboProv) {
     );
   }
 
-  window.generarReporte = generarReporte;
+  window.generarReporte =
+    generarReporte;
 
   /* ============================================================
      INICIALIZACIÓN
@@ -1596,7 +1803,9 @@ if (comboProv) {
   GET("/api/sesion")
     .then(r => {
       if (r.usuario) {
-        return iniciarSesion(r.usuario);
+        return iniciarSesion(
+          r.usuario
+        );
       }
     })
     .catch(err => console.error(err));

@@ -1,8 +1,9 @@
+import json
 import os
 from datetime import date
 from functools import wraps
 
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask,Response, jsonify, render_template, request, session
 from psycopg2 import errors as pg_errors
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -14,6 +15,7 @@ app.secret_key = os.getenv("MERAKI_SECRET_KEY", "cambia-esta-clave-en-produccion
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
+    MAX_CONTENT_LENGTH=4 * 1024 * 1024,
 )
 
 db = Conexion()
@@ -243,6 +245,104 @@ def proveedores_eliminar(pid):
     db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
     return jsonify({"ok": True})
 
+# rutas del crud para categorias
+
+@app.get("/api/categorias")
+@login_requerido
+def categorias_listar():
+    return jsonify(
+        db.consultar("SELECT id, nombre FROM categorias ORDER BY id")
+    )
+
+# crear y modificar categoria
+@app.post("/api/categorias")
+@login_requerido
+def categorias_guardar():
+    d = datos_json()
+    cid = entero(d.get("id"), 1)
+    nombre = (d.get("nombre") or "").strip()
+
+    if not nombre:
+        return error("El nombre de la categoría es obligatorio.")
+    if len(nombre) > 30:
+        return error("El nombre no puede superar los 30 caracteres.")
+
+    try:
+        if cid:
+            fila = db.ejecutar(
+                """
+                UPDATE categorias
+                SET nombre = %s
+                WHERE id = %s
+                RETURNING id
+                """,
+                (nombre, cid),
+                retornar=True
+            )
+            if not fila:
+                return error("La categoría no existe.", 404)
+            return jsonify({
+                "ok": True,
+                "mensaje": "Categoría modificada correctamente."
+            })
+
+        db.ejecutar(
+            """
+            INSERT INTO categorias (nombre)
+            VALUES (%s)
+            """,
+            (nombre,)
+        )
+        return jsonify({
+            "ok": True,
+            "mensaje": "Categoría creada correctamente."
+        })
+
+    except pg_errors.UniqueViolation:
+        return error("Esta categoría ya está registrada.", 409)
+
+# eliminar categoria
+@app.post("/api/categorias/<int:cid>/eliminar")
+@login_requerido
+def categorias_eliminar(cid):
+    try:
+        uso = db.consultar_uno(
+            """
+            SELECT COUNT(*) AS total
+            FROM alimentos
+            WHERE LOWER(TRIM(categoria)) = LOWER(
+                (SELECT nombre FROM categorias WHERE id = %s)
+            )
+            """,
+            (cid,)
+        )
+
+        if not uso or uso["total"] > 0:
+            return error(
+                "No puedes eliminar esta categoría porque está asociada a alimentos.",
+                409
+            )
+
+        fila = db.ejecutar(
+            """
+            DELETE FROM categorias
+            WHERE id = %s
+            RETURNING id
+            """,
+            (cid,),
+            retornar=True
+        )
+
+        if not fila:
+            return error("La categoría no existe.", 404)
+
+        return jsonify({
+            "ok": True,
+            "mensaje": "Categoría eliminada correctamente."
+        })
+
+    except pg_errors.ForeignKeyViolation:
+        return error("No se pudo eliminar la categoría.", 409)
 
 # RUTAS DE ALIMENTOS E INVENTARIO (RF 3)
 @app.get("/api/alimentos")
@@ -263,6 +363,7 @@ def alimentos_listar():
 @login_requerido
 def alimentos_guardar():
     d = datos_json()
+
     aid = entero(d.get("id"), 1)
     nombre = (d.get("nombre") or "").strip()
     categoria = (d.get("categoria") or "").strip()
@@ -270,40 +371,67 @@ def alimentos_guardar():
 
     cantidad = entero(d.get("cantidad"), 0)
     precio = entero(d.get("precio"), 0)
+
     try:
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
-    except ValueError:
+    except (ValueError, TypeError):
         return error("La fecha de vencimiento no es válida.")
 
     if not nombre or not categoria:
         return error("Nombre y categoría son obligatorios.")
+
     if cantidad is None:
         return error("La cantidad debe ser un número mayor o igual a 0.")
+
     if precio is None:
         return error("El precio debe ser un número mayor o igual a 0.")
-    # Al crear, el proveedor es obligatorio. Al editar, si no llega, se conserva el actual.
+
     if not aid and not proveedor_id:
         return error("Selecciona el proveedor de origen.")
 
     try:
         if aid:
-            db.ejecutar(
-                """UPDATE alimentos SET nombre=%s, categoria=%s, cantidad=%s,
-                          precio=%s, vencimiento=%s,
-                          proveedor_id=COALESCE(%s, proveedor_id) WHERE id=%s""",
-                (nombre, categoria, cantidad, precio, vencimiento, proveedor_id, aid),
+            fila = db.ejecutar(
+                """
+                UPDATE alimentos
+                SET nombre = %s,
+                    categoria = %s,
+                    cantidad = %s,
+                    precio = %s,
+                    vencimiento = %s,
+                    proveedor_id = COALESCE(%s, proveedor_id)
+                WHERE id = %s
+                RETURNING id
+                """,
+                (nombre, categoria, cantidad, precio,
+                 vencimiento, proveedor_id, aid),
+                retornar=True,
             )
-            return jsonify({"ok": True, "mensaje": "Registro de alimento modificado correctamente."})
+
+            if not fila:
+                return error("El alimento que intentas modificar no existe.", 404)
+
+            return jsonify({
+                "ok": True,
+                "mensaje": "Alimento modificado correctamente."
+            })
 
         db.ejecutar(
-            """INSERT INTO alimentos (nombre, categoria, cantidad, precio, vencimiento, proveedor_id)
-               VALUES (%s, %s, %s, %s, %s, %s)""",
+            """
+            INSERT INTO alimentos
+            (nombre, categoria, cantidad, precio, vencimiento, proveedor_id)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
             (nombre, categoria, cantidad, precio, vencimiento, proveedor_id),
         )
+
+        return jsonify({
+            "ok": True,
+            "mensaje": "Alimento ingresado correctamente."
+        })
+
     except pg_errors.ForeignKeyViolation:
         return error("El proveedor seleccionado no existe.", 404)
-
-    return jsonify({"ok": True, "mensaje": "Alimento ingresado correctamente."})
 
 
 @app.post("/api/alimentos/<int:aid>/eliminar")
@@ -459,6 +587,141 @@ def saldos_proveedores_registrar():
         )
     return jsonify({"ok": True, "mensaje": "Movimiento registrado correctamente."})
 
+# RUTAS DE PLATOS (MENÚ)
+MAX_FOTO = 3 * 1024 * 1024  # 3 MB
+
+# La foto no viaja en el listado: el navegador la pide aparte en /api/platos/<id>/foto
+# El ?v= cambia cuando cambia la foto, así el navegador no muestra una foto vieja.
+SQL_PLATO = """SELECT id, nombre, precio, ingredientes,
+                      '/api/platos/' || id || '/foto?v=' || substr(md5(foto), 1, 8) AS foto
+               FROM platos"""
+
+
+def leer_datos_plato():
+    """Valida nombre, precio e ingredientes del formulario. Devuelve (datos, respuesta_error)."""
+    nombre = (request.form.get("nombre") or "").strip()
+    precio = entero(request.form.get("precio"), 1)
+
+    try:
+        crudos = json.loads(request.form.get("ingredientes") or "[]")
+    except json.JSONDecodeError:
+        return None, error("Ingredientes inválidos.")
+
+    if not nombre or not precio:
+        return None, error("Escribe un nombre y un precio válido.")
+    if len(nombre) > 100:
+        return None, error("El nombre no puede pasar de 100 caracteres.")
+
+    ingredientes = []
+    if isinstance(crudos, list):
+        for ing in crudos:
+            if not isinstance(ing, dict):
+                continue
+            ing_nombre = str(ing.get("nombre") or "").strip()
+            if ing_nombre:
+                ingredientes.append({
+                    "nombre": ing_nombre,
+                    "cantidad": str(ing.get("cantidad") or "").strip(),
+                    "fijo": bool(ing.get("fijo")),
+                })
+    if not ingredientes:
+        return None, error("Agrega al menos un ingrediente.")
+
+    return {"nombre": nombre, "precio": precio, "ingredientes": ingredientes}, None
+
+
+def leer_foto():
+    """Devuelve (contenido, tipo, respuesta_error). Sin archivo: (None, None, None)."""
+    foto = request.files.get("foto")
+    if not foto or not foto.filename:
+        return None, None, None
+    if not (foto.mimetype or "").startswith("image/"):
+        return None, None, error("Selecciona una foto válida (imagen).")
+
+    contenido = foto.read()
+    if not contenido:
+        return None, None, error("La foto está vacía.")
+    if len(contenido) > MAX_FOTO:
+        return None, None, error("La foto no puede pesar más de 3 MB.")
+    return contenido, foto.mimetype, None
+
+
+@app.get("/api/platos")
+@login_requerido
+def platos_listar():
+    return jsonify(db.consultar(SQL_PLATO + " ORDER BY id"))
+
+
+@app.get("/api/platos/<int:pid>/foto")
+@login_requerido
+def platos_foto(pid):
+    fila = db.consultar_uno(
+        "SELECT foto, foto_tipo FROM platos WHERE id = %s", (pid,)
+    )
+    if not fila:
+        return error("Plato no encontrado.", 404)
+    respuesta = Response(bytes(fila["foto"]), mimetype=fila["foto_tipo"])
+    respuesta.headers["Cache-Control"] = "private, max-age=86400"
+    return respuesta
+
+
+@app.post("/api/platos")
+@login_requerido
+def platos_crear():
+    datos, fallo = leer_datos_plato()
+    if fallo:
+        return fallo
+    contenido, tipo, fallo = leer_foto()
+    if fallo:
+        return fallo
+    if contenido is None:
+        return error("Selecciona una foto válida (imagen).")
+
+    fila = db.ejecutar(
+        """INSERT INTO platos (nombre, precio, foto, foto_tipo, ingredientes)
+           VALUES (%s, %s, %s, %s, %s::jsonb)
+           RETURNING id""",
+        (datos["nombre"], datos["precio"], contenido, tipo, json.dumps(datos["ingredientes"])),
+        retornar=True,
+    )
+    return jsonify(db.consultar_uno(SQL_PLATO + " WHERE id = %s", (fila["id"],))), 201
+
+
+@app.post("/api/platos/<int:pid>/editar")
+@login_requerido
+def platos_editar(pid):
+    datos, fallo = leer_datos_plato()
+    if fallo:
+        return fallo
+    contenido, tipo, fallo = leer_foto()   # la foto es opcional al editar
+    if fallo:
+        return fallo
+
+    if not db.consultar_uno("SELECT id FROM platos WHERE id = %s", (pid,)):
+        return error("Plato no encontrado.", 404)
+
+    if contenido is not None:
+        db.ejecutar(
+            """UPDATE platos
+               SET nombre = %s, precio = %s, ingredientes = %s::jsonb, foto = %s, foto_tipo = %s
+               WHERE id = %s""",
+            (datos["nombre"], datos["precio"], json.dumps(datos["ingredientes"]), contenido, tipo, pid),
+        )
+    else:
+        db.ejecutar(
+            """UPDATE platos
+               SET nombre = %s, precio = %s, ingredientes = %s::jsonb
+               WHERE id = %s""",
+            (datos["nombre"], datos["precio"], json.dumps(datos["ingredientes"]), pid),
+        )
+    return jsonify(db.consultar_uno(SQL_PLATO + " WHERE id = %s", (pid,)))
+
+
+@app.post("/api/platos/<int:pid>/eliminar")
+@login_requerido
+def platos_eliminar(pid):
+    db.ejecutar("DELETE FROM platos WHERE id = %s", (pid,))
+    return jsonify({"ok": True})
 
 # EJECUCIÓN DE LA APLICACIÓN
 inicializar()
