@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=4">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=5">
 </head>
 
 <body>
@@ -339,6 +339,29 @@
         </div>
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
+
+          <!-- FILTRO DE BÚSQUEDA -->
+          <div class="filtros-alimentos">
+            <div class="campo campo-buscar">
+              <label for="filtroAlimentoTexto">Buscar alimento</label>
+              <input id="filtroAlimentoTexto" type="search" placeholder="Nombre, categoría o proveedor..." autocomplete="off">
+            </div>
+            <div class="campo">
+              <label for="filtroAlimentoCategoria">Categoría</label>
+              <select id="filtroAlimentoCategoria">
+                <option value="">Todas</option>
+                <option>Lácteos</option>
+                <option>Granos</option>
+                <option>Verduras</option>
+                <option>Frutas</option>
+                <option>Cárnicos</option>
+                <option>Otros</option>
+              </select>
+            </div>
+            <button class="boton-secundario" type="button" id="btnLimpiarFiltroAlimentos">Limpiar</button>
+            <span class="estado-orden" id="contadorAlimentos">0 de 0</span>
+          </div>
+
           <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Vence</th><th>Proveedor</th><th>Acciones</th></tr></thead><tbody id="tablaAlimentos"></tbody></table></div>
         </article>
       </section>
@@ -1040,15 +1063,13 @@
   <!-- fin de administrar categoria -->
 
   <!-- conexion con mis archivos js en la carpeta static -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=8"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
   <script src="{{ url_for('static', filename='js/platos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/categorias.js') }}"></script>
-
-
+  
 
 
 </body>
-</html>
+</html> 
