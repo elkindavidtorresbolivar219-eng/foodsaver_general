@@ -349,17 +349,6 @@
       const usuario = document.getElementById("usuarioLogin").value.trim();
       const clave = document.getElementById("usuarioClave").value;
       const rol = document.getElementById("usuarioRol").value;
-
-        await recargar();
-
-      } catch (err) {
-        mensaje(
-          "mensajeUsuario",
-          err.message,
-          "error"
-        );
-      }
-
       const r = await POST("/api/usuarios", {
         id: id,
         nombre: nombre,
@@ -556,28 +545,21 @@
   document.getElementById("formProveedor").addEventListener("submit", async e => {
     e.preventDefault();
 
-  function limpiarAlimento() {
-    document
-      .getElementById("formAlimento")
-      .reset();
+    try {
+      const r = await POST("/api/proveedores", {
+        id: Number(document.getElementById("proveedorId").value) || null,
+        nombre: document.getElementById("proveedorNombre").value.trim(),
+        telefono: document.getElementById("proveedorTelefono").value.trim()
+      });
 
-      mensaje(
-        "mensajeProveedor",
-        r.mensaje || "Proveedor guardado correctamente.",
-        "ok"
-      );
-
+      mensaje("mensajeProveedor", r.mensaje || "Proveedor guardado correctamente.", "ok");
       limpiarProveedor();
-
       await recargar();
-
       renderizarProveedores();
-
     } catch (err) {
       mensaje("mensajeProveedor", err.message, "error");
     }
   });
-
 
   // LIMPIAR FORMULARIO
 
@@ -586,58 +568,40 @@
     document.getElementById("proveedorId").value = "";
   }
 
-  function renderizarTablaAlimentos() {
-    const lista = alimentosFiltrados();
-
-
   // EDITAR PROVEEDOR
 
   function editarProveedor(id) {
-    const p = datos.proveedores.find(
-      x => Number(x.id) === Number(id)
-    );
+    const p = datos.proveedores.find(x => Number(x.id) === Number(id));
 
+    if (!p) {
+      mensaje("mensajeProveedor", "No se encontró el proveedor.", "error");
       return;
     }
 
     document.getElementById("proveedorId").value = p.id;
     document.getElementById("proveedorNombre").value = p.nombre || "";
     document.getElementById("proveedorTelefono").value = p.telefono || "";
-
     document.getElementById("proveedorNombre").focus();
   }
 
-            "<td>" +
-            esc(a.categoria) +
-            "</td>" +
-
+  window.editarProveedor = editarProveedor;
 
   // ELIMINAR PROVEEDOR
 
   async function eliminarProveedor(id) {
     if (!confirm("¿Deseas eliminar este proveedor?")) return;
 
-            "<td>" +
-            formatoMoneda(a.precio) +
-            "</td>" +
-
+    try {
+      await POST("/api/proveedores/" + id + "/eliminar");
       await recargar();
-
       renderizarProveedores();
-
-      mensaje(
-        "mensajeProveedor",
-        "Proveedor eliminado correctamente.",
-        "ok"
-      );
-
+      mensaje("mensajeProveedor", "Proveedor eliminado correctamente.", "ok");
     } catch (err) {
       mensaje("mensajeProveedor", err.message, "error");
     }
   }
 
-            "<td>" +
-
+  window.eliminarProveedor = eliminarProveedor;
 
   // INFORME DE PROVEEDORES
 
@@ -654,25 +618,85 @@
     setHTML("informeProveedores", html);
   }
 
-  function limpiarFiltroAlimentos() {
-    const inputTexto = document.getElementById("filtroAlimentoTexto");
-    const selectCat = document.getElementById("filtroAlimentoCategoria");
-
-
   /* ============================================================
      ALIMENTOS
   ============================================================ */
 
-  document.getElementById("formAlimento").addEventListener("submit", async e => {
-    e.preventDefault();
+  function alimentosFiltrados() {
+    const texto = (document.getElementById("filtroAlimentoTexto")?.value || "").trim().toLowerCase();
+    const cat = document.getElementById("filtroAlimentoCategoria")?.value || "";
+
+    return datos.alimentos.filter(a =>
+      (!texto || String(a.nombre || "").toLowerCase().includes(texto)) &&
+      (!cat || String(a.categoria) === cat)
+    );
+  }
+
+  function renderizarTablaAlimentos() {
+    const lista = alimentosFiltrados();
+
+    setHTML(
+      "tablaAlimentos",
+      lista.length
+        ? lista.map(a =>
+            "<tr>" +
+            "<td><strong>" + esc(a.nombre) + "</strong></td>" +
+            "<td>" + esc(a.categoria) + "</td>" +
+            "<td>" + a.cantidad + "</td>" +
+            "<td>" + formatoMoneda(a.precio) + "</td>" +
+            "<td>" + fechaBonita(a.vencimiento) + "</td>" +
+            "<td>" + esc(a.proveedor || "-") + "</td>" +
+            '<td><div class="acciones-tabla">' +
+            '<button onclick="editarAlimento(' + a.id + ')">Editar</button>' +
+            '<button class="eliminar" onclick="eliminarAlimento(' + a.id + ')">Eliminar</button>' +
+            "</div></td>" +
+            "</tr>"
+          ).join("")
+        : '<tr><td colspan="7">No hay alimentos que coincidan.</td></tr>'
+    );
+  }
+
+  function limpiarFiltroAlimentos() {
+    const inputTexto = document.getElementById("filtroAlimentoTexto");
+    const selectCat = document.getElementById("filtroAlimentoCategoria");
+
+    if (inputTexto) inputTexto.value = "";
+    if (selectCat) selectCat.value = "";
+
+    renderizarTablaAlimentos();
+  }
 
   window.limpiarFiltroAlimentos = limpiarFiltroAlimentos;
 
-      mensaje("mensajeAlimento", r.mensaje, "ok");
+  document
+    .getElementById("filtroAlimentoTexto")
+    ?.addEventListener("input", renderizarTablaAlimentos);
 
   document
     .getElementById("filtroAlimentoCategoria")
     ?.addEventListener("change", renderizarTablaAlimentos);
+
+  document.getElementById("formAlimento").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    try {
+      const r = await POST("/api/alimentos", {
+        id: Number(document.getElementById("alimentoId").value) || null,
+        nombre: document.getElementById("alimentoNombre").value.trim(),
+        categoria: document.getElementById("alimentoCategoria").value,
+        cantidad: Number(document.getElementById("alimentoCantidad").value),
+        precio: Number(document.getElementById("alimentoPrecio").value),
+        vencimiento: document.getElementById("alimentoVencimiento").value,
+        proveedor_id: Number(document.getElementById("alimentoProveedor").value) || null
+      });
+
+      mensaje("mensajeAlimento", r.mensaje || "Alimento guardado correctamente.", "ok");
+      limpiarAlimento();
+      await recargar();
+    } catch (err) {
+      mensaje("mensajeAlimento", err.message, "error");
+    }
+  });
 
   function limpiarAlimento() {
     document.getElementById("formAlimento").reset();
@@ -885,7 +909,8 @@
       mensaje("mensajeAlimento", err.message, "error");
     }
   }
-}
+
+  window.eliminarAlimento = eliminarAlimento;
 
 
   /* ============================================================
@@ -895,23 +920,21 @@
   document.getElementById("formPerdida").addEventListener("submit", async e => {
     e.preventDefault();
 
-document.getElementById("editCantidad")
-  ?.addEventListener("input", actualizarDeltaStock);
+    const formulario = e.target;
 
-document.getElementById("editPaso")
-  ?.addEventListener("input", () => {
-    const paso = document.getElementById("editPaso");
-    if (Number(paso.value) < 1) paso.value = 1;
-  });
+    try {
+      const r = await POST("/api/perdidas", {
+        alimento_id: Number(document.getElementById("perdidaAlimento").value),
+        cantidad: Number(document.getElementById("perdidaCantidad").value),
+        motivo: document.getElementById("perdidaMotivo").value,
+        observacion: document.getElementById("perdidaObservacion").value.trim()
+      });
 
       formulario.reset();
-      mensaje("mensajePerdida", r.mensaje, "ok");
-
-// Cerrar al hacer clic fuera de la ventana
-document.getElementById("modalEditarAlimento")
-  ?.addEventListener("click", evento => {
-    if (evento.target.id === "modalEditarAlimento") {
-      cerrarModalAlimento();
+      mensaje("mensajePerdida", r.mensaje || "Pérdida registrada correctamente.", "ok");
+      await recargar();
+    } catch (err) {
+      mensaje("mensajePerdida", err.message, "error");
     }
   });
 
@@ -920,10 +943,9 @@ document.getElementById("modalEditarAlimento")
   ============================================================ */
 
   function inicializarMesas() {
-    const tarjetas =
-      document.querySelectorAll(
-        ".mesa-card"
-      );
+    document.querySelectorAll(".mesa-card").forEach(card => {
+      card.addEventListener("click", () => seleccionarMesa(Number(card.dataset.mesa)));
+    });
 
     const btnAgregar = document.getElementById("btnAgregarProducto");
     if (btnAgregar) btnAgregar.addEventListener("click", agregarProductoOrden);
@@ -938,12 +960,8 @@ document.getElementById("modalEditarAlimento")
     actualizarVisualMesas();
   }
 
-    if (btnAgregar) {
-      btnAgregar.addEventListener(
-        "click",
-        agregarProductoOrden
-      );
-    }
+  function seleccionarMesa(numero) {
+    if (!mesas[numero]) return;
 
     mesaSeleccionada = numero;
     window.mesaSeleccionada = numero;
@@ -955,6 +973,7 @@ document.getElementById("modalEditarAlimento")
     );
 
     actualizarProductosOrden();
+    renderizarOrden();
     actualizarVisualMesas();
 
     // Notifica al módulo de meta que la mesa cambió
@@ -962,8 +981,6 @@ document.getElementById("modalEditarAlimento")
       window.actualizarMeta();
     }
   }
-function seleccionarMesa(numero) {
-  if (!mesas[numero]) return;
 
   function actualizarVisualMesas() {
     document.querySelectorAll(".mesa-card").forEach(card => {
@@ -973,29 +990,9 @@ function seleccionarMesa(numero) {
       card.classList.remove("disponible", "ocupada", "seleccionada");
       card.classList.add(mesa.estado);
 
-  renderizarOrden();
-  actualizarVisualMesas();
-  
-  // Notifica al módulo de meta que la mesa cambió
-  if (typeof window.actualizarMeta === "function") {
-    window.actualizarMeta();
-  }
-}
-  function actualizarVisualMesas() {
-    document
-      .querySelectorAll(".mesa-card")
-      .forEach(card => {
-        const numero =
-          Number(card.dataset.mesa);
-
-        const mesa =
-          mesas[numero];
-
-        card.classList.remove(
-          "disponible",
-          "ocupada",
-          "seleccionada"
-        );
+      if (numero === mesaSeleccionada) {
+        card.classList.add("seleccionada");
+      }
 
       const estado = card.querySelector(".mesa-estado");
       if (estado) {
@@ -1712,6 +1709,9 @@ if (comboProv) {
       primera &&
       primera.actualizacion !==
       "Pendiente"
+        ? primera.actualizacion
+        : "Sin sincronizar"
+    );
 
     /* MESAS */
     actualizarProductosOrden();

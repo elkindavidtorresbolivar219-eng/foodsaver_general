@@ -269,7 +269,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnGuardar = formPlato.querySelector('button[type="submit"]');
 
   let fotoPlato = "";          // imagen en base64 (solo para la vista previa)
-  let fotoArchivo = null;      // archivo real que se sube al servidor
+  let fotoArchivo = null; 
+  let fotoLista = Promise.resolve();     // archivo real que se sube al servidor
   let fotoActual = "";         // foto ya guardada (solo al editar)
   let editandoId = null;       // id del plato que se está editando (null = plato nuevo)
   let cartaEditando = null;    // carta que se reemplaza al guardar la edición
@@ -372,24 +373,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mostrarPrevia(fotoActual);
     dibujarIngredientes();
+    modalPlato.style.display = "flex";
     modalPlato.classList.add("abierto");
     modalPlato.setAttribute("aria-hidden", "false");
     inpNombre.focus();
   }
 
-  function cerrarModalPlato() {
+function cerrarModalPlato() {
     modalPlato.classList.remove("abierto");
+    modalPlato.style.display = "none";
     modalPlato.setAttribute("aria-hidden", "true");
   }
 
-  document.getElementById("btnAbrirNuevoPlato").addEventListener("click", () => abrirModalPlato());
-  document.getElementById("btnCancelarNuevoPlato").addEventListener("click", cerrarModalPlato);
-  modalPlato.addEventListener("click", (e) => {
-    if (e.target === modalPlato) cerrarModalPlato();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalPlato.classList.contains("abierto")) cerrarModalPlato();
-  });
+  
+  window.addEventListener(
+    "click",
+    (e) => {
+      const t = e.target;
+
+      if (t.closest("#btnAbrirNuevoPlato")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        abrirModalPlato();
+        return;
+      }
+
+      const bEditar = t.closest(".plato-editar");
+      if (bEditar) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const carta = bEditar.closest(".plato-carta");
+        if (carta && carta._plato) abrirModalPlato(carta._plato, carta);
+        return;
+      }
+
+      if (modalPlato.classList.contains("abierto")) {
+        if (t === modalPlato || t.closest("#btnCancelarNuevoPlato")) {
+          e.stopImmediatePropagation();
+          cerrarModalPlato();
+        }
+      }
+    },
+    true
+  );
+
+  // Lo que pasa dentro del modal no sale de él
+  modalPlato.addEventListener("click", (e) => e.stopPropagation());
+  modalPlato.addEventListener("submit", (e) => e.stopPropagation());
+  modalPlato.addEventListener("keydown", (e) => e.stopPropagation());
+
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape" && modalPlato.classList.contains("abierto")) {
+        e.stopImmediatePropagation();
+        cerrarModalPlato();
+      }
+    },
+    true
+  );
+
+ // Reduce la foto antes de subirla (una foto de celular puede pesar varios MB)
+  function reducirImagen(archivo, maxLado = 800, calidad = 0.72) {
+    return new Promise((resolver) => {
+      const url = URL.createObjectURL(archivo);
+      const img = new Image();
+      img.onload = () => {
+        const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * escala);
+        c.height = Math.round(img.height * escala);
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(
+          (blob) => {
+            if (!blob || blob.size >= archivo.size) return resolver(archivo);
+            resolver(new File([blob], archivo.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" }));
+          },
+          "image/jpeg",
+          calidad
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolver(archivo);
+      };
+      img.src = url;
+    });
+  }
 
   inpFoto.addEventListener("change", () => {
     const archivo = inpFoto.files[0];
@@ -404,17 +478,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    fotoArchivo = archivo;
-    const lector = new FileReader();
-    lector.onload = () => {
-      fotoPlato = lector.result;
-      previa.textContent = "";
-      const img = document.createElement("img");
-      img.src = fotoPlato;
-      img.alt = "Vista previa";
-      previa.appendChild(img);
-    };
-    lector.readAsDataURL(archivo);
+     fotoArchivo = archivo;
+    mostrarPrevia(URL.createObjectURL(archivo));   // vista previa instantánea
+    fotoLista = reducirImagen(archivo).then((pequena) => { fotoArchivo = pequena; });
   });
 
   document.getElementById("btnAgregarIngrediente").addEventListener("click", () => {
@@ -469,7 +535,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const estilo = "padding:5px 10px;font-size:11px;font-weight:600;border-radius:8px;cursor:pointer;" +
         "background:rgba(15,15,25,.85);border:1px solid rgba(255,255,255,.25);color:#fff;";
 
-      const bEditar = crearBoton("Editar", "plato-editar", () => abrirModalPlato(plato, carta));
+      carta._plato = plato;
+      const bEditar = crearBoton("Editar", "plato-editar", () => {});
       bEditar.style.cssText = estilo;
       const bEliminar = crearBoton("Eliminar", "plato-eliminar", () => eliminarPlato(plato, carta));
       bEliminar.style.cssText = estilo + "color:#ff6b6b;border-color:rgba(255,107,107,.55);";
@@ -537,6 +604,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!editandoId && !fotoArchivo) return msgModal("Selecciona una foto del producto.", "error");
     if (!ingElegidos.length) return msgModal("Agrega al menos un ingrediente.", "error");
 
+    await fotoLista;   // asegura que se sube la foto ya reducida
     const datos = new FormData();
     datos.append("nombre", nombre);
     datos.append("precio", precio);
@@ -544,7 +612,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fotoArchivo) datos.append("foto", fotoArchivo);   // al editar, la foto es opcional
 
     const url = editandoId ? "/api/platos/" + editandoId + "/editar" : "/api/platos";
+
     btnGuardar.disabled = true;
+    btnGuardar.textContent = "Guardando...";
 
     try {
       const resp = await fetch(url, { method: "POST", body: datos });
@@ -573,6 +643,7 @@ document.addEventListener("DOMContentLoaded", () => {
       msgModal("No se pudo conectar con el servidor.", "error");
     } finally {
       btnGuardar.disabled = false;
+      btnGuardar.textContent = editandoId ? "Guardar cambios" : "Guardar producto";
     }
   });
 
