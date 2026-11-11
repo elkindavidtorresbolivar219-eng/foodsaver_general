@@ -1,9 +1,9 @@
 (() => {
   "use strict";
 
-  /* ============================================================
+  /* 
      COMUNICACIÓN CON EL SERVIDOR
-  ============================================================ */
+ */
 
   async function api(url, opciones) {
     const resp = await fetch(
@@ -37,9 +37,9 @@
       body: JSON.stringify(cuerpo || {})
     });
 
-  /* ============================================================
+  /* 
      DATOS
-  ============================================================ */
+  */
 
   let sesion = null;
 
@@ -52,9 +52,9 @@
     proveedores: []
   };
 
-  /* ============================================================
+  /* 
      SISTEMA DE MESAS
-  ============================================================ */
+*/
 
   let mesaSeleccionada = null;
 
@@ -65,9 +65,9 @@
     4: { estado: "disponible", productos: [] }
   };
 
-  /* ============================================================
+  /* 
      FUNCIONES GENERALES
-  ============================================================ */
+ */
 
   const hoyISO = () => new Date().toLocaleDateString("en-CA");
 
@@ -127,9 +127,9 @@
     return d + "/" + m + "/" + y;
   }
 
-  /* ============================================================
+  /*
      CARGA DE DATOS
-  ============================================================ */
+ */
 
   async function cargarDatos() {
     if (!sesion) return;
@@ -165,9 +165,9 @@
     return cargarDatos().catch(err => console.error(err));
   }
 
-  /* ============================================================
+  /* 
      VISTAS Y SESIÓN
-  ============================================================ */
+ */
 
   function mostrarVista(nombre) {
     if (!sesion) return;
@@ -288,9 +288,9 @@
       });
     });
 
-  /* ============================================================
+  /*
      LOGIN
-  ============================================================ */
+ */
 
   document.getElementById("formLogin").addEventListener("submit", async e => {
     e.preventDefault();
@@ -335,9 +335,9 @@
     .getElementById("btnPerfil")
     .addEventListener("click", () => mostrarVista("configuracion"));
 
-  /* ============================================================
+  /* 
      USUARIOS
-  ============================================================ */
+   */
 
   document.getElementById("formUsuario").addEventListener("submit", async e => {
     e.preventDefault();
@@ -464,14 +464,14 @@
 
   window.generarInformeUsuarios = generarInformeUsuarios;
 
-  /* ============================================================
+  /* 
      PROVEEDORES
-  ============================================================ */
+ */
 
   
-  /* ============================================================
+  /*
      MODAL Y CRUD DE PROVEEDORES
-  ============================================================ */
+ */
 
   function abrirModalProveedores() {
     const modal = document.getElementById("modalProveedores");
@@ -618,9 +618,9 @@
     setHTML("informeProveedores", html);
   }
 
-  /* ============================================================
+  /*
      ALIMENTOS
-  ============================================================ */
+  */
 
   function alimentosFiltrados() {
     const texto = (document.getElementById("filtroAlimentoTexto")?.value || "").trim().toLowerCase();
@@ -707,7 +707,7 @@
   const categoria = document.getElementById("editCategoria");
   const proveedor = document.getElementById("editProveedor");
 
-  /* ---------- MODAL EDITAR ALIMENTOS ---------- */
+  /*  MODAL EDITAR ALIMENTOS  */
 
   let stockOriginal = 0;
 
@@ -897,7 +897,7 @@
     }
   });
 
-  /* ---------- FIN MODAL EDITAR ALIMENTOS ---------- */
+  /*  FIN MODAL EDITAR ALIMENTOS  */
 
   async function eliminarAlimento(id) {
     if (!confirm("¿Desea eliminar este alimento?")) return;
@@ -913,9 +913,9 @@
   window.eliminarAlimento = eliminarAlimento;
 
 
-  /* ============================================================
+  /* 
      PÉRDIDAS
-  ============================================================ */
+   */
 
   document.getElementById("formPerdida").addEventListener("submit", async e => {
     e.preventDefault();
@@ -938,9 +938,9 @@
     }
   });
 
-  /* ============================================================
+  /* 
      MESAS
-  ============================================================ */
+ */
 
   function inicializarMesas() {
     document.querySelectorAll(".mesa-card").forEach(card => {
@@ -1001,9 +1001,9 @@
     });
   }
 
-  /* ============================================================
+  /* 
      PRODUCTOS DE LA ORDEN
-  ============================================================ */
+ */
 
   function obtenerPrecioProducto(producto) {
     return Number(
@@ -1226,9 +1226,9 @@
   window.eliminarProductoOrden =
     eliminarProductoOrden;
 
-  /* ============================================================
+  /* 
      REGISTRAR VENTA (CONECTADO A SALDOS)
-  ============================================================ */
+   */
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
@@ -1317,9 +1317,9 @@
     }
   }
 
-  /* ============================================================
+  /* 
      LIBERAR MESA
-  ============================================================ */
+  */
 
   function liberarMesa() {
     if (!mesaSeleccionada) {
@@ -1353,9 +1353,9 @@
     actualizarVisualMesas();
   }
 
-  /* ============================================================
+  /* 
      SINCRONIZACIÓN
-  ============================================================ */
+  */
 
   async function sincronizar() {
     setText(
@@ -1387,9 +1387,9 @@
   window.sincronizar =
     sincronizar;
 
-  /* ============================================================
+  /* 
      ESTADOS DE ALIMENTOS
-  ============================================================ */
+  */
 
   function diasParaVencer(a) {
     return Math.ceil(
@@ -1404,9 +1404,9 @@
     return ["Disponible", "ok"];
   }
 
-  /* ============================================================
+  /* 
      RENDERIZADO GENERAL
-  ============================================================ */
+   */
 
   function renderizarTodo() {
     if (!sesion) return;
@@ -1718,9 +1718,9 @@ if (comboProv) {
     actualizarVisualMesas();
   }
 
-  /* ============================================================
+  /* 
      REPORTES
-  ============================================================ */
+   */
 
   function generarReporte() {
     const tipo = document.getElementById("tipoReporte").value;
@@ -1790,9 +1790,9 @@ if (comboProv) {
   window.generarReporte =
     generarReporte;
 
-  /* ============================================================
+  /*
      INICIALIZACIÓN
-  ============================================================ */
+ */
 
   document.addEventListener("DOMContentLoaded", () => {
     inicializarMesas();

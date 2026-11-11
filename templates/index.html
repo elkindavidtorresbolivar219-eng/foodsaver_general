@@ -1138,25 +1138,7 @@
     </div>
   </div>
  <!-- AGREGAR / EDITAR PRODUCTO (plato) -->
-  <style>
-    .modal-plato-fondo{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7)}
-    .modal-plato-fondo.abierto{display:flex}
-    .modal-plato-caja{width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .modal-plato-caja h3{margin-bottom:18px;font-family:var(--font-title);font-size:15px;font-weight:800}
-    .modal-plato-caja .acciones{justify-content:flex-end}
-    .modal-plato-caja input[type="file"]{padding:8px}
-    .foto-previa{margin-top:8px;display:flex;align-items:center;justify-content:center;height:150px;overflow:hidden;font-size:10px;color:var(--text-secondary);border:1px dashed var(--border);border-radius:var(--radius)}
-    .foto-previa img{width:100%;height:100%;object-fit:cover}
-    .ing-selector{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
-    .ing-elegidos{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
-    .ing-elegidos li{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:10px;border:1px solid var(--border);border-radius:8px}
-    .ing-elegidos .ing-texto{flex:1}
-    .ing-elegidos label{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--text-secondary);cursor:pointer}
-    .ing-elegidos .ing-quitar{background:none;border:0;color:var(--error);cursor:pointer;font-size:12px}
-    .ing-ayuda{display:block;margin-top:6px;font-size:9px;color:var(--text-secondary)}
-    .titulo-vista-fila{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-    @media (max-width:560px){.ing-selector{grid-template-columns:1fr}}
-  </style>
+  
   <div class="modal-plato-fondo" id="modalNuevoPlato" aria-hidden="true">
     <div class="modal-plato-caja" role="dialog" aria-modal="true" aria-labelledby="tituloNuevoPlato">
       <h3 id="tituloNuevoPlato">Agregar producto</h3>
@@ -1200,12 +1182,101 @@
   </div>
   <!-- fin agregar producto -->
 
+<!-- ADMINISTRAR CATEGORÍAS -->
+  <div class="modal-fondo" id="modalCategorias" aria-hidden="true">
+
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="tituloModalCategorias">
+
+      <h3 id="tituloModalCategorias">Administrar categorías</h3>
+
+      <p style="color:var(--text-secondary);font-size:12px;margin:8px 0 18px;">
+
+        Registra nuevas categorías o modifica y elimina las existentes.
+      </p>
+
+      <form id="formCategoria">
+
+        <input type="hidden" id="categoriaId">
+
+        <div class="form-grid">
+
+          <div class="campo form-full">
+
+            <label for="categoriaNombre">Nombre de la categoría</label>
+
+            <input id="categoriaNombre" type="text" maxlength="60"
+              placeholder="Ej. Bebidas" autocomplete="off" required>
+
+          </div>
+
+        </div>
+
+        <div class="acciones">
+
+          <button class="boton-principal" type="submit" id="btnGuardarCategoria">Guardar categoría</button>
+
+          <button class="boton-secundario" type="button" id="btnLimpiarCategoria">Limpiar</button>
+
+        </div>
+
+        <div id="mensajeCategoria" class="mensaje" role="status" aria-live="polite"></div>
+
+      </form>
+
+      <div style="margin-top:22px;">
+
+        <div class="encabezado-panel" style="margin-bottom:12px;">
+
+          <h4 style="margin:0;">Categorías registradas</h4>
+
+        </div>
+
+        <div class="campo" style="margin-bottom:10px;">
+
+          <input id="categoriaBuscar" type="search" placeholder="Buscar categoría..." autocomplete="off">
+
+        </div>
+
+        <div id="categoriaContador" style="color:var(--text-secondary);font-size:9px;margin-bottom:8px;"></div>
+
+
+        <div class="tabla-contenedor">
+
+          <table class="tabla">
+
+            <thead><tr><th>Categoría</th><th>Acciones</th></tr></thead>
+
+            <tbody id="tablaCategorias">
+
+              <tr><td colspan="2">Cargando categorías...</td></tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      <div class="acciones">
+
+        <button type="button" class="boton-secundario" id="btnCerrarCategorias">Cerrar</button>
+
+      </div>
+
+    </div>
+    
+  </div>
+
+  <!-- fin de administrar categoria -->
+
   <!-- Archivos JS en la carpeta static (subí la versión para evitar caché joselin) -->
   <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
-   <script src="{{ url_for('static', filename='js/platos.js') }}?v=10"></script>
+  <script src="{{ url_for('static', filename='js/platos.js') }}?v=10"></script>
+     <script src="{{ url_for('static', filename='js/categorias.js') }}?v=10"></script> 
 
 </body>
 </html> 
