@@ -1,5 +1,78 @@
 (() => {
   "use strict";
+    function confirmar(mensaje, textoBoton) {
+    return new Promise(resolve => {
+      const fondo = document.createElement("div");
+      fondo.className = "cf-fondo";
+      fondo.innerHTML =
+        '<div class="cf-tarjeta">' +
+          '<div class="cf-icono">🗑️</div>' +
+          "<h3>¿Estás seguro?</h3>" +
+          "<p>" + esc(mensaje) + "</p>" +
+          '<div class="cf-botones">' +
+            '<button type="button" class="cf-no">Cancelar</button>' +
+            '<button type="button" class="cf-si">' + esc(textoBoton || "Sí, eliminar") + "</button>" +
+          "</div>" +
+        "</div>";
+
+      document.body.appendChild(fondo);
+
+      const cerrar = valor => {
+        document.removeEventListener("keydown", alEscape, true);
+        fondo.remove();
+        resolve(valor);
+      };
+
+      const alEscape = e => {
+        if (e.key === "Escape") {
+          e.stopImmediatePropagation();
+          cerrar(false);
+        }
+      };
+
+      document.addEventListener("keydown", alEscape, true);
+      fondo.querySelector(".cf-si").onclick = () => cerrar(true);
+      fondo.querySelector(".cf-no").onclick = () => cerrar(false);
+      fondo.addEventListener("click", e => { if (e.target === fondo) cerrar(false); });
+      fondo.querySelector(".cf-si").focus();
+    });
+  }
+
+  function avisar(mensaje) {
+    return new Promise(resolve => {
+      const fondo = document.createElement("div");
+      fondo.className = "cf-fondo";
+      fondo.innerHTML =
+        '<div class="cf-tarjeta">' +
+          '<div class="cf-icono aviso">!</div>' +
+          "<h3>Atención</h3>" +
+          "<p>" + esc(mensaje) + "</p>" +
+          '<div class="cf-botones">' +
+            '<button type="button" class="cf-ok">Entendido</button>' +
+          "</div>" +
+        "</div>";
+
+      document.body.appendChild(fondo);
+
+      const cerrar = () => {
+        document.removeEventListener("keydown", alEscape, true);
+        fondo.remove();
+        resolve();
+      };
+
+      const alEscape = e => {
+        if (e.key === "Escape" || e.key === "Enter") {
+          e.stopImmediatePropagation();
+          cerrar();
+        }
+      };
+
+      document.addEventListener("keydown", alEscape, true);
+      fondo.querySelector(".cf-ok").onclick = cerrar;
+      fondo.addEventListener("click", e => { if (e.target === fondo) cerrar(); });
+      fondo.querySelector(".cf-ok").focus();
+    });
+  }
 
   /* 
      COMUNICACIÓN CON EL SERVIDOR
@@ -431,7 +504,7 @@
     editarUsuario;
 
   async function eliminarUsuario(id) {
-    if (!confirm("¿Deseas eliminar este usuario?")) return;
+    if (!(await confirmar("¿Deseas eliminar este usuario?"))) return;
 
     try {
       await POST("/api/usuarios/" + id + "/eliminar");
@@ -589,7 +662,7 @@
   // ELIMINAR PROVEEDOR
 
   async function eliminarProveedor(id) {
-    if (!confirm("¿Deseas eliminar este proveedor?")) return;
+if (!(await confirmar("¿Deseas eliminar este proveedor?"))) return;
 
     try {
       await POST("/api/proveedores/" + id + "/eliminar");
@@ -900,8 +973,7 @@
   /*  FIN MODAL EDITAR ALIMENTOS  */
 
   async function eliminarAlimento(id) {
-    if (!confirm("¿Desea eliminar este alimento?")) return;
-
+    if (!(await confirmar("¿Desea eliminar este alimento?"))) return;
     try {
       await POST("/api/alimentos/" + id + "/eliminar");
       await recargar();
@@ -1036,7 +1108,7 @@
 
   function agregarProductoOrden() {
     if (!mesaSeleccionada) {
-      alert(
+        avisar(
         "Primero selecciona una mesa."
       );
 
@@ -1058,10 +1130,7 @@
       );
 
     if (!productoId) {
-      alert(
-        "Selecciona un producto."
-      );
-
+      avisar("Selecciona un producto.");
       return;
     }
 
@@ -1069,9 +1138,7 @@
       !cantidad ||
       cantidad < 1
     ) {
-      alert(
-        "La cantidad debe ser mayor a 0."
-      );
+      avisar("La cantidad debe ser mayor a 0.");
 
       return;
     }
@@ -1084,10 +1151,7 @@
       );
 
     if (!producto) {
-      alert(
-        "No se encontró el producto."
-      );
-
+      avisar("No se encontró el producto.");
       return;
     }
 
@@ -1232,10 +1296,7 @@
 
   async function registrarVenta() {
     if (!mesaSeleccionada) {
-      alert(
-        "Selecciona una mesa."
-      );
-
+      await avisar("Selecciona una mesa.");
       return;
     }
 
@@ -1248,10 +1309,7 @@
       !orden ||
       !orden.productos.length
     ) {
-      alert(
-        "La mesa no tiene productos."
-      );
-
+      await avisar("La mesa no tiene productos.");
       return;
     }
 
@@ -1259,9 +1317,7 @@
       calcularTotalOrden();
 
     if (total <= 0) {
-      alert(
-        "El total de la orden debe ser mayor a $0."
-      );
+    await avisar("El total de la orden debe ser mayor a $0.");
 
       return;
     }
@@ -1313,28 +1369,20 @@
 
     } catch (err) {
       console.error(err);
-      alert("No se pudo registrar la venta:\n" + err.message);
+         await avisar("No se pudo registrar la venta:\n" + err.message);
     }
   }
-
   /* 
      LIBERAR MESA
   */
 
-  function liberarMesa() {
+  async function liberarMesa() {
     if (!mesaSeleccionada) {
-      alert(
-        "Selecciona una mesa."
-      );
-
+      await avisar("Selecciona una mesa.");
       return;
     }
 
-    const confirmar = confirm(
-      "¿Seguro que deseas liberar la Mesa " +
-      mesaSeleccionada +
-      "?\n\nLa orden actual se eliminará."
-    );
+    if (!(await confirmar("La orden actual de la Mesa " + mesaSeleccionada + " se eliminará.", "Sí, liberar"))) return;
 
     setText(
       "estadoOrden",
