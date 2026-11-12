@@ -74,6 +74,9 @@
     });
   }
 
+  window.confirmar = confirmar;
+  window.avisar = avisar;
+
   /* 
      COMUNICACIÓN CON EL SERVIDOR
  */
@@ -307,11 +310,14 @@
     setText("avatarSidebar", iniciales(sesion.nombre));
     setText("avatarTop", iniciales(sesion.nombre));
 
-    aplicarPermisos();
+   aplicarPermisos();
+
+    if (typeof window.cargarCategoriasSelect === "function") {
+      window.cargarCategoriasSelect();
+    }
 
     await recargar();
   }
-
   // Solo el Administrador ve el bloque de usuarios.
   // Proveedores queda visible para todos los roles.
   function aplicarPermisos() {

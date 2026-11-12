@@ -56,11 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 async function cargarCategoriasSelect() {
-    const select = document.getElementById("alimentoCategoria");
-    if (!select) return;
-
     try {
-        const respuesta = await fetch("/api/categorias");
+        const respuesta = await fetch("/api/categorias", { credentials: "same-origin" });
 
         if (!respuesta.ok) {
             throw new Error("No se pudieron cargar las categorías");
@@ -68,19 +65,35 @@ async function cargarCategoriasSelect() {
 
         const categorias = await respuesta.json();
 
-        select.innerHTML = '<option value="">Seleccionar categoría</option>';
+        const selects = [
+            ["alimentoCategoria", "Seleccionar categoría"],
+            ["filtroAlimentoCategoria", "Todas"]
+        ];
 
-        categorias.forEach((cat) => {
-            const opcion = document.createElement("option");
-            opcion.value = cat.nombre;
-            opcion.textContent = cat.nombre;
-            select.appendChild(opcion);
+        selects.forEach(([id, textoInicial]) => {
+            const select = document.getElementById(id);
+            if (!select) return;
+
+            const actual = select.value;
+
+            select.innerHTML = '<option value="">' + textoInicial + "</option>";
+
+            categorias.forEach((cat) => {
+                const opcion = document.createElement("option");
+                opcion.value = cat.nombre;
+                opcion.textContent = cat.nombre;
+                select.appendChild(opcion);
+            });
+
+            if (actual) select.value = actual;
         });
 
     } catch (error) {
         console.error("Error al cargar categorías:", error);
     }
 }
+
+window.cargarCategoriasSelect = cargarCategoriasSelect;
 
 
 // ABRIR Y CERRAR MODAL
@@ -294,7 +307,7 @@ async function editarCategoria(id) {
 
 
 async function eliminarCategoria(id) {
-    if (!confirm("¿Estás seguro de eliminar esta categoría?")) {
+    if (!(await window.confirmar("¿Estás seguro de eliminar esta categoría?"))) {
         return;
     }
 
