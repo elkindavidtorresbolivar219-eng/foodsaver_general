@@ -1164,7 +1164,7 @@
             <label for="nuevoPlatoIngrediente">Ingredientes (del inventario)</label>
             <div class="ing-selector">
               <select id="nuevoPlatoIngrediente"></select>
-              <input id="nuevoPlatoCantidad" type="text" maxlength="20" placeholder="Cantidad (opcional) Ej: 150 g">
+              <input id="nuevoPlatoCantidad" type="number" min="1" step="1" value="1" placeholder="Unidades">
               <button type="button" class="boton-secundario" id="btnAgregarIngrediente">+ Añadir</button>
             </div>
             <ul class="ing-elegidos" id="nuevoPlatoLista"></ul>

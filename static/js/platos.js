@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     contador.textContent = unidades + (unidades === 1 ? " producto" : " productos");
   }
 
-  function agregarAlPedido(nombre, precio, sin) {
+  function agregarAlPedido(nombre, precio, sin, ingredientes) {
     const clave = [...sin].sort().join("|");
     const existente = pedido.find(
       (p) => p.nombre === nombre && [...p.sin].sort().join("|") === clave
@@ -122,12 +122,114 @@ document.addEventListener("DOMContentLoaded", () => {
     if (existente) {
       existente.cantidad++;
     } else {
-      pedido.push({ nombre, precio, sin, cantidad: 1 });
+      pedido.push({ nombre, precio, sin, ingredientes: ingredientes || [], cantidad: 1 });
     }
     dibujarPedido();
   }
 
-  btnHacerPedido.addEventListener("click", () => {
+  // ---- Descuento de inventario al hacer el pedido ----
+  const textoIng = (ing) => (ing.cantidad ? ing.cantidad + " de " + ing.nombre : ing.nombre);
+
+  // Unidades que gasta un ingrediente por plato: si la cantidad escrita es un número
+  // ("2", "2 unidades", "2 und") se usa ese número; si está vacía o es un peso/volumen
+  // ("150 g") se descuenta 1 unidad del inventario.
+  function unidadesIng(ing) {
+    const m = String(ing.cantidad || "").trim().toLowerCase()
+      .match(/^(\d+)\s*(unidades?|unds?\.?|u|x)?$/);
+    return m ? Math.max(1, parseInt(m[1], 10)) : 1;
+  }
+
+  // { "Tomate": 3, "Queso": 2 } según el pedido (sin contar lo que el cliente quitó)
+  function ingredientesNecesarios() {
+    const necesario = {};
+    pedido.forEach((item) => {
+      (item.ingredientes || []).forEach((ing) => {
+        if (item.sin.includes(textoIng(ing))) return;
+        necesario[ing.nombre] = (necesario[ing.nombre] || 0) + unidadesIng(ing) * item.cantidad;
+      });
+    });
+    return necesario;
+  }
+
+  async function leerError(resp, porDefecto) {
+    let d = {};
+    try { d = await resp.json(); } catch (_) {}
+    return d.error || porDefecto;
+  }
+
+  async function descontarInventario(necesario) {
+    const nombres = Object.keys(necesario);
+    if (!nombres.length) return;
+
+    const opciones = { credentials: "same-origin" };
+    const [rAlimentos, rProveedores] = await Promise.all([
+      fetch("/api/alimentos", opciones),
+      fetch("/api/proveedores", opciones)
+    ]);
+    if (!rAlimentos.ok) throw new Error(await leerError(rAlimentos, "No se pudo leer el inventario."));
+
+    const alimentos = await rAlimentos.json();
+    const proveedores = rProveedores.ok ? await rProveedores.json() : [];
+
+    // Primero se valida todo; si algo no alcanza no se descuenta nada
+    const plan = nombres.map((nombre) => {
+      const a = alimentos.find(
+        (x) => String(x.nombre).trim().toLowerCase() === nombre.trim().toLowerCase()
+      );
+      if (!a) throw new Error('"' + nombre + '" no existe en el inventario.');
+
+      const stock = Number(a.cantidad) || 0;
+      if (stock < necesario[nombre]) {
+        throw new Error(
+          "Stock insuficiente de " + a.nombre + ": hay " + stock +
+          " y el pedido necesita " + necesario[nombre] + "."
+        );
+      }
+      return { a, stock, nuevo: stock - necesario[nombre] };
+    });
+
+    async function guardar(a, cantidad) {
+      let proveedorId = a.proveedor_id;
+      if (proveedorId == null && a.proveedor) {
+        const p = proveedores.find(
+          (x) => String(x.nombre).trim().toLowerCase() === String(a.proveedor).trim().toLowerCase()
+        );
+        proveedorId = p ? p.id : null;
+      }
+
+      const resp = await fetch("/api/alimentos", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: a.id,
+          nombre: a.nombre,
+          categoria: a.categoria,
+          precio: a.precio,
+          cantidad: cantidad,
+          vencimiento: a.vencimiento,
+          proveedor_id: proveedorId ?? null
+        })
+      });
+      if (!resp.ok) throw new Error(await leerError(resp, "No se pudo actualizar " + a.nombre + "."));
+    }
+
+    // Si falla uno, se devuelven los que ya se habían descontado
+    const hechos = [];
+    try {
+      for (const p of plan) {
+        await guardar(p.a, p.nuevo);
+        hechos.push(p);
+      }
+    } catch (err) {
+      for (const p of hechos) {
+        try { await guardar(p.a, p.stock); } catch (_) {}
+      }
+      throw err;
+    }
+  }
+
+  btnHacerPedido.addEventListener("click", async () => {
     if (!pedido.length) {
       mostrarMensaje("Agrega al menos un producto al pedido.", "error");
       return;
@@ -135,6 +237,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const unidades = pedido.reduce((s, p) => s + p.cantidad, 0);
     const total = pedido.reduce((s, p) => s + p.precio * p.cantidad, 0);
+
+    btnHacerPedido.disabled = true;
+    try {
+      await descontarInventario(ingredientesNecesarios());
+    } catch (err) {
+      mostrarMensaje(err.message || "No se pudo actualizar el inventario.", "error");
+      return;
+    } finally {
+      btnHacerPedido.disabled = false;
+    }
+
+    // Refresca inventario, alimentos y dashboard (expuesto por app.js)
+    if (typeof window.recargar === "function") window.recargar();
 
     // Aquí después se enviará el pedido al servidor / base de datos:
     // fetch("/api/pedidos", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(pedido) })
@@ -244,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const nombre = carta.dataset.nombre;
-      agregarAlPedido(nombre, Number(carta.dataset.precio), sin);
+      agregarAlPedido(nombre, Number(carta.dataset.precio), sin, carta._plato ? carta._plato.ingredientes : []);
 
       reiniciarIngredientes();
       carta.classList.remove("volteada");
