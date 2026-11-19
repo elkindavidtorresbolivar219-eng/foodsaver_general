@@ -344,7 +344,7 @@
           <div class="mini-card"><span>Productos críticos</span><strong id="invCriticos">0</strong></div>
         </div>
         <article class="panel">
-          <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div><button class="boton-secundario" onclick="mostrarVista('sincronizacion')">Sincronizar →</button></div>
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">EXISTENCIAS</span><h3>Inventario general</h3></div></div>
           <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Alimento</th><th>Categoría</th><th>Existencias</th><th>Vencimiento</th><th>Proveedor</th><th>Estado</th></tr></thead><tbody id="tablaInventario"></tbody></table></div>
         </article>
       </section>
@@ -408,7 +408,7 @@
     <div class="encabezado-panel">
       <div>
         <span class="etiqueta-seccion">PEDIDO</span>
-        <h3>Productos pedidos</h3>
+        <h3>Platos agregados</h3>
       </div>
       <span class="estado-orden" id="pedidoContador">0 productos</span>
     </div>
@@ -485,9 +485,9 @@
           <div class="encabezado-panel">
             <div>
               <span class="etiqueta-seccion">PEDIDO</span>
-              <h3>Productos pedidos</h3>
+              <h3>Platos agregados</h3>
             </div>
-            <span class="estado-orden" id="pedidoContador">0 productos</span>
+            <span class="estado-orden" id="pedidoContador">0 platos</span>
           </div>
 
           <div class="pedido-lista" id="pedidoLista"></div>
@@ -1271,12 +1271,12 @@
   <!-- fin de administrar categoria -->
 
   <!-- Archivos JS en la carpeta static (subí la versión para evitar caché joselin) -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=10"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/platos.js') }}?v=10"></script>
-     <script src="{{ url_for('static', filename='js/categorias.js') }}?v=10"></script> 
+  <script src="{{ url_for('static', filename='js/platos.js') }}?v=12"></script>
+     <script src="{{ url_for('static', filename='js/categorias.js') }}?v=11"></script>
 
 </body>
 </html> 

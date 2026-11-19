@@ -372,11 +372,13 @@ def alimentos_guardar():
     cantidad = entero(d.get("cantidad"), 0)
     precio = entero(d.get("precio"), 0)
 
-    try:
+    try:      
         vencimiento = date.fromisoformat(d.get("vencimiento") or "")
     except (ValueError, TypeError):
         return error("La fecha de vencimiento no es válida.")
-
+    
+    if vencimiento <= date.today():
+        return error("La fecha de vencimiento debe ser a partir de mañana.")
     if not nombre or not categoria:
         return error("Nombre y categoría son obligatorios.")
 
