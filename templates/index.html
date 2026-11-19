@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=5">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=7">
 </head>
 
 <body>
@@ -64,8 +64,23 @@
   <div id="aplicacion" class="aplicacion oculto">
     <aside class="barra-lateral">
 
-      <div class="marca">
+      <div class="marca" id="marcaAplicacion" data-animacion="{{ url_for('static', filename='img/Meraki-pasos-pulidos.gif', v=2) }}">
         <img src="{{ url_for('static', filename='img/logo3.png') }}" alt="Logo">
+        <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+          <filter id="transparencia-meraki" color-interpolation-filters="sRGB">
+            <feFlood flood-color="#0d0c16" result="fondo"/>
+            <feBlend in="SourceGraphic" in2="fondo" mode="difference"/>
+            <feColorMatrix type="matrix" values="
+              0 0 0 0 0
+              0 0 0 0 0
+              0 0 0 0 0
+              1 1 1 0 0"/>
+            <feComponentTransfer result="mascara">
+              <feFuncA type="linear" slope="42.5" intercept="-0.5"/>
+            </feComponentTransfer>
+            <feComposite in="SourceGraphic" in2="mascara" operator="in"/>
+          </filter>
+        </svg>
       </div>
 
       <nav class="menu">
@@ -1271,7 +1286,7 @@
   <!-- fin de administrar categoria -->
 
   <!-- Archivos JS en la carpeta static (subí la versión para evitar caché joselin) -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=10"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=12"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>

@@ -95,6 +95,12 @@ a {
   background-color:#0D0C16 ;
 }
 
+.marca img.marca-animacion {
+  background-color: transparent;
+  filter: url(#transparencia-meraki);
+  transform: scale(1.6);
+}
+
 .menu {
   
   padding: 24px 14px;
