@@ -725,33 +725,58 @@
 
       </section>
 
-      <!-- SALDOS -->
+                 <!-- SALDOS -->
       <section id="vista-saldos" class="vista">
 
         <div class="titulo-vista">
           <span class="etiqueta-seccion">FINANZAS</span>
           <h2>Gestión de Saldos y Cuentas</h2>
-          <p>Controla los saldos del administrador, trabajador y las deudas con proveedores.</p>
+          <p>Controla el saldo del administrador, el de cada trabajador y la deuda con cada proveedor.</p>
         </div>
 
         <div class="ventas-resumen">
-
           <div class="resumen-card">
             <span>Saldo Administrador</span>
             <strong id="saldoAdmin">$0</strong>
           </div>
 
           <div class="resumen-card">
-            <span>Saldo Trabajador</span>
+            <span>Saldo Trabajadores (total)</span>
             <strong id="saldoTrabajador">$0</strong>
           </div>
 
           <div class="resumen-card">
-            <span>Deuda Proveedores</span>
+            <span>Deuda Proveedores (total)</span>
             <strong id="saldoProveedores" style="color: #e53935;">$0</strong>
             <small style="font-size: 0.75rem; color: #888;">(Prestado)</small>
           </div>
+        </div>
 
+        <!-- SALDO INDIVIDUAL -->
+        <div class="modulo-grid" style="margin-bottom: 25px;">
+          <article class="panel">
+            <div class="encabezado-panel">
+              <div><span class="etiqueta-seccion">PROVEEDORES</span><h3>Deuda por proveedor</h3></div>
+            </div>
+            <div class="tabla-contenedor">
+              <table class="tabla">
+                <thead><tr><th>Proveedor</th><th>Deuda</th></tr></thead>
+                <tbody id="tablaSaldosProveedores"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="encabezado-panel">
+              <div><span class="etiqueta-seccion">TRABAJADORES</span><h3>Saldo por trabajador</h3></div>
+            </div>
+            <div class="tabla-contenedor">
+              <table class="tabla">
+                <thead><tr><th>Trabajador</th><th>Rol</th><th>Saldo</th></tr></thead>
+                <tbody id="tablaSaldosTrabajadores"></tbody>
+              </table>
+            </div>
+          </article>
         </div>
 
         <!-- PANEL 1: COMPRA A CRÉDITO -->
@@ -759,14 +784,21 @@
           <div class="orden-header">
             <div>
               <h3>Pedir Prestado al Proveedor</h3>
-              <span>Aumenta la deuda con el proveedor por insumos o productos recibidos.</span>
+              <span>Aumenta la deuda del proveedor elegido por insumos o productos recibidos.</span>
             </div>
           </div>
 
           <form id="formCompraProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
+            <div class="campo" style="flex: 1; min-width: 200px;">
+              <label for="proveedorCompra">Proveedor</label>
+              <select id="proveedorCompra" required>
+                <option value="">Seleccionar proveedor</option>
+              </select>
+            </div>
+
             <div class="campo" style="flex: 2; min-width: 200px;">
-              <label for="descCompraProveedor">Detalle / Proveedor</label>
-              <input type="text" id="descCompraProveedor" placeholder="Escoge tu provedor" required>
+              <label for="descCompraProveedor">Concepto</label>
+              <input type="text" id="descCompraProveedor" placeholder="Ej: Carne y verduras" required>
             </div>
 
             <div class="campo campo-cantidad" style="flex: 1; min-width: 130px;">
@@ -787,16 +819,21 @@
           <div class="orden-header">
             <div>
               <h3>Pagar a Proveedor</h3>
-              <span>Saca dinero del Saldo del Administrador para abonar o cancelar la deuda.</span>
+              <span>Descuenta del Saldo del Administrador y baja la deuda de ese proveedor.</span>
             </div>
           </div>
 
           <form id="formPagoProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
+            <div class="campo" style="flex: 2; min-width: 200px;">
+              <label for="proveedorPago">Proveedor</label>
+              <select id="proveedorPago" required>
+                <option value="">Seleccionar proveedor</option>
+              </select>
+            </div>
+
             <div class="campo campo-cantidad" style="flex: 1; min-width: 180px;">
               <label for="montoPagoProveedor">Monto a pagar ($)</label>
               <input type="number" id="montoPagoProveedor" min="1" placeholder="Ej: 50000" required>
-              <label for="descPagoProveedor">Proveedor</label>
-              <input type="text" id="descPagoProveedor" placeholder="Escoge tu provedor" required>
             </div>
 
             <div class="campo" style="display: flex; align-items: flex-end;">
@@ -812,7 +849,7 @@
           <div class="orden-header">
             <div>
               <h3>Ajuste Manual de Saldos</h3>
-              <span>Ingresa o retira dinero directamente del Admin o Trabajador.</span>
+              <span>Ingresa o retira dinero del Administrador o de un trabajador en particular.</span>
             </div>
           </div>
 
@@ -823,6 +860,13 @@
                 <option value="">Seleccionar cuenta</option>
                 <option value="admin">Administrador</option>
                 <option value="trabajador">Trabajador</option>
+              </select>
+            </div>
+
+            <div class="campo" id="cajaTrabajadorAjuste" style="flex: 1; min-width: 180px; display: none;">
+              <label for="trabajadorAjuste">Trabajador</label>
+              <select id="trabajadorAjuste">
+                <option value="">Seleccionar trabajador</option>
               </select>
             </div>
 
@@ -839,6 +883,11 @@
               <input type="number" id="montoAjuste" min="1" placeholder="Ej: 20000" required>
             </div>
 
+            <div class="campo" style="flex: 2; min-width: 200px;">
+              <label for="descAjuste">Concepto (opcional)</label>
+              <input type="text" id="descAjuste" placeholder="Ej: Adelanto de sueldo">
+            </div>
+
             <div class="campo" style="display: flex; align-items: flex-end;">
               <button type="submit" class="btn-agregar" style="height: 42px;">
                 Aplicar Ajuste
@@ -851,7 +900,7 @@
           <div class="tabla-header">
             <div>
               <h3>Historial de Movimientos de Saldos</h3>
-              <p>Registro completo de préstamos, pagos y ajustes realizados.</p>
+              <p>Registro completo de deudas, pagos y ajustes realizados.</p>
             </div>
           </div>
 
@@ -875,22 +924,6 @@
           </div>
         </div>
 
-      </section>
-
-      <!-- REPORTES -->
-      <section id="vista-reportes" class="vista">
-        <div class="titulo-vista"><span class="etiqueta-seccion">GENERACIÓN DE REPORTES ALIMENTARIOS</span><h2>Reportes del sistema</h2><p>Reportes diarios, inventario general, pérdidas y consumo.</p></div>
-        <article class="panel">
-          <div class="encabezado-panel"><div><span class="etiqueta-seccion">REPORTES</span><h3>Generar informe</h3></div></div>
-          <div class="panel-form">
-            <div class="form-grid">
-              <div class="campo"><label>Tipo de reporte</label><select id="tipoReporte"><option>Reporte diario</option><option>Inventario general</option><option>Pérdida de alimentos</option><option>Consumo</option><option>Informe de operaciones contables</option></select></div>
-              <div class="campo"><label>Fecha</label><input id="fechaReporte" type="date"></div>
-            </div>
-            <div class="acciones"><button class="boton-principal" onclick="generarReporte()">Generar reporte</button><button class="boton-secundario" onclick="window.print()">Imprimir</button></div>
-            <div id="resultadoReporte" class="reporte-box"><h4>Resultado</h4><p>Seleccione un tipo de reporte y pulse “Generar reporte”.</p></div>
-          </div>
-        </article>
       </section>
 
       <!-- INVERSIONES -->

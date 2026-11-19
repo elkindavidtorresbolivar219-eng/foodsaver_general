@@ -1,143 +1,163 @@
+// SALDOS CONECTADOS A LA BASE DE DATOS
+let resumenSaldos = { admin: 0, proveedores: [], trabajadores: [], total_deuda: 0, total_trabajadores: 0 };
 
-// ESTADO DE SALDOS
-
-let saldos = {
-    admin: 0,
-    trabajador: 0,
-    proveedores: 0 // Representa la deuda acumulada
-};
-
-let historialSaldos = [];
-
-// Formateador a Pesos / Moneda
 function formatearMoneda(valor) {
     return '$' + Number(valor).toLocaleString('es-CO');
 }
 
+function escapar(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
-function actualizarSaldosUI() {
-    // Actualizar valores en las tarjetas
-    document.getElementById('saldoAdmin').textContent = formatearMoneda(saldos.admin);
-    document.getElementById('saldoTrabajador').textContent = formatearMoneda(saldos.trabajador);
-    document.getElementById('saldoProveedores').textContent = formatearMoneda(saldos.proveedores);
+async function apiSaldos(url, cuerpo) {
+    const opciones = { credentials: 'same-origin' };
+    if (cuerpo) {
+        opciones.method = 'POST';
+        opciones.headers = { 'Content-Type': 'application/json' };
+        opciones.body = JSON.stringify(cuerpo);
+    }
+    const resp = await fetch(url, opciones);
+    let datos = {};
+    try { datos = await resp.json(); } catch (e) {}
+    if (!resp.ok) throw new Error(datos.error || 'No se pudo comunicar con el servidor.');
+    return datos;
+}
 
-    // Actualizar tabla de historial
+function avisarSaldo(texto) {
+    return typeof window.avisar === 'function' ? window.avisar(texto) : alert(texto);
+}
+
+function llenarSelect(id, lista, textoVacio, etiqueta) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const actual = sel.value;
+    sel.innerHTML = `<option value="">${textoVacio}</option>` +
+        lista.map(x => `<option value="${x.id}">${escapar(etiqueta(x))}</option>`).join('');
+    if (lista.some(x => String(x.id) === actual)) sel.value = actual;
+}
+
+async function cargarSaldos() {
+    try {
+        const [resumen, movimientos] = await Promise.all([
+            apiSaldos('/api/saldos'),
+            apiSaldos('/api/saldos/movimientos')
+        ]);
+        resumenSaldos = resumen;
+        pintarSaldos(movimientos);
+    } catch (err) {
+        console.error(err);
+    }
+}
+window.cargarSaldos = cargarSaldos;
+
+function pintarSaldos(movimientos) {
+    const r = resumenSaldos;
+
+    const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+    setTxt('saldoAdmin', formatearMoneda(r.admin));
+    setTxt('saldoTrabajador', formatearMoneda(r.total_trabajadores));   // total de todos los trabajadores
+    setTxt('saldoProveedores', formatearMoneda(r.total_deuda));         // deuda total
+
+    // Selectores
+    llenarSelect('proveedorCompra', r.proveedores, 'Seleccionar proveedor',
+        p => `${p.nombre} (debes ${formatearMoneda(p.deuda)})`);
+    llenarSelect('proveedorPago', r.proveedores, 'Seleccionar proveedor',
+        p => `${p.nombre} (debes ${formatearMoneda(p.deuda)})`);
+    llenarSelect('trabajadorAjuste', r.trabajadores, 'Seleccionar trabajador',
+        t => `${t.nombre} ${t.apellido} (${formatearMoneda(t.saldo)})`);
+
+    // Lista de saldos por proveedor
+    const tProv = document.getElementById('tablaSaldosProveedores');
+    if (tProv) {
+        tProv.innerHTML = r.proveedores.length
+            ? r.proveedores.map(p => `
+                <tr>
+                    <td><strong>${escapar(p.nombre)}</strong></td>
+                    <td style="color:${p.deuda > 0 ? '#d32f2f' : '#2e7d32'}; font-weight:bold;">
+                        ${formatearMoneda(p.deuda)}
+                    </td>
+                </tr>`).join('')
+            : '<tr><td colspan="2" style="text-align:center;">No hay proveedores registrados.</td></tr>';
+    }
+
+    // Lista de saldos por trabajador
+    const tTrab = document.getElementById('tablaSaldosTrabajadores');
+    if (tTrab) {
+        tTrab.innerHTML = r.trabajadores.length
+            ? r.trabajadores.map(t => `
+                <tr>
+                    <td><strong>${escapar(t.nombre)} ${escapar(t.apellido)}</strong></td>
+                    <td>${escapar(t.rol)}</td>
+                    <td style="font-weight:bold;">${formatearMoneda(t.saldo)}</td>
+                </tr>`).join('')
+            : '<tr><td colspan="3" style="text-align:center;">No hay trabajadores registrados.</td></tr>';
+    }
+
+    // Historial
     const tbody = document.getElementById('tablaHistorialSaldos');
-
-    if (historialSaldos.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay movimientos registrados.</td></tr>`;
-        return;
+    if (tbody) {
+        tbody.innerHTML = movimientos.length
+            ? movimientos.map(m => `
+                <tr>
+                    <td>${escapar(m.fecha)}</td>
+                    <td>${escapar(m.concepto)}</td>
+                    <td><strong>${escapar(m.cuenta)}</strong></td>
+                    <td style="color:${m.sube ? '#2e7d32' : '#d32f2f'}; font-weight:bold;">${escapar(m.tipo)}</td>
+                    <td>${formatearMoneda(m.monto)}</td>
+                </tr>`).join('')
+            : '<tr><td colspan="5" style="text-align:center;">No hay movimientos registrados.</td></tr>';
     }
-
-    tbody.innerHTML = historialSaldos.map(item => `
-        <tr>
-            <td>${item.fecha}</td>
-            <td>${item.concepto}</td>
-            <td><strong>${item.cuenta}</strong></td>
-            <td style="color: ${item.color}; font-weight: bold;">${item.tipo}</td>
-            <td>${formatearMoneda(item.monto)}</td>
-        </tr>
-    `).join('');
 }
 
-// Helper para agregar eventos al historial
-function agregarAlHistorial(concepto, cuenta, tipo, monto, color) {
-    historialSaldos.unshift({
-        fecha: new Date().toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }),
-        concepto,
-        cuenta,
-        tipo,
-        monto,
-        color
+// Muestra el selector de trabajador solo cuando la cuenta es "trabajador"
+function alternarTrabajador() {
+    const cuenta = document.getElementById('cuentaAjuste')?.value;
+    const caja = document.getElementById('cajaTrabajadorAjuste');
+    if (caja) caja.style.display = cuenta === 'trabajador' ? '' : 'none';
+}
+document.getElementById('cuentaAjuste')?.addEventListener('change', alternarTrabajador);
+
+async function enviarSaldo(form, url, cuerpo) {
+    try {
+        await apiSaldos(url, cuerpo);
+        form.reset();
+        alternarTrabajador();
+        await cargarSaldos();
+    } catch (err) {
+        await avisarSaldo(err.message);
+    }
+}
+
+// 1. Compra a crédito a un proveedor (aumenta SU deuda)
+document.getElementById('formCompraProveedor')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+    enviarSaldo(this, '/api/saldos/compra-proveedor', {
+        proveedor_id: Number(document.getElementById('proveedorCompra').value) || null,
+        concepto: document.getElementById('descCompraProveedor').value.trim(),
+        monto: Number(document.getElementById('montoCompraProveedor').value)
     });
-}
-
-// 1. REGISTRAR COMPRA A CRÉDITO AL PROVEEDOR
-document.getElementById('formCompraProveedor').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const concepto = document.getElementById('descCompraProveedor').value.trim();
-    const monto = parseFloat(document.getElementById('montoCompraProveedor').value);
-
-    if (!monto || monto <= 0) return;
-
-    // Aumenta la deuda con proveedores
-    saldos.proveedores += monto;
-
-    agregarAlHistorial(
-        `Préstamo: ${concepto}`,
-        'Proveedores',
-        'Deuda Aumentó (+)',
-        monto,
-        '#d32f2f' // Rojo
-    );
-
-    this.reset();
-    actualizarSaldosUI();
 });
 
-// 2. PAGAR A PROVEEDOR (DESCONTANDO DEL ADMIN)
-document.getElementById('formPagoProveedor').addEventListener('submit', function (e) {
+// 2. Pago a un proveedor (baja SU deuda y descuenta al admin)
+document.getElementById('formPagoProveedor')?.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    const monto = parseFloat(document.getElementById('montoPagoProveedor').value);
-
-    if (!monto || monto <= 0) return;
-
-    // Validaciones de negocio
-    if (monto > saldos.proveedores) {
-        alert("El monto ingresado es mayor a la deuda total con proveedores.");
-        return;
-    }
-
-    if (monto > saldos.admin) {
-        alert("El administrador no cuenta con suficiente saldo para realizar este pago.");
-        return;
-    }
-
-    // Descontar saldo del admin y bajar deuda de proveedores
-    saldos.admin -= monto;
-    saldos.proveedores -= monto;
-
-    agregarAlHistorial(
-        'Pago de deuda a proveedor',
-        'Admin / Proveedores',
-        'Pago Realizado (-)',
-        monto,
-        '#2e7d32' // Verde
-    );
-
-    this.reset();
-    actualizarSaldosUI();
+    enviarSaldo(this, '/api/saldos/pago-proveedor', {
+        proveedor_id: Number(document.getElementById('proveedorPago').value) || null,
+        monto: Number(document.getElementById('montoPagoProveedor').value)
+    });
 });
 
-// 3. AJUSTE MANUAL (AUMENTAR O REBAJAR ADMIN/TRABAJADOR)
-document.getElementById('formAjusteSaldo').addEventListener('submit', function (e) {
+// 3. Ajuste manual (admin o un trabajador en particular)
+document.getElementById('formAjusteSaldo')?.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    const cuentaKey = document.getElementById('cuentaAjuste').value; // admin o trabajador
-    const tipo = document.getElementById('tipoAjuste').value; // aumentar o rebajar
-    const monto = parseFloat(document.getElementById('montoAjuste').value);
-
-    if (!cuentaKey || !monto || monto <= 0) return;
-
-    const nombreCuenta = cuentaKey === 'admin' ? 'Administrador' : 'Trabajador';
-
-    if (tipo === 'aumentar') {
-        saldos[cuentaKey] += monto;
-        agregarAlHistorial('Aumento manual de saldo', nombreCuenta, 'Ingreso (+)', monto, '#2e7d32');
-    } else {
-        if (monto > saldos[cuentaKey]) {
-            alert(`El saldo actual del ${nombreCuenta} es menor al monto que intentas retirar.`);
-            return;
-        }
-        saldos[cuentaKey] -= monto;
-        agregarAlHistorial('Rebaja manual de saldo', nombreCuenta, 'Retiro (-)', monto, '#c62828');
-    }
-
-    this.reset();
-    actualizarSaldosUI();
+    enviarSaldo(this, '/api/saldos/ajuste', {
+        cuenta: document.getElementById('cuentaAjuste').value,
+        usuario_id: Number(document.getElementById('trabajadorAjuste')?.value) || null,
+        tipo: document.getElementById('tipoAjuste').value,
+        monto: Number(document.getElementById('montoAjuste').value),
+        concepto: (document.getElementById('descAjuste')?.value || '').trim()
+    });
 });
 
-// Inicialización joselin
-actualizarSaldosUI();
+alternarTrabajador();
