@@ -64,6 +64,12 @@ a {
   display: flex;
 }
 
+
+button:active,
+a:active {
+    cursor: pointer;
+}
+
 /* SIDEBAR  */
 
 .barra-lateral {
@@ -3158,4 +3164,33 @@ footer {
   background: var(--gold-light);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(255, 185, 20, .18);
+}
+
+/* Cursor personalizado en toda la página */
+html,
+body {
+  cursor: url("/static/img/hamburguesa.png") 16 16, auto;
+}
+
+/* Mantener el cursor de hamburguesa sobre enlaces, botones y elementos interactivos */
+a,
+button,
+select,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.boton-icono,
+.boton-perfil,
+.boton-principal,
+.boton-secundario,
+.boton-peligro,
+.boton-verde,
+.btn-agregar,
+.btn-liberar,
+.btn-venta,
+.mesa-card,
+.plato-carta,
+.elemento-menu,
+[role="button"] {
+  cursor: url("/static/img/hamburguesa.png") 16 16, pointer;
 }
