@@ -209,10 +209,13 @@
           </div>
 
           <div class="cuadricula-accesos">
+             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('usuarios');return false;"><span class="icono-acceso">▦</span><strong>Gestionar usuarios</strong><small>Registrar, modificar y eliminar usuarios</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('platos');return false;"><span class="icono-acceso">◫</span><strong>Gestionar platos</strong><small>Registrar, modificar y eliminar platos</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('usuarios');return false;"><span class="icono-acceso">▦</span><strong>Gestionar proveedores</strong><small>Registrar, modificar y eliminar proveedores</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inversiones');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inversiones</strong><small>Consultar inversiones en tiempo real</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Gestionar ventas </strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('saldos');return false;"><span class="icono-acceso">$</span><strong>Gestionar saldos </strong><small>consulta saldos en tiempo real</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
         </section>
@@ -324,7 +327,7 @@
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
 
-          <!-- FILTRO DE BÚSQUEDA -->
+          <!-- FILTRO DE BÚSQUEDA josep-->
           <div class="filtros-alimentos">
             <div class="campo campo-buscar">
               <label for="filtroAlimentoTexto">Buscar alimento</label>
