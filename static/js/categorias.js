@@ -4,8 +4,6 @@
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarCategoriasSelect();
-
     const btnAbrir = document.getElementById("btnAdministrarCategorias");
     const btnCerrar = document.getElementById("btnCerrarCategorias");
     const formulario = document.getElementById("formCategoria");

@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!pedido.length) {
       const vacio = document.createElement("p");
       vacio.className = "pedido-vacio";
-      vacio.textContent = "Aún no hay productos en el pedido.";
+      vacio.textContent = "Aún no hay platos agregados.";
       listaPedido.appendChild(vacio);
     }
 
@@ -616,6 +616,7 @@ function cerrarModalPlato() {
 
   function crearCarta(plato) {
     const carta = document.createElement("div");
+    carta.dataset.platoId = String(plato.id);
     carta.className = "plato-carta";
     carta.tabIndex = 0;
     carta.setAttribute("role", "button");
@@ -631,6 +632,7 @@ function cerrarModalPlato() {
     const frente = document.createElement("div");
     frente.className = "plato-cara plato-frente";
     const img = document.createElement("img");
+    img.loading = "lazy";
     img.src = plato.foto;
     img.alt = plato.nombre;
     const pie = document.createElement("div");
@@ -826,19 +828,54 @@ function cerrarModalPlato() {
     }
   }
 
-  // Al cargar la página, traer los platos guardados en la base de datos
   async function cargarPlatos() {
+    const grid = document.getElementById("platosGrid");
+    const aviso = document.createElement("p");
+    aviso.setAttribute("role", "status");
+    aviso.textContent = "Cargando catálogo…";
+    grid.before(aviso);
+
     try {
       const resp = await fetch("/api/platos");
-      if (!resp.ok) return;
+
+      if (!resp.ok) {
+        throw new Error(`Error al cargar el catálogo (${resp.status})`);
+      }
+
       const platos = await resp.json();
-      platos.forEach(agregarCartaAlMenu);
+      const idsVisibles = new Set(
+        Array.from(grid.querySelectorAll("[data-plato-id]"), (carta) =>
+          carta.dataset.platoId
+        )
+      );
+
+      for (const plato of platos) {
+        const id = String(plato.id);
+        if (idsVisibles.has(id)) continue;
+
+        agregarCartaAlMenu(plato);
+        idsVisibles.add(id);
+      }
+
+      aviso.remove();
     } catch (err) {
       console.error("No se pudieron cargar los platos:", err);
+      aviso.textContent = "No se pudo cargar el catálogo. ";
+
+      const boton = document.createElement("button");
+      boton.type = "button";
+      boton.className = "boton-secundario";
+      boton.textContent = "Reintentar";
+      boton.addEventListener("click", () => {
+        aviso.remove();
+        cargarPlatos();
+      });
+
+      aviso.appendChild(boton);
     }
   }
 
-  cargarPlatos();
+  window.cargarPlatos = cargarPlatos;
 
   dibujarPedido();
 });

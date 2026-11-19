@@ -316,6 +316,8 @@
       window.cargarCategoriasSelect();
     }
 
+    window.cargarPlatos?.();
+
     await recargar();
   }
   // Solo el Administrador ve el bloque de usuarios.
@@ -754,6 +756,21 @@ if (!(await confirmar("¿Deseas eliminar este proveedor?"))) return;
   document
     .getElementById("filtroAlimentoCategoria")
     ?.addEventListener("change", renderizarTablaAlimentos);
+
+function actualizarMinimoVencimiento(campo) {
+  const hoy = new Date();
+  const primerDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1);
+  const anio = primerDia.getFullYear();
+  const mes = String(primerDia.getMonth() + 1).padStart(2, "0");
+
+  campo.min = `${anio}-${mes}-01`;
+}
+
+for (const id of ["alimentoVencimiento", "editVencimiento"]) {
+  const campo = document.getElementById(id);
+  actualizarMinimoVencimiento(campo);
+  campo.addEventListener("focus", () => actualizarMinimoVencimiento(campo));
+}
 
   document.getElementById("formAlimento").addEventListener("submit", async e => {
     e.preventDefault();
@@ -1854,14 +1871,16 @@ if (comboProv) {
 
   /* RESTAURAR SESIÓN */
 
-  GET("/api/sesion")
-    .then(r => {
-      if (r.usuario) {
-        return iniciarSesion(
-          r.usuario
-        );
-      }
-    })
-    .catch(err => console.error(err));
+  document.addEventListener("DOMContentLoaded", () => {
+    GET("/api/sesion")
+      .then(r => {
+        if (r.usuario) {
+          return iniciarSesion(
+            r.usuario
+          );
+        }
+      })
+      .catch(err => console.error(err));
+  });
 
 })();
