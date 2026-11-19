@@ -293,6 +293,23 @@
 
   window.mostrarVista = mostrarVista;
 
+  function reproducirLogoAplicacion() {
+    const marca = document.getElementById("marcaAplicacion");
+    const url = marca.dataset.animacion;
+    if (!url || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    delete marca.dataset.animacion;
+    const logo = marca.querySelector("img");
+    const animacion = new Image();
+    animacion.className = "marca-animacion";
+    animacion.alt = logo.alt;
+    animacion.addEventListener("load", () => {
+      logo.replaceWith(animacion);
+      window.setTimeout(() => animacion.replaceWith(logo), 7080);
+    }, { once: true });
+    animacion.src = url;
+  }
+
   async function iniciarSesion(usuario) {
     sesion = {
       id: usuario.id,
@@ -303,6 +320,7 @@
 
     document.getElementById("pantallaLogin").classList.add("oculto");
     document.getElementById("aplicacion").classList.remove("oculto");
+    reproducirLogoAplicacion();
 
     setText("nombreSidebar", sesion.nombre);
     setText("rolSidebar", sesion.rol);
