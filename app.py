@@ -520,12 +520,18 @@ def contabilidad_registrar():
     if valor is None:
         return error("El valor debe ser un número mayor o igual a 0.")
 
-    db.ejecutar(
-        "INSERT INTO contabilidad (tipo, descripcion, valor) VALUES (%s, %s, %s)",
-        (tipo, descripcion, valor),
-    )
+    with db.cursor() as cur:
+        cur.execute(
+            "INSERT INTO contabilidad (tipo, descripcion, valor) VALUES (%s, %s, %s)",
+            (tipo, descripcion, valor),
+        )
+        if tipo == "Venta" and valor > 0:
+            cur.execute("SELECT pg_advisory_xact_lock(1, 0)")
+            cur.execute(
+                "INSERT INTO movimientos_saldo (cuenta, tipo, monto, concepto) VALUES ('admin', 'Ingreso', %s, %s)",
+                (valor, descripcion[:200]),
+            )
     return jsonify({"ok": True, "mensaje": "Operación contable registrada correctamente."})
-
 
 # RUTAS DE BILLETERAS DE PROVEEDORES
 @app.get("/api/saldos-proveedores")
@@ -588,6 +594,203 @@ def saldos_proveedores_registrar():
             (pid, tipo, monto, concepto or ("Compra a crédito" if tipo == "Compra" else "Pago de deuda")),
         )
     return jsonify({"ok": True, "mensaje": "Movimiento registrado correctamente."})
+# ============================================================
+# RUTAS DE SALDOS (admin, trabajadores y proveedores)
+# ============================================================
+def contador_o_admin(funcion):
+    @wraps(funcion)
+    @login_requerido
+    def envoltura(*args, **kwargs):
+        if session["usuario"]["rol"] not in ("Administrador", "Contador"):
+            return error("No tienes permiso para modificar saldos.", 403)
+        return funcion(*args, **kwargs)
+    return envoltura
+
+
+SQL_SUMA_SALDO = "COALESCE(SUM(CASE WHEN tipo = 'Ingreso' THEN monto ELSE -monto END), 0)::BIGINT"
+
+
+def saldo_admin_cur(cur):
+    cur.execute(f"SELECT {SQL_SUMA_SALDO} AS s FROM movimientos_saldo WHERE cuenta = 'admin'")
+    return cur.fetchone()["s"]
+
+
+def saldo_trabajador_cur(cur, uid):
+    cur.execute(
+        f"SELECT {SQL_SUMA_SALDO} AS s FROM movimientos_saldo WHERE cuenta = 'trabajador' AND usuario_id = %s",
+        (uid,),
+    )
+    return cur.fetchone()["s"]
+
+
+@app.get("/api/saldos")
+@login_requerido
+def saldos_resumen():
+    admin = db.consultar_uno(
+        f"SELECT {SQL_SUMA_SALDO} AS s FROM movimientos_saldo WHERE cuenta = 'admin'"
+    )["s"]
+
+    proveedores = db.consultar(
+        """SELECT p.id, p.nombre,
+                  COALESCE(SUM(CASE WHEN m.tipo = 'Compra' THEN m.monto ELSE -m.monto END), 0)::BIGINT AS deuda
+           FROM proveedores p
+           LEFT JOIN movimientos_proveedor m ON m.proveedor_id = p.id
+           GROUP BY p.id
+           ORDER BY p.nombre"""
+    )
+
+    trabajadores = db.consultar(
+        f"""SELECT u.id, u.nombre, u.apellido, u.rol,
+                   COALESCE(SUM(CASE WHEN s.tipo = 'Ingreso' THEN s.monto ELSE -s.monto END), 0)::BIGINT AS saldo
+            FROM usuarios u
+            LEFT JOIN movimientos_saldo s ON s.usuario_id = u.id AND s.cuenta = 'trabajador'
+            WHERE u.rol <> 'Administrador'
+            GROUP BY u.id
+            ORDER BY u.nombre"""
+    )
+
+    return jsonify({
+        "admin": admin,
+        "proveedores": proveedores,
+        "trabajadores": trabajadores,
+        "total_deuda": sum(p["deuda"] for p in proveedores),
+        "total_trabajadores": sum(t["saldo"] for t in trabajadores),
+    })
+
+
+@app.get("/api/saldos/movimientos")
+@login_requerido
+def saldos_movimientos():
+    return jsonify(db.consultar(
+        """SELECT to_char(fecha, 'DD/MM/YYYY HH24:MI') AS fecha, concepto, cuenta, tipo, monto, sube
+           FROM (
+               SELECT m.fecha, m.concepto,
+                      'Proveedor: ' || p.nombre AS cuenta,
+                      CASE m.tipo WHEN 'Compra' THEN 'Deuda aumentó (+)' ELSE 'Pago realizado (-)' END AS tipo,
+                      m.monto,
+                      (m.tipo = 'Compra') AS sube,
+                      m.id AS orden
+               FROM movimientos_proveedor m
+               JOIN proveedores p ON p.id = m.proveedor_id
+               UNION ALL
+               SELECT s.fecha, s.concepto,
+                      CASE WHEN s.cuenta = 'admin' THEN 'Administrador'
+                           ELSE 'Trabajador: ' || u.nombre || ' ' || u.apellido END AS cuenta,
+                      CASE s.tipo WHEN 'Ingreso' THEN 'Ingreso (+)' ELSE 'Retiro (-)' END AS tipo,
+                      s.monto,
+                      (s.tipo = 'Ingreso') AS sube,
+                      s.id AS orden
+               FROM movimientos_saldo s
+               LEFT JOIN usuarios u ON u.id = s.usuario_id
+           ) t
+           ORDER BY fecha DESC, orden DESC
+           LIMIT 100"""
+    ))
+
+
+@app.post("/api/saldos/compra-proveedor")
+@contador_o_admin
+def saldos_compra_proveedor():
+    d = datos_json()
+    pid = entero(d.get("proveedor_id"), 1)
+    monto = entero(d.get("monto"), 1)
+    concepto = (d.get("concepto") or "").strip()
+
+    if not pid or not monto:
+        return error("Selecciona un proveedor e ingresa un monto mayor a 0.")
+    if not concepto:
+        return error("El concepto es obligatorio.")
+
+    with db.cursor() as cur:
+        cur.execute("SELECT id FROM proveedores WHERE id = %s FOR UPDATE", (pid,))
+        if not cur.fetchone():
+            return error("El proveedor no existe.", 404)
+        cur.execute(
+            "INSERT INTO movimientos_proveedor (proveedor_id, tipo, monto, concepto) VALUES (%s, 'Compra', %s, %s)",
+            (pid, monto, concepto),
+        )
+    return jsonify({"ok": True, "mensaje": "Deuda con el proveedor registrada."})
+
+
+@app.post("/api/saldos/pago-proveedor")
+@contador_o_admin
+def saldos_pago_proveedor():
+    d = datos_json()
+    pid = entero(d.get("proveedor_id"), 1)
+    monto = entero(d.get("monto"), 1)
+
+    if not pid or not monto:
+        return error("Selecciona un proveedor e ingresa un monto mayor a 0.")
+
+    with db.cursor() as cur:
+        cur.execute("SELECT pg_advisory_xact_lock(1, 0)")          # bloquea la caja del admin
+        cur.execute("SELECT id, nombre FROM proveedores WHERE id = %s FOR UPDATE", (pid,))
+        prov = cur.fetchone()
+        if not prov:
+            return error("El proveedor no existe.", 404)
+
+        cur.execute(
+            """SELECT COALESCE(SUM(CASE WHEN tipo = 'Compra' THEN monto ELSE -monto END), 0) AS deuda
+               FROM movimientos_proveedor WHERE proveedor_id = %s""",
+            (pid,),
+        )
+        if monto > cur.fetchone()["deuda"]:
+            return error("El monto es mayor a la deuda con este proveedor.")
+
+        if monto > saldo_admin_cur(cur):
+            return error("El administrador no tiene saldo suficiente para este pago.")
+
+        cur.execute(
+            "INSERT INTO movimientos_proveedor (proveedor_id, tipo, monto, concepto) VALUES (%s, 'Pago', %s, 'Pago de deuda')",
+            (pid, monto),
+        )
+        cur.execute(
+            "INSERT INTO movimientos_saldo (cuenta, tipo, monto, concepto) VALUES ('admin', 'Retiro', %s, %s)",
+            (monto, "Pago a proveedor: " + prov["nombre"]),
+        )
+    return jsonify({"ok": True, "mensaje": "Pago registrado y descontado del administrador."})
+
+
+@app.post("/api/saldos/ajuste")
+@contador_o_admin
+def saldos_ajuste():
+    d = datos_json()
+    cuenta = d.get("cuenta")                       # 'admin' | 'trabajador'
+    tipo = d.get("tipo")                           # 'aumentar' | 'rebajar'
+    monto = entero(d.get("monto"), 1)
+    uid = entero(d.get("usuario_id"), 1)
+    concepto = (d.get("concepto") or "").strip()
+
+    if cuenta not in ("admin", "trabajador") or tipo not in ("aumentar", "rebajar"):
+        return error("Datos de ajuste no válidos.")
+    if not monto:
+        return error("El monto debe ser mayor a 0.")
+    if cuenta == "trabajador" and not uid:
+        return error("Selecciona un trabajador.")
+
+    mov = "Ingreso" if tipo == "aumentar" else "Retiro"
+    concepto = concepto or ("Aumento manual de saldo" if mov == "Ingreso" else "Rebaja manual de saldo")
+
+    with db.cursor() as cur:
+        if cuenta == "admin":
+            uid = None
+            cur.execute("SELECT pg_advisory_xact_lock(1, 0)")
+            actual = saldo_admin_cur(cur)
+        else:
+            cur.execute("SELECT id FROM usuarios WHERE id = %s", (uid,))
+            if not cur.fetchone():
+                return error("El trabajador no existe.", 404)
+            cur.execute("SELECT pg_advisory_xact_lock(2, %s)", (uid,))
+            actual = saldo_trabajador_cur(cur, uid)
+
+        if mov == "Retiro" and monto > actual:
+            return error("El saldo actual es menor al monto que intentas retirar.")
+
+        cur.execute(
+            "INSERT INTO movimientos_saldo (cuenta, usuario_id, tipo, monto, concepto) VALUES (%s, %s, %s, %s, %s)",
+            (cuenta, uid, mov, monto, concepto),
+        )
+    return jsonify({"ok": True, "mensaje": "Saldo actualizado correctamente."})
 
 # RUTAS DE PLATOS (MENÚ)
 MAX_FOTO = 3 * 1024 * 1024  # 3 MB

@@ -127,3 +127,26 @@ ALTER TABLE contabilidad ENABLE ROW LEVEL SECURITY;
 ALTER TABLE movimientos_proveedor ENABLE ROW LEVEL SECURITY;
 ALTER TABLE platos                ENABLE ROW LEVEL SECURITY;
 --  joselin pinguin
+
+-- Movimientos de saldo: caja del administrador y billetera de cada trabajador
+CREATE TABLE IF NOT EXISTS movimientos_saldo (
+    id         SERIAL PRIMARY KEY,
+    cuenta     VARCHAR(12) NOT NULL CHECK (cuenta IN ('admin', 'trabajador')),
+    usuario_id INTEGER REFERENCES usuarios (id) ON DELETE CASCADE,
+    tipo       VARCHAR(10) NOT NULL CHECK (tipo IN ('Ingreso', 'Retiro')),
+    monto      BIGINT NOT NULL CHECK (monto > 0),
+    concepto   VARCHAR(200) NOT NULL,
+    fecha      TIMESTAMP NOT NULL DEFAULT now(),
+    CHECK (
+        (cuenta = 'trabajador' AND usuario_id IS NOT NULL) OR
+        (cuenta = 'admin' AND usuario_id IS NULL)
+    )
+);
+
+CREATE INDEX IF NOT EXISTS movimientos_saldo_usuario_idx ON movimientos_saldo (usuario_id);
+
+ALTER TABLE movimientos_saldo ENABLE ROW LEVEL SECURITY;
+INSERT INTO movimientos_saldo (cuenta, tipo, monto, concepto)
+SELECT 'admin', 'Ingreso', SUM(valor), 'Saldo inicial (ventas anteriores)'
+FROM contabilidad WHERE tipo = 'Venta'
+HAVING SUM(valor) > 0;

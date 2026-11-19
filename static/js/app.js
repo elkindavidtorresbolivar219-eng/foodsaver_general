@@ -1386,14 +1386,7 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
         valor: total
       });
 
-      // Sincronización automática con el saldo del administrador
-      const saldoActualAdmin = Number(localStorage.getItem("saldoAdmin") || 0) + total;
-      localStorage.setItem("saldoAdmin", saldoActualAdmin);
-
-      if (typeof window.cargarSaldos === "function") {
-        window.cargarSaldos();
-      }
-
+      
       mesas[numeroMesa] = { estado: "disponible", productos: [] };
       mesaSeleccionada = null;
       window.mesaSeleccionada = null;
@@ -1530,16 +1523,10 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
     setText("balance", formatoMoneda(ventas - gastos));
 
     /* SINCRONIZACIÓN DE SALDO */
-    if (localStorage.getItem("saldoAdmin") === null) {
-      localStorage.setItem("saldoAdmin", ventas - gastos);
-    }
-
-    if (typeof window.cargarSaldos === "function") {
-      window.cargarSaldos();
-    } else {
-      const saldoLocal = Number(localStorage.getItem("saldoAdmin") || 0);
-      setText("saldoAdmin", formatoMoneda(saldoLocal));
-    }
+  /* SALDOS (vienen de la base de datos) */
+if (typeof window.cargarSaldos === "function") {
+  window.cargarSaldos();
+}
 
     /* USUARIOS */
     setHTML(
