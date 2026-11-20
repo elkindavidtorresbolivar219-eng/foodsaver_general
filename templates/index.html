@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=7">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=8">
 </head>
 
 <body>
@@ -446,86 +446,36 @@
     </div>
 
     <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
+
+      <dialog id="dialogoMesaPedido" aria-labelledby="tituloMesaPedido">
+  <form method="dialog" class="panel panel-form">
+    <h3 id="tituloMesaPedido">Asignar pedido a una mesa</h3>
+
+    <div class="campo">
+      <label for="mesaDestinoPedido">Mesa del cliente</label>
+      <select id="mesaDestinoPedido" required>
+        <option value="">Seleccionar mesa</option>
+        <option value="1">Mesa 1</option>
+        <option value="2">Mesa 2</option>
+        <option value="3">Mesa 3</option>
+        <option value="4">Mesa 4</option>
+      </select>
+    </div>
+
+    <div class="acciones">
+      <button type="submit" value="cancelar" class="boton-secundario" formnovalidate>
+        Cancelar
+      </button>
+      <button type="submit" value="enviar" class="btn-venta">
+        Enviar pedido
+      </button>
+    </div>
+  </form>
+</dialog>
   </article>
 </section>
 
-      <!-- PLATOS -->
-      <section id="vista-platos" class="vista">
-        <div class="titulo-vista">
-          <span class="etiqueta-seccion">MENÚ</span>
-          <h2>Platos</h2>
-          <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
-        </div>
-
-        <div class="platos-grid" id="platosGrid">
-
-          <div class="plato-carta" tabindex="0" role="button" data-nombre="MERAKI" data-precio="16000" aria-label="Ver ingredientes de la hamburguesa Meraki">
-            <div class="plato-carta-interior">
-
-              <div class="plato-cara plato-frente">
-                <img src="{{ url_for('static', filename='img/hamburguesa1.jpg') }}" alt="Hamburguesa Meraki">
-                <div class="plato-pie">
-                  <strong>MERAKI</strong>
-                  <span>$16.000</span>
-                </div>
-              </div>
-
-              <div class="plato-cara plato-reverso">
-                <div class="plato-reverso-cab">
-                  <div>
-                    <h3>MERAKI</h3>
-                    <span class="plato-precio">$16.000</span>
-                  </div>
-                  <button type="button" class="plato-volver">↺ Volver</button>
-                </div>
-
-                <p class="plato-subtitulo">Ingredientes</p>
-                <ul class="plato-ingredientes" id="ingredientesMeraki">
-                  <li data-fijo>Pan Brioche</li>
-                  <li>Salsa de ajo</li>
-                  <li>Lechuga</li>
-                  <li>Tomate</li>
-                  <li>Cebolla</li>
-                  <li>Queso mozzarella</li>
-                  <li data-fijo>150 g de carne 100% res</li>
-                  <li>Tocineta</li>
-                  <li>100 g de papas a la francesa</li>
-                </ul>
-                <button type="button" class="btn-agregar plato-agregar">+ Agregar al pedido</button>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-        <article class="panel pedido-panel">
-          <div class="encabezado-panel">
-            <div>
-              <span class="etiqueta-seccion">PEDIDO</span>
-              <h3>Platos agregados</h3>
-            </div>
-            <span class="estado-orden" id="pedidoContador">0 platos</span>
-          </div>
-
-          <div class="pedido-lista" id="pedidoLista"></div>
-
-          <div class="orden-footer">
-            <div class="orden-total">
-              <span>Total del pedido</span>
-              <strong id="pedidoTotal">$0</strong>
-            </div>
-
-            <button type="button" id="btnHacerPedido" class="btn-venta">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-              Hacer pedido
-            </button>
-          </div>
-
-          <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
-        </article>
-      </section>
-
+      
       <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
@@ -691,6 +641,18 @@
           </div>
 
         </div>
+
+        <div class="acciones">
+  <button
+    id="btnCerrarTurno"
+    type="button"
+    class="boton-secundario"
+    onclick="cerrarTurnoVentas()"
+    hidden
+  >
+    Cerrar turno
+  </button>
+</div>
 
         <!-- HISTORIAL DE OPERACIONES -->
         <div class="tabla-ventas">
@@ -1037,6 +999,37 @@
           </div>
         </section>
       </section>
+
+      <!-- Reportes -->
+
+<section id="vista-reportes" class="vista">
+  <article class="panel panel-form">
+    <h2>Reportes alimentarios</h2>
+
+    <label for="tipoReporte">Tipo de reporte</label>
+    <select id="tipoReporte">
+      <option>Reporte diario</option>
+      <option>Inventario general</option>
+      <option>Pérdida de alimentos</option>
+      <option>Consumo</option>
+    </select>
+
+   <div class="campo campo-fecha-reporte">
+  <label for="fechaReporte">Fecha del reporte diario</label>
+  <input id="fechaReporte" type="date">
+</div>
+
+    <div class="acciones">
+      <button type="button" class="boton-principal" onclick="generarReporte()">
+        Generar reporte
+      </button>
+    </div>
+
+    <div id="resultadoReporte" class="reporte-box" aria-live="polite"></div>
+  </article>
+</section>
+
+
 
       <!-- CONFIGURACIÓN -->
       <section id="vista-configuracion" class="vista">

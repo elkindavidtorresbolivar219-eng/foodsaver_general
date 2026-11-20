@@ -146,7 +146,13 @@ CREATE TABLE IF NOT EXISTS movimientos_saldo (
 CREATE INDEX IF NOT EXISTS movimientos_saldo_usuario_idx ON movimientos_saldo (usuario_id);
 
 ALTER TABLE movimientos_saldo ENABLE ROW LEVEL SECURITY;
-INSERT INTO movimientos_saldo (cuenta, tipo, monto, concepto)
-SELECT 'admin', 'Ingreso', SUM(valor), 'Saldo inicial (ventas anteriores)'
-FROM contabilidad WHERE tipo = 'Venta'
-HAVING SUM(valor) > 0;
+CREATE TABLE IF NOT EXISTS corte_ventas (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    ultimo_id INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT INTO corte_ventas (id, ultimo_id)
+VALUES (1, 0)
+ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE corte_ventas ENABLE ROW LEVEL SECURITY;

@@ -1073,6 +1073,28 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
     actualizarVisualMesas();
   }
 
+
+  window.agregarPedidoAMesa = function (numero, platos) {
+    const mesa = mesas[numero];
+
+    for (const plato of platos) {
+      const detalle = plato.sin?.length
+        ? " (sin " + plato.sin.join(", ") + ")"
+        : "";
+
+      mesa.productos.push({
+        nombre: plato.nombre + detalle,
+        cantidad: plato.cantidad,
+        precio: plato.precio
+      });
+    }
+
+    mesa.estado = "ocupada";
+    seleccionarMesa(numero);
+  };
+
+
+
   function seleccionarMesa(numero) {
     if (!mesas[numero]) return;
 
@@ -1490,6 +1512,28 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
      RENDERIZADO GENERAL
    */
 
+     window.cerrarTurnoVentas = async function () {
+  const operaciones = datos.contabilidad.filter(x => x.del_turno);
+  if (!operaciones.length) return;
+
+  const ultimoId = operaciones.reduce(
+    (mayor, x) => Math.max(mayor, Number(x.id)), 0
+  );
+
+  const acepta = await confirmar(
+    "¿Cerrar este turno? Las tarjetas empezarán en cero y las operaciones seguirán en el historial.",
+    "Cerrar turno"
+  );
+  if (!acepta) return;
+
+  try {
+    await POST("/api/ventas/cerrar-turno", { ultimo_id: ultimoId });
+    await cargarDatos();
+  } catch (err) {
+    await avisar(err.message);
+  }
+};
+
   function renderizarTodo() {
     if (!sesion) return;
 
@@ -1518,9 +1562,24 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
     setText("invUnidades", totalUnidades);
     setText("invCriticos", criticos);
 
-    setText("totalVentas", formatoMoneda(ventas));
-    setText("totalGastos", formatoMoneda(gastos));
-    setText("balance", formatoMoneda(ventas - gastos));
+    const operacionesTurno = datos.contabilidad.filter(x => x.del_turno);
+
+const sumarTurno = tipo => operacionesTurno
+  .filter(x => x.tipo === tipo)
+  .reduce((suma, x) => suma + Number(x.valor), 0);
+
+const ventasTurno = sumarTurno("Venta");
+const gastosTurno = sumarTurno("Gasto operativo");
+
+setText("totalVentas", formatoMoneda(ventasTurno));
+setText("totalGastos", formatoMoneda(gastosTurno));
+setText("balance", formatoMoneda(ventasTurno - gastosTurno));
+
+const botonCierre = document.getElementById("btnCerrarTurno");
+if (botonCierre) {
+  botonCierre.hidden = sesion.rol !== "Administrador";
+  botonCierre.disabled = operacionesTurno.length === 0;
+}
 
     /* SINCRONIZACIÓN DE SALDO */
   /* SALDOS (vienen de la base de datos) */
@@ -1548,7 +1607,7 @@ if (typeof window.cargarSaldos === "function") {
         .join("")
     );
 
-    /* PROVEEDORES */
+   
    /* PROVEEDORES */
 
 renderizarProveedores();
@@ -1857,15 +1916,57 @@ if (comboProv) {
           .join("\n") || "No hay operaciones contables registradas.";
     }
 
-    setHTML(
+        setHTML(
       "resultadoReporte",
-      "<h4>" + esc(tipo) + "</h4><p>" + esc(texto).replace(/\n/g, "<br>") + "</p>"
+      "<h4>" + esc(tipo) + "</h4><p>" +
+        esc(texto).replace(/\n/g, "<br>") + "</p>"
     );
+
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "boton-principal";
+    boton.textContent = "Imprimir reporte";
+    boton.addEventListener("click", () => imprimirReporte(tipo, texto));
+
+    document.getElementById("resultadoReporte").appendChild(boton);
+  } // Aquí termina generarReporte()
+
+// para poder imprimir el reporte en una ventana emergente 
+
+  function imprimirReporte(tipo, texto) {
+    const ventana = window.open("", "_blank");
+
+    if (!ventana) {
+      window.alert("Permite las ventanas emergentes para imprimir el reporte.");
+      return;
+    }
+
+    const doc = ventana.document;
+    doc.documentElement.lang = "es";
+    doc.title = "Meraki - " + tipo;
+
+    const estilo = doc.createElement("style");
+    estilo.textContent = `
+      @page { margin: 2cm; }
+      body { font: 12pt/1.5 Arial, sans-serif; color: #111; }
+      h1 { font-size: 18pt; }
+      p { white-space: pre-wrap; overflow-wrap: anywhere; }
+    `;
+    doc.head.appendChild(estilo);
+
+    const titulo = doc.createElement("h1");
+    titulo.textContent = "Meraki · " + tipo;
+
+    const contenido = doc.createElement("p");
+    contenido.textContent = texto;
+
+    doc.body.append(titulo, contenido);
+    ventana.addEventListener("afterprint", () => ventana.close(), { once: true });
+    ventana.focus();
+    ventana.print();
   }
 
-  window.generarReporte =
-    generarReporte;
-
+  window.generarReporte = generarReporte;
   /*
      INICIALIZACIÓN
  */
