@@ -229,39 +229,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  btnHacerPedido.addEventListener("click", async () => {
+  const dialogoMesa = document.getElementById("dialogoMesaPedido");
+  const selectorMesa = document.getElementById("mesaDestinoPedido");
+  const formMesa = dialogoMesa.querySelector("form");
+  const botonEnviar = formMesa.querySelector('button[value="enviar"]');
+  const botonCancelar = formMesa.querySelector('button[value="cancelar"]');
+
+  btnHacerPedido.addEventListener("click", () => {
     if (!pedido.length) {
-      mostrarMensaje("Agrega al menos un producto al pedido.", "error");
+      mostrarMensaje("Agrega al menos un plato al pedido.", "error");
       return;
     }
 
-    const unidades = pedido.reduce((s, p) => s + p.cantidad, 0);
-    const total = pedido.reduce((s, p) => s + p.precio * p.cantidad, 0);
+    selectorMesa.value = "";
+    dialogoMesa.showModal();
+    selectorMesa.focus();
+  });
 
-    btnHacerPedido.disabled = true;
+  dialogoMesa.addEventListener("cancel", event => {
+    if (botonEnviar.disabled) event.preventDefault();
+  });
+
+  formMesa.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (botonEnviar.disabled) return;
+
+    if (event.submitter === botonCancelar) {
+      dialogoMesa.close();
+      return;
+    }
+
+    const numero = Number(selectorMesa.value);
+    if (![1, 2, 3, 4].includes(numero)) {
+      selectorMesa.reportValidity();
+      return;
+    }
+
+    if (typeof window.agregarPedidoAMesa !== "function") {
+      dialogoMesa.close();
+      mostrarMensaje("No se pudo conectar con las mesas. Recarga la página.", "error");
+      return;
+    }
+
+    botonEnviar.disabled = true;
+    botonCancelar.disabled = true;
+    selectorMesa.disabled = true;
+
     try {
       await descontarInventario(ingredientesNecesarios());
-    } catch (err) {
-      mostrarMensaje(err.message || "No se pudo actualizar el inventario.", "error");
-      return;
+      window.agregarPedidoAMesa(numero, pedido);
+
+      pedido.length = 0;
+      dibujarPedido();
+      dialogoMesa.close();
+      mostrarMensaje("Pedido enviado a la Mesa " + numero + ".", "ok");
+
+      if (typeof window.recargar === "function") window.recargar();
+    } catch (error) {
+      dialogoMesa.close();
+      mostrarMensaje(error.message || "No se pudo enviar el pedido.", "error");
     } finally {
-      btnHacerPedido.disabled = false;
+      botonEnviar.disabled = false;
+      botonCancelar.disabled = false;
+      selectorMesa.disabled = false;
     }
-
-    // Refresca inventario, alimentos y dashboard (expuesto por app.js)
-    if (typeof window.recargar === "function") window.recargar();
-
-    // Aquí después se enviará el pedido al servidor / base de datos:
-    // fetch("/api/pedidos", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(pedido) })
-    console.log("Pedido:", JSON.parse(JSON.stringify(pedido)));
-
-    pedido.length = 0;
-    dibujarPedido();
-    mostrarMensaje(
-      "Pedido realizado: " + unidades + (unidades === 1 ? " producto" : " productos") + " por " + dinero(total) + ".",
-      "ok"
-    );
   });
+
 
   // ---- Cartas de platos ----
   function inicializarCarta(carta) {

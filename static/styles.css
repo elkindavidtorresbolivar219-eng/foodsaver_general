@@ -647,7 +647,7 @@ a:active {
   margin-top: 5px;
 }
 
-/*  REPORTS  */
+/*  REPORTES  */
 
 .panel-reportes {
   margin-bottom: 24px;
@@ -732,6 +732,23 @@ a:active {
   font-size: 8px;
 }
 
+
+/* darle diseño al calendario en los reportes */
+.campo-fecha-reporte {
+  width: 100%;
+  max-width: 260px;
+  margin: 14px 0;
+}
+
+.campo-fecha-reporte input {
+  min-height: 42px;
+  font-size: 14px;
+  color-scheme: dark;
+}
+
+:root[data-tema="claro"] .campo-fecha-reporte input {
+  color-scheme: light;
+}
 /*  QUICK ACCESS  */
 
 .seccion-accesos-rapidos {
@@ -3193,4 +3210,31 @@ input[type="reset"],
 .elemento-menu,
 [role="button"] {
   cursor: url("/static/img/hamburguesa.png") 16 16, pointer;
+}
+
+/* Mostrar el aviso del modal cuando tenga un mensaje */
+#mensajeCategoria:not(:empty) {
+  display: block;
+}
+
+
+ /* ventanita de asignar mesa en platos */
+ 
+#dialogoMesaPedido[open] {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  width: min(400px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  background: var(--card);
+  color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+#dialogoMesaPedido::backdrop {
+  background: rgb(0 0 0 / 60%);
 }

@@ -225,25 +225,79 @@ def proveedores_guardar():
     if not telefono.isdigit():
         return error("El teléfono solo puede contener números.")
 
-    if pid:
-        db.ejecutar(
-            "UPDATE proveedores SET nombre=%s,telefono=%s WHERE id=%s",
-            (nombre, telefono, pid),
-        )
-        return jsonify({"ok": True, "mensaje": "Proveedor modificado correctamente."})
+    with db.cursor() as cur:
+        cur.execute("LOCK TABLE proveedores IN SHARE ROW EXCLUSIVE MODE")
 
-    db.ejecutar(
-        "INSERT INTO proveedores (nombre,  telefono) VALUES (%s, %s)",
-        (nombre, telefono),
-    )
-    return jsonify({"ok": True, "mensaje": "Proveedor creado correctamente."})
+        comprobar_nombre = True
+        if pid:
+            cur.execute(
+                """
+                SELECT LOWER(TRIM(nombre)) = LOWER(TRIM(%s)) AS mismo_nombre
+                FROM proveedores
+                WHERE id = %s
+                """,
+                (nombre, pid),
+            )
+            actual = cur.fetchone()
+            if actual is None:
+                return error("No se encontró el proveedor.", 404)
+
+            # Permite editar el teléfono aunque ya existan duplicados antiguos.
+            comprobar_nombre = not actual["mismo_nombre"]
+
+        if comprobar_nombre:
+            cur.execute(
+                """
+                SELECT 1 FROM proveedores
+                WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(%s))
+                LIMIT 1
+                """,
+                (nombre,),
+            )
+            if cur.fetchone() is not None:
+                return error("Ya existe un proveedor con ese nombre.", 409)
+
+        if pid:
+            cur.execute(
+                "UPDATE proveedores SET nombre = %s, telefono = %s WHERE id = %s",
+                (nombre, telefono, pid),
+            )
+            texto = "Proveedor modificado correctamente."
+        else:
+            cur.execute(
+                "INSERT INTO proveedores (nombre, telefono) VALUES (%s, %s)",
+                (nombre, telefono),
+            )
+            texto = "Proveedor creado correctamente."
+
+    return jsonify({"ok": True, "mensaje": texto})
 
 
 @app.post("/api/proveedores/<int:pid>/eliminar")
 @login_requerido
 def proveedores_eliminar(pid):
-    db.ejecutar("DELETE FROM proveedores WHERE id = %s", (pid,))
-    return jsonify({"ok": True})
+    with db.cursor() as cur:
+        cur.execute(
+            "SELECT id FROM proveedores WHERE id = %s FOR UPDATE",
+            (pid,),
+        )
+        if cur.fetchone() is None:
+            return error("No se encontró el proveedor.", 404)
+
+        cur.execute(
+            "SELECT 1 FROM alimentos WHERE proveedor_id = %s LIMIT 1",
+            (pid,),
+        )
+        if cur.fetchone() is not None:
+            return error(
+                "Este proveedor tiene productos asignados. "
+                "Asígnalos a otro proveedor antes de eliminarlo.",
+                409,
+            )
+
+        cur.execute("DELETE FROM proveedores WHERE id = %s", (pid,))
+
+    return jsonify({"ok": True, "mensaje": "Proveedor eliminado correctamente."})
 
 # rutas del crud para categorias
 
@@ -495,15 +549,45 @@ def sedes_listar():
         return jsonify([])
 
 
-# RUTAS DE CONTABILIDAD (RF 5)
+# RUTAS DE CONTABILIDAD 
 @app.get("/api/contabilidad")
 @login_requerido
 def contabilidad_listar():
-    return jsonify(db.consultar(
-        """SELECT id, to_char(fecha, 'YYYY-MM-DD') AS fecha, tipo, descripcion, valor
-           FROM contabilidad ORDER BY id"""
-    ))
+    return jsonify(db.consultar("""
+        SELECT c.id,
+               to_char(c.fecha, 'YYYY-MM-DD') AS fecha,
+               c.tipo,
+               c.descripcion,
+               c.valor,
+               (c.id > corte.ultimo_id) AS del_turno
+        FROM contabilidad AS c
+        CROSS JOIN corte_ventas AS corte
+        WHERE corte.id = 1
+        ORDER BY c.id
+    """))
 
+
+@app.post("/api/ventas/cerrar-turno")
+@solo_admin
+def cerrar_turno_ventas():
+    ultimo_id = entero(datos_json().get("ultimo_id"), 1)
+    if ultimo_id is None:
+        return error("No hay operaciones para cerrar.")
+
+    with db.cursor() as cur:
+        cur.execute("""
+            UPDATE corte_ventas
+            SET ultimo_id = GREATEST(ultimo_id, %s)
+            WHERE id = 1
+              AND EXISTS (
+                  SELECT 1 FROM contabilidad WHERE id = %s
+              )
+        """, (ultimo_id, ultimo_id))
+
+        if cur.rowcount != 1:
+            return error("Actualiza la vista de Ventas y vuelve a intentarlo.")
+
+    return jsonify({"ok": True})
 
 @app.post("/api/contabilidad")
 @login_requerido
