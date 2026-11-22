@@ -430,9 +430,7 @@
       }
     });
 
-  document
-    .getElementById("btnPerfil")
-    .addEventListener("click", () => mostrarVista("configuracion"));
+ 
 
   /* 
      USUARIOS
@@ -1990,3 +1988,52 @@ if (comboProv) {
   });
 
 })();
+
+//menu de sesion de usuario
+
+document.addEventListener('click', (evento) => {
+  const menuPerfil = document.querySelector('details.menu-perfil[open]');
+
+  if (menuPerfil && !menuPerfil.contains(evento.target)) {
+    menuPerfil.open = false;
+  }
+});
+
+async function cargarDatosCuenta() {
+  const nombre = document.getElementById('cuentaNombre');
+  const usuario = document.getElementById('cuentaUsuario');
+  const rol = document.getElementById('cuentaRol');
+  const estado = document.getElementById('estadoDatosCuenta');
+
+  nombre.textContent = usuario.textContent = rol.textContent = '—';
+  document.getElementById('cuentaAvatar').textContent = '—';
+  estado.textContent = 'Cargando datos de la cuenta…';
+
+  try {
+    const respuesta = await fetch('/api/sesion', { cache: 'no-store' });
+    if (!respuesta.ok) throw new Error('No se pudo consultar la sesión');
+
+    const { usuario: cuenta } = await respuesta.json();
+
+    if (!cuenta) {
+      estado.textContent = 'No hay una sesión activa.';
+      return;
+    }
+
+   const nombreCuenta = cuenta.nombre?.trim();
+const loginCuenta = cuenta.login?.trim().replace(/^@+/, '');
+
+nombre.textContent = nombreCuenta || '—';
+usuario.textContent = loginCuenta ? `@${loginCuenta}` : '—';
+rol.textContent = cuenta.rol || '—';
+
+const avatar = document.getElementById('cuentaAvatar');
+avatar.textContent = (nombreCuenta || loginCuenta || '—').charAt(0).toUpperCase();
+    estado.textContent = '';
+  } catch {
+    estado.textContent = 'No se pudieron cargar los datos de la cuenta.';
+  }
+}
+
+document.querySelector('.elemento-menu[data-vista="configuracion"]')
+  ?.addEventListener('click', cargarDatosCuenta);

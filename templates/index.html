@@ -202,12 +202,28 @@
           <button class="boton-icono notificacion" aria-label="Notificaciones" onclick="mostrarVista('reportes')">
             ♧<span class="punto-notificacion"></span>
           </button>
-          <button class="boton-perfil" id="btnPerfil">
-            <span class="avatar pequeno" id="avatarTop">AD</span>
-            <span id="nombreTop">Administrador</span>
-            <span>⌄</span>
-          </button>
-        </div>
+         <details class="menu-perfil">
+  <summary class="boton-perfil" id="btnPerfil">
+    <span class="avatar pequeno" id="avatarTop">AD</span>
+    <span id="nombreTop">Administrador</span>
+    <span aria-hidden="true">⌄</span>
+  </summary>
+
+  <div class="menu-perfil-opciones">
+  <button type="button" class="opcion-cerrar-sesion"
+          onclick="this.closest('details').open = false; cerrarSesion()">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M10 4H5v16h5M9 12h12m-4-4 4 4-4 4"/>
+    </svg>
+    <span>Cerrar sesión</span>
+  </button>
+  <button type="button"
+        onclick="this.closest('details').open = false; mostrarVista('configuracion'); cargarDatosCuenta()">
+  Configuración
+</button>
+</div>
       </header>
 
       <!-- DASHBOARD -->
@@ -1093,14 +1109,38 @@
 
 
       <!-- CONFIGURACIÓN -->
-      <section id="vista-configuracion" class="vista">
-        <div class="titulo-vista"><span class="etiqueta-seccion">SISTEMA</span><h2>Configuración</h2><p>Opciones generales de la sesión actual.</p></div>
-        <article class="panel panel-form">
-          <h3 style="font-family:var(--font-title);font-size:14px;">Sesión y seguridad</h3>
-          <p style="color:var(--text-secondary);font-size:9px;margin-top:8px;">Puedes cerrar la sesión actual desde aquí. Los datos se guardan en la base de datos PostgreSQL.</p>
-          <div class="acciones"><button class="boton-peligro" onclick="cerrarSesion()">Cerrar sesión</button></div>
-        </article>
-      </section>
+<section id="vista-configuracion" class="vista">
+  <div class="titulo-vista">
+    <h2>Configuración</h2>
+  </div>
+
+  <article class="panel datos-cuenta" aria-labelledby="tituloMiCuenta">
+    <h3 id="tituloMiCuenta">Mi cuenta</h3>
+
+    <div class="cuenta-perfil">
+      <span class="avatar cuenta-avatar" id="cuentaAvatar" aria-hidden="true">—</span>
+
+      <div class="cuenta-identidad">
+        <strong id="cuentaNombre">—</strong>
+        <span id="cuentaUsuario">—</span>
+        <span id="cuentaRol">—</span>
+      </div>
+    </div>
+
+    <p id="estadoDatosCuenta" role="status"></p>
+
+    <div class="cuenta-acciones">
+      <button type="button" class="cuenta-salir" onclick="cerrarSesion()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 4H5v16h5M9 12h12m-4-4 4 4-4 4"/>
+        </svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </article>
+</section>
 
       <footer>
         <span>© 2026 Meraki · Sistema de Gestión Alimentaria</span>

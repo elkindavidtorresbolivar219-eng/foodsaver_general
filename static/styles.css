@@ -3374,3 +3374,173 @@ input[type="reset"],
 #vista-dashboard .cuadricula-contenido {
   grid-template-columns: minmax(0, 1fr);
 }
+
+.menu-perfil {
+  position: relative;
+}
+
+.menu-perfil summary {
+  list-style: none;
+}
+
+.menu-perfil summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-perfil-opciones {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.menu-perfil-opciones button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--white);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-perfil-opciones button:hover {
+  background: var(--border);
+}
+
+.menu-perfil-opciones button:last-child {
+  border-top: 1px solid var(--border);
+  font-weight: 700;
+}
+.menu-perfil-opciones .opcion-cerrar-sesion {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  font-weight: 600;
+}
+
+.menu-perfil-opciones .opcion-cerrar-sesion svg {
+  flex-shrink: 0;
+  color: #f87171;
+}
+
+:root[data-tema="claro"] .opcion-cerrar-sesion svg {
+  color: #b91c1c;
+}
+
+.datos-cuenta {
+  margin-bottom: 16px;
+}
+
+.datos-cuenta dl {
+  margin-top: 12px;
+}
+
+.datos-cuenta dt {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.datos-cuenta dd {
+  margin: 4px 0 0;
+  color: var(--white);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#vista-configuracion .datos-cuenta {
+  width: 100%;
+  max-width: 540px;
+  padding: clamp(16px, 4vw, 28px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--white);
+}
+
+.datos-cuenta h3 {
+  margin: 0 0 20px;
+  font-size: 22px;
+}
+
+.cuenta-perfil {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.cuenta-avatar {
+  width: clamp(56px, 12vw, 80px);
+  height: clamp(56px, 12vw, 80px);
+  font-size: 30px;
+}
+
+.cuenta-identidad {
+  display: grid;
+  justify-items: start;
+  min-width: 0;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+
+#cuentaNombre {
+  font-size: 22px;
+}
+
+#cuentaUsuario,
+#estadoDatosCuenta {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+#cuentaRol {
+  margin-top: 3px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #17161f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#estadoDatosCuenta:not(:empty) {
+  margin-top: 12px;
+}
+
+.cuenta-acciones {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.cuenta-salir {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #b91c2c;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cuenta-salir:hover {
+  background: #991525;
+}
