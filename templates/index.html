@@ -296,7 +296,7 @@
         </section>
       </section>
 
-      <!-- USUARIOS Y PROVEEDORES -->
+         <!-- USUARIOS Y PROVEEDORES -->
       <section id="vista-usuarios" class="vista">
 
         <!-- Bloque solo para Administrador -->
@@ -318,20 +318,48 @@
                 <div id="mensajeUsuario" class="mensaje"></div>
               </form>
             </article>
+
             <article class="panel">
-              <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.3</span><h3>Usuarios registrados</h3></div></div>
-              <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Nombre</th><th>Apellido</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tablaUsuarios"></tbody></table></div>
+              <div class="encabezado-panel">
+                <div>
+                  <span class="etiqueta-seccion">2.3</span>
+                  <h3>Usuarios registrados</h3>
+                </div>
+              </div>
+
+              <!-- BUSCADOR -->
+              <div class="buscador-usuarios">
+                <div class="campo">
+                <input type="text" id="buscarUsuario" placeholder="Busca por usuario..." autocomplete="off">
+                <button type="button" class="boton-principal" onclick="buscarUsuarios()">Buscar</button>
+                <button type="button" class="boton-secundario" onclick="cargarUsuarios()">Limpiar</button>
+                </div>
+              </div>
+
+              <div class="tabla-contenedor">
+                <table class="tabla">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                      <th>Usuario</th>
+                      <th>Rol</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaUsuarios"></tbody>
+                </table>
+              </div>
             </article>
           </div>
+
           <article class="panel" style="margin-top:20px;">
             <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
             <div id="informeUsuarios" class="panel-form"></div>
           </article>
         </div>
 
-       
       </section>
-
       <!-- ALIMENTOS -->
       <section id="vista-alimentos" class="vista">
         <div class="titulo-vista"><span class="etiqueta-seccion">ADMINISTRACIÓN DE ALIMENTOS</span><h2>Registro de alimentos</h2><p>Ingreso, modificación, eliminación y registro de pérdidas.</p></div>
