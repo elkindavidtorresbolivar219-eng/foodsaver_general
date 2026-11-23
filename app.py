@@ -143,7 +143,20 @@ def restablecer():
 @app.get("/api/usuarios")
 @solo_admin
 def usuarios_listar():
-    return jsonify(db.consultar("SELECT id, nombre, apellido, usuario, login, rol FROM usuarios ORDER BY id"))
+    buscar = request.args.get("buscar", "").strip()
+    if buscar:
+        filas = db.consultar(
+            """SELECT id, nombre, apellido, usuario, login, rol
+               FROM usuarios
+               WHERE login ILIKE %s
+               ORDER BY id""",
+            (f"%{buscar}%",),
+        )
+    else:
+        filas = db.consultar(
+            "SELECT id, nombre, apellido, usuario, login, rol FROM usuarios ORDER BY id"
+        )
+    return jsonify(filas)
 
 
 @app.post("/api/usuarios")
@@ -171,26 +184,39 @@ def usuarios_guardar():
     try:
         if uid:
             if clave:
-                db.ejecutar(
-                    "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, clave=%s, rol=%s WHERE id=%s",
+                fila = db.ejecutar(
+                    """UPDATE usuarios
+                       SET nombre=%s, apellido=%s, usuario=%s, login=%s, clave=%s, rol=%s
+                       WHERE id=%s RETURNING id""",
                     (nombre, apellido, usuario, login_, generate_password_hash(clave), rol, uid),
+                    retornar=True,
                 )
             else:
-                db.ejecutar(
-                    "UPDATE usuarios SET nombre=%s, apellido=%s, usuario=%s, login=%s, rol=%s WHERE id=%s",
+                fila = db.ejecutar(
+                    """UPDATE usuarios
+                       SET nombre=%s, apellido=%s, usuario=%s, login=%s, rol=%s
+                       WHERE id=%s RETURNING id""",
                     (nombre, apellido, usuario, login_, rol, uid),
+                    retornar=True,
                 )
+            if not fila:
+                return error("El usuario no existe.", 404)
+
+            # Si el admin se edita a sí mismo, actualiza su sesión
             if session["usuario"]["id"] == uid:
-                session["usuario"] = {"id": uid, "nombre": nombre, "apellido": apellido, "usuario": usuario, "login": login_, "rol": rol}
+                session["usuario"] = {"id": uid, "nombre": nombre, "login": login_, "rol": rol}
+
             return jsonify({"ok": True, "mensaje": "Usuario modificado correctamente."})
 
         db.ejecutar(
-            "INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol) VALUES (%s, %s, %s, %s, %s, %s)",
+            """INSERT INTO usuarios (nombre, apellido, usuario, login, clave, rol)
+               VALUES (%s, %s, %s, %s, %s, %s)""",
             (nombre, apellido, usuario, login_, generate_password_hash(clave), rol),
         )
         return jsonify({"ok": True, "mensaje": "Usuario creado correctamente."})
+
     except pg_errors.UniqueViolation:
-        return error("Ese nombre de usuario ya existe.", 409)
+        return error("Ya existe un usuario con ese login.", 409)
 
 
 @app.post("/api/usuarios/<int:uid>/eliminar")
@@ -200,8 +226,6 @@ def usuarios_eliminar(uid):
         return error("No puede eliminar el usuario que está actualmente conectado.")
     db.ejecutar("DELETE FROM usuarios WHERE id = %s", (uid,))
     return jsonify({"ok": True})
-
-
 # RUTAS DE PROVEEDORES
 @app.get("/api/proveedores")
 @login_requerido
