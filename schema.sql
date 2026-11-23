@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     clave VARCHAR(255) NOT NULL,
     rol VARCHAR(20) NOT NULL CHECK (
         rol IN (
+            'Super Administrador',
             'Administrador',
             'Operador',
             'Contador',
