@@ -324,6 +324,10 @@
   }
 
   async function iniciarSesion(usuario) {
+  const pantallaCarga = document.getElementById("pantalla-carga");
+  pantallaCarga.hidden = false;
+
+  try {
     sesion = {
       id: usuario.id,
       nombre: usuario.nombre,
@@ -333,7 +337,6 @@
 
     document.getElementById("pantallaLogin").classList.add("oculto");
     document.getElementById("aplicacion").classList.remove("oculto");
-    reproducirLogoAplicacion();
 
     setText("nombreSidebar", sesion.nombre);
     setText("rolSidebar", sesion.rol);
@@ -341,16 +344,19 @@
     setText("avatarSidebar", iniciales(sesion.nombre));
     setText("avatarTop", iniciales(sesion.nombre));
 
-   aplicarPermisos();
+    aplicarPermisos();
 
-    if (typeof window.cargarCategoriasSelect === "function") {
-      window.cargarCategoriasSelect();
-    }
-
-    window.cargarPlatos?.();
-
-    await recargar();
+    await Promise.all([
+      window.cargarCategoriasSelect?.(),
+      window.cargarPlatos?.(),
+      recargar()
+    ]);
+  } finally {
+    pantallaCarga.hidden = true;
   }
+
+  reproducirLogoAplicacion();
+}
   // Solo el Administrador ve el bloque de usuarios.
   // Proveedores queda visible para todos los roles.
 function aplicarPermisos() {
