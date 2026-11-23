@@ -21,6 +21,8 @@ app.config.update(
 db = Conexion()
 
 ROLES = ("Administrador", "Operador", "Contador", "Consulta")
+ROL_SUPER_ADMIN = "Super Administrador"
+ROLES_PROTEGIDOS = {ROL_SUPER_ADMIN, "Administrador"}
 TIPOS_CONTABLES = ("Venta", "Gasto operativo", "Inversión en insumos")
 
 
@@ -46,9 +48,10 @@ def solo_admin(funcion):
     @wraps(funcion)
     @login_requerido
     def envoltura(*args, **kwargs):
-        if session["usuario"]["rol"] != "Administrador":
-            return error("Solo el Administrador puede gestionar usuarios.", 403)
+        if session["usuario"]["rol"] not in ("Administrador", ROL_SUPER_ADMIN):
+            return error("Se requiere una cuenta de administrador.", 403)
         return funcion(*args, **kwargs)
+
     return envoltura
 
 
@@ -127,17 +130,22 @@ def restablecer():
     d = datos_json()
     login_ = (d.get("usuario") or "").strip()
     nueva = d.get("clave") or ""
+
     if len(nueva) < 4:
         return error("La contraseña debe tener mínimo 4 caracteres.")
+
     fila = db.ejecutar(
-        "UPDATE usuarios SET clave = %s WHERE login = %s RETURNING id",
-        (generate_password_hash(nueva), login_),
+        "UPDATE usuarios SET clave = %s "
+        "WHERE login = %s AND rol NOT IN %s "
+        "RETURNING id",
+        (generate_password_hash(nueva), login_, tuple(ROLES_PROTEGIDOS)),
         retornar=True,
     )
-    if not fila:
-        return error("El usuario no existe.", 404)
-    return jsonify({"ok": True})
 
+    if not fila:
+        return error("No se puede restablecer esta cuenta desde este formulario.", 403)
+
+    return jsonify({"ok": True})
 
 # RUTAS DE GESTIÓN DE USUARIOS (RF 2)
 @app.get("/api/usuarios")
@@ -173,6 +181,20 @@ def usuarios_guardar():
 
     clave = d.get("clave") or ""
     rol = d.get("rol")
+    if rol in ROLES_PROTEGIDOS and session["usuario"]["rol"] != ROL_SUPER_ADMIN:
+        return error("Solo el Super Administrador puede asignar ese rol.", 403)
+
+    if uid:
+        cuenta_actual = db.consultar_uno(
+            "SELECT rol FROM usuarios WHERE id = %s",
+            (uid,)
+        )
+
+        if not cuenta_actual:
+            return error("Usuario no encontrado.", 404)
+
+        if cuenta_actual["rol"] in ROLES_PROTEGIDOS and session["usuario"]["rol"] != ROL_SUPER_ADMIN:
+            return error("Solo el Super Administrador puede modificar esta cuenta.", 403)
 
     if not nombre or not apellido or not usuario:
         return error("Nombre, apellido y usuario son obligatorios.")
@@ -224,7 +246,18 @@ def usuarios_guardar():
 def usuarios_eliminar(uid):
     if uid == session["usuario"]["id"]:
         return error("No puede eliminar el usuario que está actualmente conectado.")
-    db.ejecutar("DELETE FROM usuarios WHERE id = %s", (uid,))
+    es_super_admin = session["usuario"]["rol"] == ROL_SUPER_ADMIN
+
+    eliminada = db.ejecutar(
+        "DELETE FROM usuarios "
+        "WHERE id = %s AND (%s OR rol NOT IN %s) "
+        "RETURNING id",
+        (uid, es_super_admin, tuple(ROLES_PROTEGIDOS)),
+        retornar=True,
+    )
+
+    if not eliminada:
+        return error("La cuenta no existe o no tienes permiso para eliminarla.", 403)
     return jsonify({"ok": True})
 # RUTAS DE PROVEEDORES
 @app.get("/api/proveedores")

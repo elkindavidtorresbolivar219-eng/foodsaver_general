@@ -218,9 +218,14 @@
       GET("/api/proveedores")
     ];
 
+      if (["Administrador", "Super Administrador"].includes(sesion.rol)) {
+      peticiones.push(GET("/api/usuarios"));
+
+
     if (sesion.rol === "Administrador") {
       const q = document.getElementById("buscarUsuario")?.value.trim() || "";
       peticiones.push(GET("/api/usuarios?buscar=" + encodeURIComponent(q)));
+
     }
 
     const r = await Promise.all(peticiones);
@@ -240,6 +245,7 @@
 
   function recargar() {
     return cargarDatos().catch(err => console.error(err));
+    
   }
 
   /* 
@@ -247,8 +253,7 @@
  */
 
      function puedeVerVista(nombre) {
-  if (sesion?.rol === "Administrador") return true;
-
+        if (["Administrador", "Super Administrador"].includes(sesion?.rol)) return true;
   return sesion?.rol === "Operador" &&
     (nombre === "platos" || nombre === "ventas" || nombre === "configuracion");
 }
@@ -349,13 +354,16 @@
   // Solo el Administrador ve el bloque de usuarios.
   // Proveedores queda visible para todos los roles.
 function aplicarPermisos() {
+   
+  const esAdmin = ["Administrador", "Super Administrador"].includes(sesion?.rol);
+
   document.querySelectorAll(".elemento-menu[data-vista]").forEach(enlace => {
     enlace.style.display = puedeVerVista(enlace.dataset.vista) ? "" : "none";
   });
 
   const bloque = document.getElementById("bloqueUsuarios");
   if (bloque) {
-    bloque.style.display = sesion?.rol === "Administrador" ? "block" : "none";
+   bloque.style.display = esAdmin ? "block" : "none";
   }
 
   // Limpia la pantalla que pudo quedar abierta en la sesión anterior.
@@ -365,10 +373,11 @@ function aplicarPermisos() {
 
   if (sesion?.rol === "Operador") {
     mostrarVista("ventas");
-  } else if (sesion?.rol === "Administrador") {
+} else if (esAdmin) {
     mostrarVista("dashboard");
   }
 }
+
   function mostrarLogin() {
     sesion = null;
 
