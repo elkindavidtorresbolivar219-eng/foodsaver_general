@@ -245,8 +245,15 @@
      VISTAS Y SESIÓN
  */
 
+     function puedeVerVista(nombre) {
+  if (sesion?.rol === "Administrador") return true;
+
+  return sesion?.rol === "Operador" &&
+    (nombre === "platos" || nombre === "ventas");
+}
+
   function mostrarVista(nombre) {
-    if (!sesion) return;
+   if (!puedeVerVista(nombre)) return;
 
     document
       .querySelectorAll(".vista")
@@ -340,14 +347,27 @@
   }
   // Solo el Administrador ve el bloque de usuarios.
   // Proveedores queda visible para todos los roles.
-  function aplicarPermisos() {
-    const bloque = document.getElementById("bloqueUsuarios");
-    if (bloque) {
-      bloque.style.display =
-        sesion && sesion.rol === "Administrador" ? "block" : "none";
-    }
+function aplicarPermisos() {
+  document.querySelectorAll(".elemento-menu[data-vista]").forEach(enlace => {
+    enlace.style.display = puedeVerVista(enlace.dataset.vista) ? "" : "none";
+  });
+
+  const bloque = document.getElementById("bloqueUsuarios");
+  if (bloque) {
+    bloque.style.display = sesion?.rol === "Administrador" ? "block" : "none";
   }
 
+  // Limpia la pantalla que pudo quedar abierta en la sesión anterior.
+  document.querySelectorAll(".vista.activa").forEach(vista => {
+    vista.classList.remove("activa");
+  });
+
+  if (sesion?.rol === "Operador") {
+    mostrarVista("ventas");
+  } else if (sesion?.rol === "Administrador") {
+    mostrarVista("dashboard");
+  }
+}
   function mostrarLogin() {
     sesion = null;
 

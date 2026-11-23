@@ -739,6 +739,26 @@
             </div>
           </div>
 
+          <div class="filtro-historial" role="group" aria-label="Filtrar operaciones por fecha">
+  <label>
+    Ver por
+    <select class="historial-periodo">
+      <option value="dia">Día</option>
+      <option value="semana">Semana</option>
+      <option value="mes">Mes</option>
+      <option value="anio">Año</option>
+    </select>
+  </label>
+
+  <label>
+    Fecha de referencia
+    <input class="historial-fecha" type="date">
+  </label>
+
+  <strong class="historial-rango" aria-live="polite"></strong>
+</div>
+
+          
           <div class="tabla-wrapper">
             <table>
               <thead>
@@ -940,7 +960,24 @@
               <p>Registro completo de deudas, pagos y ajustes realizados.</p>
             </div>
           </div>
+            <div class="filtro-historial" role="group" aria-label="Filtrar movimientos de saldos por fecha">
+            <label>
+            Ver por
+        <select class="historial-periodo">
+          <option value="dia">Día</option>
+          <option value="semana">Semana</option>
+          <option value="mes">Mes</option>
+          <option value="anio">Año</option>
+       </select>
+    </label>
 
+  <label>
+    Fecha de referencia
+    <input class="historial-fecha" type="date">
+  </label>
+
+  <strong class="historial-rango" aria-live="polite"></strong>
+</div>
           <div class="tabla-wrapper">
             <table>
               <thead>
@@ -1420,8 +1457,9 @@
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/historiales.js') }}"></script>
   <script src="{{ url_for('static', filename='js/platos.js') }}?v=12"></script>
-     <script src="{{ url_for('static', filename='js/categorias.js') }}?v=11"></script>
+  <script src="{{ url_for('static', filename='js/categorias.js') }}?v=11"></script>
 
 </body>
 </html> 
