@@ -249,7 +249,7 @@
   if (sesion?.rol === "Administrador") return true;
 
   return sesion?.rol === "Operador" &&
-    (nombre === "platos" || nombre === "ventas");
+    (nombre === "platos" || nombre === "ventas" || nombre === "configuracion");
 }
 
   function mostrarVista(nombre) {
