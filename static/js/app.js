@@ -209,7 +209,6 @@
 
   async function cargarDatos() {
     if (!sesion) return;
-
     const peticiones = [
       GET("/api/alimentos"),
       GET("/api/perdidas"),
@@ -218,18 +217,12 @@
       GET("/api/proveedores")
     ];
 
-      if (["Administrador", "Super Administrador"].includes(sesion.rol)) {
-      peticiones.push(GET("/api/usuarios"));
-
-
-    if (sesion.rol === "Administrador") {
+    if (["Administrador", "Super Administrador"].includes(sesion.rol)) {
       const q = document.getElementById("buscarUsuario")?.value.trim() || "";
       peticiones.push(GET("/api/usuarios?buscar=" + encodeURIComponent(q)));
-
     }
 
     const r = await Promise.all(peticiones);
-
     datos = {
       alimentos: Array.isArray(r[0]) ? r[0] : [],
       perdidas: Array.isArray(r[1]) ? r[1] : [],
