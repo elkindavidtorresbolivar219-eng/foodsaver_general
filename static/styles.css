@@ -3544,3 +3544,60 @@ input[type="reset"],
 .cuenta-salir:hover {
   background: #991525;
 }
+
+/* este es el estilo para el historial */
+.filtro-historial {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 20px;
+  padding: 14px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.filtro-historial label {
+  display: grid;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.filtro-historial select,
+.filtro-historial input {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+}
+
+.filtro-historial select {
+  border-color: var(--gold);
+}
+
+.historial-rango {
+  align-self: center;
+  color: var(--text-secondary);
+}
+
+
+@media (max-width: 640px) {
+  .filtro-historial {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .filtro-historial select,
+  .filtro-historial input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 16px;
+  }
+}

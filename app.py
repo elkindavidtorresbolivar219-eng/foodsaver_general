@@ -678,9 +678,9 @@ def saldos_proveedores_registrar():
             (pid, tipo, monto, concepto or ("Compra a crédito" if tipo == "Compra" else "Pago de deuda")),
         )
     return jsonify({"ok": True, "mensaje": "Movimiento registrado correctamente."})
-# ============================================================
+
 # RUTAS DE SALDOS (admin, trabajadores y proveedores)
-# ============================================================
+
 def contador_o_admin(funcion):
     @wraps(funcion)
     @login_requerido
@@ -708,7 +708,7 @@ def saldo_trabajador_cur(cur, uid):
 
 
 @app.get("/api/saldos")
-@login_requerido
+@solo_admin
 def saldos_resumen():
     admin = db.consultar_uno(
         f"SELECT {SQL_SUMA_SALDO} AS s FROM movimientos_saldo WHERE cuenta = 'admin'"
@@ -743,7 +743,7 @@ def saldos_resumen():
 
 
 @app.get("/api/saldos/movimientos")
-@login_requerido
+@solo_admin
 def saldos_movimientos():
     return jsonify(db.consultar(
         """SELECT to_char(fecha, 'DD/MM/YYYY HH24:MI') AS fecha, concepto, cuenta, tipo, monto, sube
