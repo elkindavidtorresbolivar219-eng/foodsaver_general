@@ -217,8 +217,15 @@
       GET("/api/sedes"),
       GET("/api/proveedores")
     ];
+
       if (["Administrador", "Super Administrador"].includes(sesion.rol)) {
       peticiones.push(GET("/api/usuarios"));
+
+
+    if (sesion.rol === "Administrador") {
+      const q = document.getElementById("buscarUsuario")?.value.trim() || "";
+      peticiones.push(GET("/api/usuarios?buscar=" + encodeURIComponent(q)));
+
     }
 
     const r = await Promise.all(peticiones);
@@ -455,9 +462,31 @@ function aplicarPermisos() {
 
  
 
-  /* 
+    /* 
      USUARIOS
    */
+
+  function renderizarUsuarios() {
+    setHTML(
+      "tablaUsuarios",
+      datos.usuarios.length
+        ? datos.usuarios
+            .map(u =>
+              "<tr>" +
+              "<td><strong>" + esc(u.nombre) + "</strong></td>" +
+              "<td>" + esc(u.apellido) + "</td>" +
+              "<td>" + esc(u.login) + "</td>" +
+              "<td>" + esc(u.rol) + "</td>" +
+              '<td><div class="acciones-tabla">' +
+              '<button onclick="editarUsuario(' + u.id + ')">Editar</button>' +
+              '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' +
+              "</div></td>" +
+              "</tr>"
+            )
+            .join("")
+        : '<tr><td colspan="5">No se encontraron usuarios.</td></tr>'
+    );
+  }
 
   document.getElementById("formUsuario").addEventListener("submit", async e => {
     e.preventDefault();
@@ -469,18 +498,12 @@ function aplicarPermisos() {
       const usuario = document.getElementById("usuarioLogin").value.trim();
       const clave = document.getElementById("usuarioClave").value;
       const rol = document.getElementById("usuarioRol").value;
+
       const r = await POST("/api/usuarios", {
-        id: id,
-        nombre: nombre,
-        apellido: apellido,
-        usuario: usuario,
-        login: usuario,
-        clave: clave,
-        rol: rol
+        id, nombre, apellido, usuario, login: usuario, clave, rol
       });
 
       mensaje("mensajeUsuario", r.mensaje || "Usuario guardado correctamente.", "ok");
-
       limpiarUsuario();
       await recargar();
     } catch (err) {
@@ -494,61 +517,28 @@ function aplicarPermisos() {
     document.getElementById("usuarioClave").required = true;
   }
 
-  window.limpiarUsuario =
-    limpiarUsuario;
+  window.limpiarUsuario = limpiarUsuario;
 
   function editarUsuario(id) {
     const u = datos.usuarios.find(x => Number(x.id) === Number(id));
 
     if (!u) {
-      mensaje(
-        "mensajeUsuario",
-        "No se encontró el usuario.",
-        "error"
-      );
-
+      mensaje("mensajeUsuario", "No se encontró el usuario.", "error");
       return;
     }
 
-    document
-      .getElementById("usuarioId")
-      .value = u.id || "";
+    document.getElementById("usuarioId").value = u.id || "";
+    document.getElementById("usuarioNombre").value = u.nombre || "";
+    document.getElementById("usuarioApellido").value = u.apellido || "";
+    document.getElementById("usuarioLogin").value = u.login || u.usuario || "";
+    document.getElementById("usuarioClave").value = "";
+    document.getElementById("usuarioClave").required = false;
+    document.getElementById("usuarioRol").value = u.rol || "";
 
-    document
-      .getElementById("usuarioNombre")
-      .value = u.nombre || "";
-
-    document
-      .getElementById("usuarioApellido")
-      .value = u.apellido || "";
-
-    document
-      .getElementById("usuarioLogin")
-      .value =
-        u.login ||
-        u.usuario ||
-        "";
-
-    document
-      .getElementById("usuarioClave")
-      .value = "";
-
-    document
-      .getElementById("usuarioClave")
-      .required = false;
-
-    document
-      .getElementById("usuarioRol")
-      .value = u.rol || "";
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  window.editarUsuario =
-    editarUsuario;
+  window.editarUsuario = editarUsuario;
 
   async function eliminarUsuario(id) {
     if (!(await confirmar("¿Deseas eliminar este usuario?"))) return;
@@ -557,18 +547,12 @@ function aplicarPermisos() {
       await POST("/api/usuarios/" + id + "/eliminar");
       mensaje("mensajeUsuario", "Usuario eliminado correctamente.", "ok");
       await recargar();
-
     } catch (err) {
-      mensaje(
-        "mensajeUsuario",
-        err.message,
-        "error"
-      );
+      mensaje("mensajeUsuario", err.message, "error");
     }
   }
 
-  window.eliminarUsuario =
-    eliminarUsuario;
+  window.eliminarUsuario = eliminarUsuario;
 
   function generarInformeUsuarios() {
     const html = datos.usuarios.length
@@ -583,6 +567,37 @@ function aplicarPermisos() {
   }
 
   window.generarInformeUsuarios = generarInformeUsuarios;
+
+  // BUSCAR USUARIOS POR LOGIN
+  async function buscarUsuarios() {
+    const texto = (document.getElementById("buscarUsuario")?.value || "").trim();
+
+    try {
+      const lista = await GET("/api/usuarios?buscar=" + encodeURIComponent(texto));
+      datos.usuarios = Array.isArray(lista) ? lista : [];
+      renderizarUsuarios();
+    } catch (err) {
+      mensaje("mensajeUsuario", err.message, "error");
+    }
+  }
+
+  window.buscarUsuarios = buscarUsuarios;
+
+  // Botón "Limpiar" del buscador
+  function cargarUsuarios() {
+    const campo = document.getElementById("buscarUsuario");
+    if (campo) campo.value = "";
+    return buscarUsuarios();
+  }
+
+  window.cargarUsuarios = cargarUsuarios;
+
+  // Busca mientras se escribe
+  let temporizadorBusqueda;
+  document.getElementById("buscarUsuario")?.addEventListener("input", () => {
+    clearTimeout(temporizadorBusqueda);
+    temporizadorBusqueda = setTimeout(buscarUsuarios, 250);
+  });
 
   /* 
      PROVEEDORES
@@ -1608,27 +1623,11 @@ if (typeof window.cargarSaldos === "function") {
   window.cargarSaldos();
 }
 
-    /* USUARIOS */
-    setHTML(
-      "tablaUsuarios",
-      datos.usuarios
-        .map(
-          u =>
-            "<tr>" +
-            "<td><strong>" + esc(u.nombre) + "</strong></td>" +
-            "<td>" + esc(u.apellido) + "</td>" +
-            "<td>" + esc(u.login) + "</td>" +
-            "<td>" + esc(u.rol) + "</td>" +
-            '<td><div class="acciones-tabla">' +
-            '<button onclick="editarUsuario(' + u.id + ')">Editar</button>' +
-            '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' +
-            "</div></td>" +
-            "</tr>"
-        )
-        .join("")
-    );
+   /* 
+     USUARIOS
+   */
 
-   
+  renderizarUsuarios();
    /* PROVEEDORES */
 
 renderizarProveedores();
