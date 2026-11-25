@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date
+from datetime import date, timedelta
 from functools import wraps
 
 from flask import Flask,Response, jsonify, render_template, request, session
@@ -827,6 +827,89 @@ def saldos_movimientos():
            ORDER BY fecha DESC, orden DESC
            LIMIT 100"""
     ))
+
+
+# ---------- REPORTE DE SALDOS: cómo empezó y cómo terminó un periodo ----------
+def rango_periodo(periodo, ref):
+    """Devuelve (inicio, fin) donde fin NO está incluido."""
+    if periodo == "dia":
+        return ref, ref + timedelta(days=1)
+    if periodo == "semana":                      # semana de lunes a domingo
+        ini = ref - timedelta(days=ref.weekday())
+        return ini, ini + timedelta(days=7)
+    ini = ref.replace(day=1)                     # mes
+    fin = date(ini.year + 1, 1, 1) if ini.month == 12 else date(ini.year, ini.month + 1, 1)
+    return ini, fin
+
+
+def resumen_periodo(tabla, filtro, pos, neg, ini, fin):
+    """Saldo inicial, lo que sumó, lo que restó y saldo final de un periodo.
+    tabla y filtro son constantes internas (nunca vienen del usuario)."""
+    fila = db.consultar_uno(
+        f"""SELECT
+               COALESCE(SUM(CASE WHEN fecha < %s THEN
+                    CASE WHEN tipo = %s THEN monto ELSE -monto END END), 0)::BIGINT AS inicial,
+               COALESCE(SUM(CASE WHEN fecha >= %s AND fecha < %s AND tipo = %s
+                    THEN monto END), 0)::BIGINT AS aumentos,
+               COALESCE(SUM(CASE WHEN fecha >= %s AND fecha < %s AND tipo = %s
+                    THEN monto END), 0)::BIGINT AS disminuciones
+            FROM {tabla} WHERE {filtro}""",
+        (ini, pos, ini, fin, pos, ini, fin, neg),
+    )
+    fila["final"] = fila["inicial"] + fila["aumentos"] - fila["disminuciones"]
+    return fila
+
+
+@app.get("/api/saldos/reporte")
+@solo_admin
+def saldos_reporte():
+    periodo = request.args.get("periodo", "dia")
+    if periodo not in ("dia", "semana", "mes"):
+        return error("Periodo no válido.")
+    try:
+        ref = date.fromisoformat(request.args.get("fecha") or date.today().isoformat())
+    except ValueError:
+        return error("La fecha no es válida.")
+
+    ini, fin = rango_periodo(periodo, ref)
+
+    movimientos = db.consultar(
+        """SELECT to_char(fecha, 'DD/MM/YYYY HH24:MI') AS fecha, concepto, cuenta, tipo, monto, sube
+           FROM (
+               SELECT m.fecha, m.concepto,
+                      'Proveedor: ' || p.nombre AS cuenta,
+                      CASE m.tipo WHEN 'Compra' THEN 'Deuda aumentó (+)' ELSE 'Pago realizado (-)' END AS tipo,
+                      m.monto, (m.tipo = 'Compra') AS sube, m.id AS orden
+               FROM movimientos_proveedor m
+               JOIN proveedores p ON p.id = m.proveedor_id
+               WHERE m.fecha >= %s AND m.fecha < %s
+               UNION ALL
+               SELECT s.fecha, s.concepto,
+                      CASE WHEN s.cuenta = 'admin' THEN 'Administrador'
+                           ELSE 'Trabajador: ' || u.nombre || ' ' || u.apellido END AS cuenta,
+                      CASE s.tipo WHEN 'Ingreso' THEN 'Ingreso (+)' ELSE 'Retiro (-)' END AS tipo,
+                      s.monto, (s.tipo = 'Ingreso') AS sube, s.id AS orden
+               FROM movimientos_saldo s
+               LEFT JOIN usuarios u ON u.id = s.usuario_id
+               WHERE s.fecha >= %s AND s.fecha < %s
+           ) t
+           ORDER BY fecha ASC, orden ASC""",
+        (ini, fin, ini, fin),
+    )
+
+    return jsonify({
+        "periodo": periodo,
+        "desde": ini.strftime("%d/%m/%Y"),
+        "hasta": (fin - timedelta(days=1)).strftime("%d/%m/%Y"),
+        "admin": resumen_periodo("movimientos_saldo", "cuenta = 'admin'",
+                                 "Ingreso", "Retiro", ini, fin),
+        "trabajadores": resumen_periodo("movimientos_saldo", "cuenta = 'trabajador'",
+                                        "Ingreso", "Retiro", ini, fin),
+        "proveedores": resumen_periodo("movimientos_proveedor", "TRUE",
+                                       "Compra", "Pago", ini, fin),
+        "movimientos": movimientos,
+    })
+# ---------- FIN REPORTE DE SALDOS ----------
 
 
 @app.post("/api/saldos/compra-proveedor")
