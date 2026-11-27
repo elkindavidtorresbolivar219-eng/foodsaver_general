@@ -318,7 +318,7 @@
 
   async function iniciarSesion(usuario) {
   const pantallaCarga = document.getElementById("pantalla-carga");
-  pantallaCarga.hidden = false;
+  if (pantallaCarga) pantallaCarga.hidden = false;
 
   try {
     sesion = {
@@ -345,7 +345,7 @@
       recargar()
     ]);
   } finally {
-    pantallaCarga.hidden = true;
+    if (pantallaCarga) pantallaCarga.hidden = true;
   }
 
   reproducirLogoAplicacion();
@@ -1876,66 +1876,168 @@ if (comboProv) {
      REPORTES
    */
 
-  function generarReporte() {
-    const tipo = document.getElementById("tipoReporte").value;
-    const fecha = document.getElementById("fechaReporte").value || hoyISO();
+let reporteActual = null;
+
+  function generarReporte(tipoElegido) {
+    const tipo = tipoElegido || reporteActual || "Reporte diario";
+    const fechaElegida = document.getElementById("fechaReporte")?.value || "";
+    const fecha = fechaElegida || hoyISO();
+    const leer = id => (document.getElementById(id)?.textContent || "$0").trim();
+    const delDia = x => String(x.fecha || "").slice(0, 10) === fecha;
+    const esInversion = x => /inver/i.test(String(x.tipo || ""));
 
     let texto = "";
 
-    if (
-      tipo ===
-      "Reporte diario"
-    ) {
-      texto =
-        "Fecha: " +
-        fechaBonita(fecha) +
+    switch (tipo) {
+      case "Reporte diario":
+        texto =
+          "Fecha: " + fechaBonita(fecha) +
+          "\nProductos registrados: " + datos.alimentos.length +
+          "\nUnidades disponibles: " + datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
+          "\nPérdidas registradas: " + datos.perdidas.length +
+          "\nOperaciones contables: " + datos.contabilidad.length;
+        break;
 
-        "\nProductos registrados: " +
-        datos.alimentos.length +
-
-        "\nUnidades disponibles: " +
-        datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
-        "\nPérdidas registradas: " + datos.perdidas.length +
-        "\nOperaciones contables: " + datos.contabilidad.length;
-    } else if (tipo === "Inventario general") {
-      texto =
-        datos.alimentos
-          .map(a => a.nombre + " | " + a.categoria + " | " + a.cantidad + " unidades")
-          .join("\n") || "No hay alimentos registrados.";
-    } else if (tipo === "Pérdida de alimentos") {
-      texto = datos.perdidas.length
-        ? datos.perdidas
-            .map(
-              p =>
-                fechaBonita(p.fecha) + " | " + p.alimento + " | " +
-                p.cantidad + " unidades | " + p.motivo
-            )
-            .join("\n")
-        : "No hay pérdidas registradas.";
-    } else if (tipo === "Consumo") {
-      texto =
-        "Consumo estimado a partir de las salidas registradas.\n\n" +
-        (datos.perdidas.length
-          ? datos.perdidas
-              .map(
-                p =>
-                  p.alimento + ": " + p.cantidad +
-                  " unidades registradas como salida/pérdida"
-              )
+      case "Usuarios": {
+        const porRol = {};
+        datos.usuarios.forEach(u => { porRol[u.rol] = (porRol[u.rol] || 0) + 1; });
+        texto = datos.usuarios.length
+          ? "Total de usuarios: " + datos.usuarios.length +
+            "\n" + Object.entries(porRol).map(([r, n]) => r + ": " + n).join(" | ") +
+            "\n\n" +
+            datos.usuarios
+              .map(u => u.nombre + " " + (u.apellido || "") + " | " + u.login + " | " + u.rol)
               .join("\n")
-          : "No hay registros de consumo/salidas disponibles.");
-    } else {
-      texto =
-        datos.contabilidad
-          .map(
-            x =>
-              fechaBonita(x.fecha) + " | " + x.tipo + " | " +
-              x.descripcion + " | " + formatoMoneda(x.valor)
-          )
-          .join("\n") || "No hay operaciones contables registradas.";
+          : "No hay usuarios para mostrar (solo el Administrador puede consultarlos).";
+        break;
+      }
+
+      case "Alimentos":
+        texto = datos.alimentos.length
+          ? "Total de alimentos: " + datos.alimentos.length + "\n\n" +
+            datos.alimentos
+              .map(a =>
+                a.nombre + " | " + a.categoria + " | " + a.cantidad + " und | " +
+                formatoMoneda(a.precio) + " | Vence: " + fechaBonita(a.vencimiento) +
+                " | " + (a.proveedor || "-"))
+              .join("\n")
+          : "No hay alimentos registrados.";
+        break;
+
+      case "Platos": {
+        const platos = [...document.querySelectorAll("#platosGrid .plato-carta")];
+        texto = platos.length
+          ? "Total de platos: " + platos.length + "\n\n" +
+            platos.map(p => {
+              const ings = [...p.querySelectorAll(".plato-ingredientes li")]
+                .map(li => (li.querySelector(".ing-nombre")?.textContent || li.childNodes[0]?.textContent || "").trim())
+                .filter(Boolean)
+                .join(", ");
+              return p.dataset.nombre + " | " + formatoMoneda(Number(p.dataset.precio)) +
+                "\n   Ingredientes: " + (ings || "-");
+            }).join("\n")
+          : "No hay platos registrados.";
+        break;
+      }
+
+      case "Inventario general": {
+        const unidades = datos.alimentos.reduce((s, a) => s + a.cantidad, 0);
+        const criticos = datos.alimentos.filter(a => estadoAlimento(a)[1] === "bad").length;
+        texto = datos.alimentos.length
+          ? "Productos: " + datos.alimentos.length +
+            " | Unidades disponibles: " + unidades +
+            " | Críticos o por vencer: " + criticos + "\n\n" +
+            datos.alimentos
+              .map(a => a.nombre + " | " + a.categoria + " | " + a.cantidad + " unidades | Vence: " +
+                fechaBonita(a.vencimiento) + " | " + estadoAlimento(a)[0])
+              .join("\n")
+          : "No hay alimentos en el inventario.";
+        break;
+      }
+
+      case "Inversiones": {
+        const ops = datos.contabilidad.filter(delDia);
+        const inversiones = ops.filter(esInversion);
+        const ventas = ops.filter(x => x.tipo === "Venta");
+        const otros = ops.filter(x => x.tipo !== "Venta" && !esInversion(x));
+        const suma = lista => lista.reduce((s, x) => s + Number(x.valor), 0);
+        const linea = x => "   " + x.tipo + " | " + x.descripcion + " | " + formatoMoneda(x.valor);
+        const perdidasDia = datos.perdidas.filter(delDia);
+
+        texto =
+          "Actividad del día " + fechaBonita(fecha) +
+          (fechaElegida ? "" : " (hoy)") +
+          "\nOperaciones registradas: " + ops.length +
+          "\n\nINVERSIONES (" + inversiones.length + ") — Total: " + formatoMoneda(suma(inversiones)) +
+          "\n" + (inversiones.length ? inversiones.map(linea).join("\n") : "   Sin inversiones este día.") +
+          "\n\nVENTAS (" + ventas.length + ") — Total: " + formatoMoneda(suma(ventas)) +
+          "\n" + (ventas.length ? ventas.map(linea).join("\n") : "   Sin ventas este día.") +
+          "\n\nOTROS MOVIMIENTOS (" + otros.length + ") — Total: " + formatoMoneda(suma(otros)) +
+          "\n" + (otros.length ? otros.map(linea).join("\n") : "   Sin otros movimientos este día.") +
+          "\n\nPÉRDIDAS DE ALIMENTOS (" + perdidasDia.length + ")" +
+          "\n" + (perdidasDia.length
+            ? perdidasDia.map(p => "   " + p.alimento + " | " + p.cantidad + " unidades | " + p.motivo).join("\n")
+            : "   Sin pérdidas este día.") +
+          "\n\nESTADO FINANCIERO ACTUAL" +
+          "\n   Total invertido: " + leer("dashboardInversion") +
+          "\n   Ingresos por ventas: " + leer("dashboardIngresos") +
+          "\n   Ganancia neta: " + leer("dashboardGanancia") +
+          "\n   Rentabilidad: " + leer("dashboardRentabilidad");
+        break;
+      }
+
+      case "Ventas": {
+        const ventas = datos.contabilidad.filter(x =>
+          x.tipo === "Venta" && (!fechaElegida || delDia(x)));
+        const total = ventas.reduce((s, x) => s + Number(x.valor), 0);
+        texto = ventas.length
+          ? "Ventas: " + ventas.length + " | Total: " + formatoMoneda(total) + "\n\n" +
+            ventas.map(x => fechaBonita(x.fecha) + " | " + x.descripcion + " | " + formatoMoneda(x.valor)).join("\n")
+          : "No hay ventas registradas" + (fechaElegida ? " en esa fecha." : ".");
+        break;
+      }
+
+      case "Saldos": {
+        const filas = id => [...document.querySelectorAll("#" + id + " tr")]
+          .map(tr => [...tr.cells].map(c => c.textContent.trim()).join(" | "))
+          .filter(t => t && !/^No hay|^Cargando/i.test(t));
+        const prov = filas("tablaSaldosProveedores");
+        const trab = filas("tablaSaldosTrabajadores");
+        texto =
+          "Saldo Administrador: " + leer("saldoAdmin") +
+          "\nSaldo Trabajadores (total): " + leer("saldoTrabajador") +
+          "\nDeuda Proveedores (total): " + leer("saldoProveedores") +
+          "\n\nDEUDA POR PROVEEDOR\n" + (prov.length ? prov.map(t => "   " + t).join("\n") : "   Sin datos.") +
+          "\n\nSALDO POR TRABAJADOR\n" + (trab.length ? trab.map(t => "   " + t).join("\n") : "   Sin datos.");
+        break;
+      }
+
+      case "Pérdida de alimentos":
+        texto = datos.perdidas.length
+          ? datos.perdidas
+              .map(p => fechaBonita(p.fecha) + " | " + p.alimento + " | " + p.cantidad + " unidades | " + p.motivo)
+              .join("\n")
+          : "No hay pérdidas registradas.";
+        break;
+
+      case "Consumo":
+        texto =
+          "Consumo estimado a partir de las salidas registradas.\n\n" +
+          (datos.perdidas.length
+            ? datos.perdidas
+                .map(p => p.alimento + ": " + p.cantidad + " unidades registradas como salida/pérdida")
+                .join("\n")
+            : "No hay registros de consumo/salidas disponibles.");
+        break;
+
+      default:
+        texto =
+          datos.contabilidad
+            .map(x => fechaBonita(x.fecha) + " | " + x.tipo + " | " + x.descripcion + " | " + formatoMoneda(x.valor))
+            .join("\n") || "No hay operaciones contables registradas.";
     }
 
-        setHTML(
+    setHTML(
       "resultadoReporte",
       "<h4>" + esc(tipo) + "</h4><p>" +
         esc(texto).replace(/\n/g, "<br>") + "</p>"
@@ -1948,7 +2050,27 @@ if (comboProv) {
     boton.addEventListener("click", () => imprimirReporte(tipo, texto));
 
     document.getElementById("resultadoReporte").appendChild(boton);
-  } // Aquí termina generarReporte()
+  }
+
+  async function seleccionarReporte(tipo) {
+    reporteActual = tipo;
+
+    document
+      .querySelectorAll("#reporteOpciones .reporte-opcion")
+      .forEach(b => b.classList.toggle("activa", b.dataset.reporte === tipo));
+
+    await recargar();
+    generarReporte(tipo);
+  }
+
+  document.getElementById("reporteOpciones")?.addEventListener("click", e => {
+    const boton = e.target.closest(".reporte-opcion");
+    if (boton) seleccionarReporte(boton.dataset.reporte);
+  });
+
+  document.getElementById("fechaReporte")?.addEventListener("change", () => {
+    if (reporteActual) generarReporte(reporteActual);
+  });
 
 // para poder imprimir el reporte en una ventana emergente 
 
