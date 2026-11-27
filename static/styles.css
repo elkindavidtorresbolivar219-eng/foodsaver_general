@@ -3613,3 +3613,61 @@ input[type="reset"],
   height: 100%;
   object-fit: cover;
 }
+
+/* =========================================================
+   REPORTES: botones por sección
+   ========================================================= */
+
+.reporte-ayuda {
+  margin: 10px 0 12px;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.reporte-opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.reporte-opcion {
+  padding: 12px 14px;
+  color: var(--white);
+  background: #181725;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font-title);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.reporte-opcion:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.reporte-opcion.activa {
+  color: var(--dark);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+:root[data-tema="claro"] .reporte-opcion {
+  background: #F3F2F7;
+}
+
+:root[data-tema="claro"] .reporte-opcion.activa {
+  background: var(--gold);
+}
+
+@media print {
+  .reporte-opciones,
+  .reporte-ayuda,
+  .campo-fecha-reporte {
+    display: none !important;
+  }
+}

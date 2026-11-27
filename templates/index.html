@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=9">
 </head>
 
 <body>
@@ -1183,23 +1183,24 @@
   <article class="panel panel-form">
     <h2>Reportes alimentarios</h2>
 
-    <label for="tipoReporte">Tipo de reporte</label>
-    <select id="tipoReporte">
-      <option>Reporte diario</option>
-      <option>Inventario general</option>
-      <option>Pérdida de alimentos</option>
-      <option>Consumo</option>
-    </select>
+    <p class="reporte-ayuda">Haz clic en una sección para ver su reporte.</p>
+    <div class="reporte-opciones" id="reporteOpciones">
+      <button type="button" class="reporte-opcion" data-reporte="Usuarios">Usuarios</button>
+      <button type="button" class="reporte-opcion" data-reporte="Alimentos">Alimentos</button>
+      <button type="button" class="reporte-opcion" data-reporte="Platos">Platos</button>
+      <button type="button" class="reporte-opcion" data-reporte="Inventario general">Inventario</button>
+      <button type="button" class="reporte-opcion" data-reporte="Inversiones">Inversiones</button>
+      <button type="button" class="reporte-opcion" data-reporte="Ventas">Ventas</button>
+      <button type="button" class="reporte-opcion" data-reporte="Saldos">Saldos</button>
+      <button type="button" class="reporte-opcion" data-reporte="Pérdida de alimentos">Pérdidas</button>
+      <button type="button" class="reporte-opcion" data-reporte="Consumo">Consumo</button>
+      <button type="button" class="reporte-opcion" data-reporte="Informe de operaciones contables">Operaciones contables</button>
+      <button type="button" class="reporte-opcion" data-reporte="Reporte diario">Reporte diario</button>
+    </div>
 
-   <div class="campo campo-fecha-reporte">
-  <label for="fechaReporte">Fecha del reporte diario</label>
-  <input id="fechaReporte" type="date">
-</div>
-
-    <div class="acciones">
-      <button type="button" class="boton-principal" onclick="generarReporte()">
-        Generar reporte
-      </button>
+    <div class="campo campo-fecha-reporte">
+      <label for="fechaReporte">Fecha del reporte (si la dejas vacía se usa hoy)</label>
+      <input id="fechaReporte" type="date">
     </div>
 
     <div id="resultadoReporte" class="reporte-box" aria-live="polite"></div>
@@ -1515,8 +1516,8 @@
 
   <!-- fin de administrar categoria -->
 
-  <!-- Archivos JS en la carpeta static (subí la versión para evitar caché joselin) -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=12"></script>
+ 
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=13"></script>
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
