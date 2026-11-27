@@ -209,7 +209,6 @@
 
   async function cargarDatos() {
     if (!sesion) return;
-
     const peticiones = [
       GET("/api/alimentos"),
       GET("/api/perdidas"),
@@ -218,12 +217,12 @@
       GET("/api/proveedores")
     ];
 
-    if (sesion.rol === "Administrador") {
-      peticiones.push(GET("/api/usuarios"));
+    if (["Administrador", "Super Administrador"].includes(sesion.rol)) {
+      const q = document.getElementById("buscarUsuario")?.value.trim() || "";
+      peticiones.push(GET("/api/usuarios?buscar=" + encodeURIComponent(q)));
     }
 
     const r = await Promise.all(peticiones);
-
     datos = {
       alimentos: Array.isArray(r[0]) ? r[0] : [],
       perdidas: Array.isArray(r[1]) ? r[1] : [],
@@ -239,14 +238,21 @@
 
   function recargar() {
     return cargarDatos().catch(err => console.error(err));
+    
   }
 
   /* 
      VISTAS Y SESIÓN
  */
 
+     function puedeVerVista(nombre) {
+        if (["Administrador", "Super Administrador"].includes(sesion?.rol)) return true;
+  return sesion?.rol === "Operador" &&
+    (nombre === "platos" || nombre === "ventas" || nombre === "configuracion");
+}
+
   function mostrarVista(nombre) {
-    if (!sesion) return;
+   if (!puedeVerVista(nombre)) return;
 
     document
       .querySelectorAll(".vista")
@@ -311,6 +317,10 @@
   }
 
   async function iniciarSesion(usuario) {
+  const pantallaCarga = document.getElementById("pantalla-carga");
+  pantallaCarga.hidden = false;
+
+  try {
     sesion = {
       id: usuario.id,
       nombre: usuario.nombre,
@@ -320,7 +330,6 @@
 
     document.getElementById("pantallaLogin").classList.add("oculto");
     document.getElementById("aplicacion").classList.remove("oculto");
-    reproducirLogoAplicacion();
 
     setText("nombreSidebar", sesion.nombre);
     setText("rolSidebar", sesion.rol);
@@ -328,25 +337,45 @@
     setText("avatarSidebar", iniciales(sesion.nombre));
     setText("avatarTop", iniciales(sesion.nombre));
 
-   aplicarPermisos();
+    aplicarPermisos();
 
-    if (typeof window.cargarCategoriasSelect === "function") {
-      window.cargarCategoriasSelect();
-    }
-
-    window.cargarPlatos?.();
-
-    await recargar();
+    await Promise.all([
+      window.cargarCategoriasSelect?.(),
+      window.cargarPlatos?.(),
+      recargar()
+    ]);
+  } finally {
+    pantallaCarga.hidden = true;
   }
+
+  reproducirLogoAplicacion();
+}
   // Solo el Administrador ve el bloque de usuarios.
   // Proveedores queda visible para todos los roles.
-  function aplicarPermisos() {
-    const bloque = document.getElementById("bloqueUsuarios");
-    if (bloque) {
-      bloque.style.display =
-        sesion && sesion.rol === "Administrador" ? "block" : "none";
-    }
+function aplicarPermisos() {
+   
+  const esAdmin = ["Administrador", "Super Administrador"].includes(sesion?.rol);
+
+  document.querySelectorAll(".elemento-menu[data-vista]").forEach(enlace => {
+    enlace.style.display = puedeVerVista(enlace.dataset.vista) ? "" : "none";
+  });
+
+  const bloque = document.getElementById("bloqueUsuarios");
+  if (bloque) {
+   bloque.style.display = esAdmin ? "block" : "none";
   }
+
+  // Limpia la pantalla que pudo quedar abierta en la sesión anterior.
+  document.querySelectorAll(".vista.activa").forEach(vista => {
+    vista.classList.remove("activa");
+  });
+
+  if (sesion?.rol === "Operador") {
+    mostrarVista("ventas");
+} else if (esAdmin) {
+    mostrarVista("dashboard");
+  }
+}
 
   function mostrarLogin() {
     sesion = null;
@@ -430,13 +459,33 @@
       }
     });
 
-  document
-    .getElementById("btnPerfil")
-    .addEventListener("click", () => mostrarVista("configuracion"));
+ 
 
-  /* 
+    /* 
      USUARIOS
    */
+
+  function renderizarUsuarios() {
+    setHTML(
+      "tablaUsuarios",
+      datos.usuarios.length
+        ? datos.usuarios
+            .map(u =>
+              "<tr>" +
+              "<td><strong>" + esc(u.nombre) + "</strong></td>" +
+              "<td>" + esc(u.apellido) + "</td>" +
+              "<td>" + esc(u.login) + "</td>" +
+              "<td>" + esc(u.rol) + "</td>" +
+              '<td><div class="acciones-tabla">' +
+              '<button onclick="editarUsuario(' + u.id + ')">Editar</button>' +
+              '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' +
+              "</div></td>" +
+              "</tr>"
+            )
+            .join("")
+        : '<tr><td colspan="5">No se encontraron usuarios.</td></tr>'
+    );
+  }
 
   document.getElementById("formUsuario").addEventListener("submit", async e => {
     e.preventDefault();
@@ -448,18 +497,12 @@
       const usuario = document.getElementById("usuarioLogin").value.trim();
       const clave = document.getElementById("usuarioClave").value;
       const rol = document.getElementById("usuarioRol").value;
+
       const r = await POST("/api/usuarios", {
-        id: id,
-        nombre: nombre,
-        apellido: apellido,
-        usuario: usuario,
-        login: usuario,
-        clave: clave,
-        rol: rol
+        id, nombre, apellido, usuario, login: usuario, clave, rol
       });
 
       mensaje("mensajeUsuario", r.mensaje || "Usuario guardado correctamente.", "ok");
-
       limpiarUsuario();
       await recargar();
     } catch (err) {
@@ -473,61 +516,28 @@
     document.getElementById("usuarioClave").required = true;
   }
 
-  window.limpiarUsuario =
-    limpiarUsuario;
+  window.limpiarUsuario = limpiarUsuario;
 
   function editarUsuario(id) {
     const u = datos.usuarios.find(x => Number(x.id) === Number(id));
 
     if (!u) {
-      mensaje(
-        "mensajeUsuario",
-        "No se encontró el usuario.",
-        "error"
-      );
-
+      mensaje("mensajeUsuario", "No se encontró el usuario.", "error");
       return;
     }
 
-    document
-      .getElementById("usuarioId")
-      .value = u.id || "";
+    document.getElementById("usuarioId").value = u.id || "";
+    document.getElementById("usuarioNombre").value = u.nombre || "";
+    document.getElementById("usuarioApellido").value = u.apellido || "";
+    document.getElementById("usuarioLogin").value = u.login || u.usuario || "";
+    document.getElementById("usuarioClave").value = "";
+    document.getElementById("usuarioClave").required = false;
+    document.getElementById("usuarioRol").value = u.rol || "";
 
-    document
-      .getElementById("usuarioNombre")
-      .value = u.nombre || "";
-
-    document
-      .getElementById("usuarioApellido")
-      .value = u.apellido || "";
-
-    document
-      .getElementById("usuarioLogin")
-      .value =
-        u.login ||
-        u.usuario ||
-        "";
-
-    document
-      .getElementById("usuarioClave")
-      .value = "";
-
-    document
-      .getElementById("usuarioClave")
-      .required = false;
-
-    document
-      .getElementById("usuarioRol")
-      .value = u.rol || "";
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  window.editarUsuario =
-    editarUsuario;
+  window.editarUsuario = editarUsuario;
 
   async function eliminarUsuario(id) {
     if (!(await confirmar("¿Deseas eliminar este usuario?"))) return;
@@ -536,18 +546,12 @@
       await POST("/api/usuarios/" + id + "/eliminar");
       mensaje("mensajeUsuario", "Usuario eliminado correctamente.", "ok");
       await recargar();
-
     } catch (err) {
-      mensaje(
-        "mensajeUsuario",
-        err.message,
-        "error"
-      );
+      mensaje("mensajeUsuario", err.message, "error");
     }
   }
 
-  window.eliminarUsuario =
-    eliminarUsuario;
+  window.eliminarUsuario = eliminarUsuario;
 
   function generarInformeUsuarios() {
     const html = datos.usuarios.length
@@ -562,6 +566,37 @@
   }
 
   window.generarInformeUsuarios = generarInformeUsuarios;
+
+  // BUSCAR USUARIOS POR LOGIN
+  async function buscarUsuarios() {
+    const texto = (document.getElementById("buscarUsuario")?.value || "").trim();
+
+    try {
+      const lista = await GET("/api/usuarios?buscar=" + encodeURIComponent(texto));
+      datos.usuarios = Array.isArray(lista) ? lista : [];
+      renderizarUsuarios();
+    } catch (err) {
+      mensaje("mensajeUsuario", err.message, "error");
+    }
+  }
+
+  window.buscarUsuarios = buscarUsuarios;
+
+  // Botón "Limpiar" del buscador
+  function cargarUsuarios() {
+    const campo = document.getElementById("buscarUsuario");
+    if (campo) campo.value = "";
+    return buscarUsuarios();
+  }
+
+  window.cargarUsuarios = cargarUsuarios;
+
+  // Busca mientras se escribe
+  let temporizadorBusqueda;
+  document.getElementById("buscarUsuario")?.addEventListener("input", () => {
+    clearTimeout(temporizadorBusqueda);
+    temporizadorBusqueda = setTimeout(buscarUsuarios, 250);
+  });
 
   /* 
      PROVEEDORES
@@ -1073,6 +1108,28 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
     actualizarVisualMesas();
   }
 
+
+  window.agregarPedidoAMesa = function (numero, platos) {
+    const mesa = mesas[numero];
+
+    for (const plato of platos) {
+      const detalle = plato.sin?.length
+        ? " (sin " + plato.sin.join(", ") + ")"
+        : "";
+
+      mesa.productos.push({
+        nombre: plato.nombre + detalle,
+        cantidad: plato.cantidad,
+        precio: plato.precio
+      });
+    }
+
+    mesa.estado = "ocupada";
+    seleccionarMesa(numero);
+  };
+
+
+
   function seleccionarMesa(numero) {
     if (!mesas[numero]) return;
 
@@ -1386,14 +1443,7 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
         valor: total
       });
 
-      // Sincronización automática con el saldo del administrador
-      const saldoActualAdmin = Number(localStorage.getItem("saldoAdmin") || 0) + total;
-      localStorage.setItem("saldoAdmin", saldoActualAdmin);
-
-      if (typeof window.cargarSaldos === "function") {
-        window.cargarSaldos();
-      }
-
+      
       mesas[numeroMesa] = { estado: "disponible", productos: [] };
       mesaSeleccionada = null;
       window.mesaSeleccionada = null;
@@ -1497,6 +1547,28 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
      RENDERIZADO GENERAL
    */
 
+     window.cerrarTurnoVentas = async function () {
+  const operaciones = datos.contabilidad.filter(x => x.del_turno);
+  if (!operaciones.length) return;
+
+  const ultimoId = operaciones.reduce(
+    (mayor, x) => Math.max(mayor, Number(x.id)), 0
+  );
+
+  const acepta = await confirmar(
+    "¿Cerrar este turno? Las tarjetas empezarán en cero y las operaciones seguirán en el historial.",
+    "Cerrar turno"
+  );
+  if (!acepta) return;
+
+  try {
+    await POST("/api/ventas/cerrar-turno", { ultimo_id: ultimoId });
+    await cargarDatos();
+  } catch (err) {
+    await avisar(err.message);
+  }
+};
+
   function renderizarTodo() {
     if (!sesion) return;
 
@@ -1525,43 +1597,36 @@ for (const id of ["alimentoVencimiento", "editVencimiento"]) {
     setText("invUnidades", totalUnidades);
     setText("invCriticos", criticos);
 
-    setText("totalVentas", formatoMoneda(ventas));
-    setText("totalGastos", formatoMoneda(gastos));
-    setText("balance", formatoMoneda(ventas - gastos));
+    const operacionesTurno = datos.contabilidad.filter(x => x.del_turno);
+
+const sumarTurno = tipo => operacionesTurno
+  .filter(x => x.tipo === tipo)
+  .reduce((suma, x) => suma + Number(x.valor), 0);
+
+const ventasTurno = sumarTurno("Venta");
+const gastosTurno = sumarTurno("Gasto operativo");
+
+setText("totalVentas", formatoMoneda(ventasTurno));
+setText("totalGastos", formatoMoneda(gastosTurno));
+setText("balance", formatoMoneda(ventasTurno - gastosTurno));
+
+const botonCierre = document.getElementById("btnCerrarTurno");
+if (botonCierre) {
+  botonCierre.hidden = sesion.rol !== "Administrador";
+  botonCierre.disabled = operacionesTurno.length === 0;
+}
 
     /* SINCRONIZACIÓN DE SALDO */
-    if (localStorage.getItem("saldoAdmin") === null) {
-      localStorage.setItem("saldoAdmin", ventas - gastos);
-    }
+  /* SALDOS (vienen de la base de datos) */
+if (typeof window.cargarSaldos === "function") {
+  window.cargarSaldos();
+}
 
-    if (typeof window.cargarSaldos === "function") {
-      window.cargarSaldos();
-    } else {
-      const saldoLocal = Number(localStorage.getItem("saldoAdmin") || 0);
-      setText("saldoAdmin", formatoMoneda(saldoLocal));
-    }
+   /* 
+     USUARIOS
+   */
 
-    /* USUARIOS */
-    setHTML(
-      "tablaUsuarios",
-      datos.usuarios
-        .map(
-          u =>
-            "<tr>" +
-            "<td><strong>" + esc(u.nombre) + "</strong></td>" +
-            "<td>" + esc(u.apellido) + "</td>" +
-            "<td>" + esc(u.login) + "</td>" +
-            "<td>" + esc(u.rol) + "</td>" +
-            '<td><div class="acciones-tabla">' +
-            '<button onclick="editarUsuario(' + u.id + ')">Editar</button>' +
-            '<button class="eliminar" onclick="eliminarUsuario(' + u.id + ')">Eliminar</button>' +
-            "</div></td>" +
-            "</tr>"
-        )
-        .join("")
-    );
-
-    /* PROVEEDORES */
+  renderizarUsuarios();
    /* PROVEEDORES */
 
 renderizarProveedores();
@@ -1814,129 +1879,113 @@ if (comboProv) {
   function generarReporte() {
     const tipo = document.getElementById("tipoReporte").value;
     const fecha = document.getElementById("fechaReporte").value || hoyISO();
-    const leer = id => (document.getElementById(id)?.textContent || "$0").trim();
 
     let texto = "";
 
-    switch (tipo) {
-      case "Reporte diario":
-        texto =
-          "Fecha: " + fechaBonita(fecha) +
-          "\nProductos registrados: " + datos.alimentos.length +
-          "\nUnidades disponibles: " + datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
-          "\nPérdidas registradas: " + datos.perdidas.length +
-          "\nOperaciones contables: " + datos.contabilidad.length;
-        break;
+    if (
+      tipo ===
+      "Reporte diario"
+    ) {
+      texto =
+        "Fecha: " +
+        fechaBonita(fecha) +
 
-      case "Usuarios":
-        texto = datos.usuarios.length
-          ? "Total: " + datos.usuarios.length + " usuarios\n\n" +
-            datos.usuarios
-              .map(u => u.nombre + " " + (u.apellido || "") + " | " + u.login + " | " + u.rol)
-              .join("\n")
-          : "No hay usuarios para mostrar (solo el Administrador puede consultarlos).";
-        break;
+        "\nProductos registrados: " +
+        datos.alimentos.length +
 
-      case "Alimentos":
-        texto = datos.alimentos.length
-          ? "Total: " + datos.alimentos.length + " alimentos\n\n" +
-            datos.alimentos
-              .map(a =>
-                a.nombre + " | " + a.categoria + " | " + a.cantidad + " und | " +
-                formatoMoneda(a.precio) + " | Vence: " + fechaBonita(a.vencimiento) +
-                " | " + (a.proveedor || "-"))
-              .join("\n")
-          : "No hay alimentos registrados.";
-        break;
-
-      case "Platos": {
-        const platos = [...document.querySelectorAll("#platosGrid .plato-carta")];
-        texto = platos.length
-          ? "Total: " + platos.length + " platos\n\n" +
-            platos.map(p => {
-              const ings = [...p.querySelectorAll(".plato-ingredientes li")]
-                .map(li => (li.querySelector(".ing-nombre")?.textContent || li.childNodes[0]?.textContent || "").trim())
-                .filter(Boolean)
-                .join(", ");
-              return p.dataset.nombre + " | " + formatoMoneda(Number(p.dataset.precio)) +
-                "\n   Ingredientes: " + (ings || "-");
-            }).join("\n")
-          : "No hay platos registrados.";
-        break;
-      }
-
-      case "Inventario general":
-        texto = datos.alimentos.length
-          ? datos.alimentos
-              .map(a => a.nombre + " | " + a.categoria + " | " + a.cantidad + " unidades | " + estadoAlimento(a)[0])
-              .join("\n")
-          : "No hay alimentos registrados.";
-        break;
-
-      case "Inversiones":
-        texto =
-          "Total invertido: " + leer("dashboardInversion") +
-          "\nIngresos por ventas: " + leer("dashboardIngresos") +
-          "\nGanancia neta: " + leer("dashboardGanancia") +
-          "\nRentabilidad: " + leer("dashboardRentabilidad") +
-          "\n\nInversión en insumos: " + leer("dashboardCostoInsumos") +
-          "\nOtros gastos: " + leer("dashboardGastos") +
-          "\nResultado del negocio: " + leer("dashboardBalance");
-        break;
-
-      case "Ventas": {
-        const filtrarFecha = !!document.getElementById("fechaReporte").value;
-        const ventas = datos.contabilidad.filter(x =>
-          x.tipo === "Venta" && (!filtrarFecha || x.fecha === fecha));
-        const total = ventas.reduce((s, x) => s + Number(x.valor), 0);
-        texto = ventas.length
-          ? "Ventas: " + ventas.length + " | Total: " + formatoMoneda(total) + "\n\n" +
-            ventas.map(x => fechaBonita(x.fecha) + " | " + x.descripcion + " | " + formatoMoneda(x.valor)).join("\n")
-          : "No hay ventas registradas" + (filtrarFecha ? " en esa fecha." : ".");
-        break;
-      }
-
-      case "Saldos":
-        texto =
-          "Saldo Administrador: " + leer("saldoAdmin") +
-          "\nSaldo Trabajador: " + leer("saldoTrabajador") +
-          "\nDeuda Proveedores: " + leer("saldoProveedores");
-        break;
-
-      case "Pérdida de alimentos":
-        texto = datos.perdidas.length
+        "\nUnidades disponibles: " +
+        datos.alimentos.reduce((s, a) => s + a.cantidad, 0) +
+        "\nPérdidas registradas: " + datos.perdidas.length +
+        "\nOperaciones contables: " + datos.contabilidad.length;
+    } else if (tipo === "Inventario general") {
+      texto =
+        datos.alimentos
+          .map(a => a.nombre + " | " + a.categoria + " | " + a.cantidad + " unidades")
+          .join("\n") || "No hay alimentos registrados.";
+    } else if (tipo === "Pérdida de alimentos") {
+      texto = datos.perdidas.length
+        ? datos.perdidas
+            .map(
+              p =>
+                fechaBonita(p.fecha) + " | " + p.alimento + " | " +
+                p.cantidad + " unidades | " + p.motivo
+            )
+            .join("\n")
+        : "No hay pérdidas registradas.";
+    } else if (tipo === "Consumo") {
+      texto =
+        "Consumo estimado a partir de las salidas registradas.\n\n" +
+        (datos.perdidas.length
           ? datos.perdidas
-              .map(p => fechaBonita(p.fecha) + " | " + p.alimento + " | " + p.cantidad + " unidades | " + p.motivo)
+              .map(
+                p =>
+                  p.alimento + ": " + p.cantidad +
+                  " unidades registradas como salida/pérdida"
+              )
               .join("\n")
-          : "No hay pérdidas registradas.";
-        break;
-
-      case "Consumo":
-        texto =
-          "Consumo estimado a partir de las salidas registradas.\n\n" +
-          (datos.perdidas.length
-            ? datos.perdidas
-                .map(p => p.alimento + ": " + p.cantidad + " unidades registradas como salida/pérdida")
-                .join("\n")
-            : "No hay registros de consumo/salidas disponibles.");
-        break;
-
-      default:
-        texto =
-          datos.contabilidad
-            .map(x => fechaBonita(x.fecha) + " | " + x.tipo + " | " + x.descripcion + " | " + formatoMoneda(x.valor))
-            .join("\n") || "No hay operaciones contables registradas.";
+          : "No hay registros de consumo/salidas disponibles.");
+    } else {
+      texto =
+        datos.contabilidad
+          .map(
+            x =>
+              fechaBonita(x.fecha) + " | " + x.tipo + " | " +
+              x.descripcion + " | " + formatoMoneda(x.valor)
+          )
+          .join("\n") || "No hay operaciones contables registradas.";
     }
 
-    setHTML(
+        setHTML(
       "resultadoReporte",
-      "<h4>" + esc(tipo) + "</h4><p>" + esc(texto).replace(/\n/g, "<br>") + "</p>"
+      "<h4>" + esc(tipo) + "</h4><p>" +
+        esc(texto).replace(/\n/g, "<br>") + "</p>"
     );
+
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "boton-principal";
+    boton.textContent = "Imprimir reporte";
+    boton.addEventListener("click", () => imprimirReporte(tipo, texto));
+
+    document.getElementById("resultadoReporte").appendChild(boton);
+  } // Aquí termina generarReporte()
+
+// para poder imprimir el reporte en una ventana emergente 
+
+  function imprimirReporte(tipo, texto) {
+    const ventana = window.open("", "_blank");
+
+    if (!ventana) {
+      window.alert("Permite las ventanas emergentes para imprimir el reporte.");
+      return;
+    }
+
+    const doc = ventana.document;
+    doc.documentElement.lang = "es";
+    doc.title = "Meraki - " + tipo;
+
+    const estilo = doc.createElement("style");
+    estilo.textContent = `
+      @page { margin: 2cm; }
+      body { font: 12pt/1.5 Arial, sans-serif; color: #111; }
+      h1 { font-size: 18pt; }
+      p { white-space: pre-wrap; overflow-wrap: anywhere; }
+    `;
+    doc.head.appendChild(estilo);
+
+    const titulo = doc.createElement("h1");
+    titulo.textContent = "Meraki · " + tipo;
+
+    const contenido = doc.createElement("p");
+    contenido.textContent = texto;
+
+    doc.body.append(titulo, contenido);
+    ventana.addEventListener("afterprint", () => ventana.close(), { once: true });
+    ventana.focus();
+    ventana.print();
   }
 
-  window.generarReporte =
-    generarReporte;
-
+  window.generarReporte = generarReporte;
   /*
      INICIALIZACIÓN
  */
@@ -1960,3 +2009,52 @@ if (comboProv) {
   });
 
 })();
+
+//menu de sesion de usuario
+
+document.addEventListener('click', (evento) => {
+  const menuPerfil = document.querySelector('details.menu-perfil[open]');
+
+  if (menuPerfil && !menuPerfil.contains(evento.target)) {
+    menuPerfil.open = false;
+  }
+});
+
+async function cargarDatosCuenta() {
+  const nombre = document.getElementById('cuentaNombre');
+  const usuario = document.getElementById('cuentaUsuario');
+  const rol = document.getElementById('cuentaRol');
+  const estado = document.getElementById('estadoDatosCuenta');
+
+  nombre.textContent = usuario.textContent = rol.textContent = '—';
+  document.getElementById('cuentaAvatar').textContent = '—';
+  estado.textContent = 'Cargando datos de la cuenta…';
+
+  try {
+    const respuesta = await fetch('/api/sesion', { cache: 'no-store' });
+    if (!respuesta.ok) throw new Error('No se pudo consultar la sesión');
+
+    const { usuario: cuenta } = await respuesta.json();
+
+    if (!cuenta) {
+      estado.textContent = 'No hay una sesión activa.';
+      return;
+    }
+
+   const nombreCuenta = cuenta.nombre?.trim();
+const loginCuenta = cuenta.login?.trim().replace(/^@+/, '');
+
+nombre.textContent = nombreCuenta || '—';
+usuario.textContent = loginCuenta ? `@${loginCuenta}` : '—';
+rol.textContent = cuenta.rol || '—';
+
+const avatar = document.getElementById('cuentaAvatar');
+avatar.textContent = (nombreCuenta || loginCuenta || '—').charAt(0).toUpperCase();
+    estado.textContent = '';
+  } catch {
+    estado.textContent = 'No se pudieron cargar los datos de la cuenta.';
+  }
+}
+
+document.querySelector('.elemento-menu[data-vista="configuracion"]')
+  ?.addEventListener('click', cargarDatosCuenta);
