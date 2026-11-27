@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meraki | Sistema de Gestión Alimentaria</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=7">
 </head>
 
 <body>
-  <div id="pantalla-carga" role="status" aria-label="Cargando" hidden>
-  <img src="{{ url_for('static', filename='img/Cargando.gif') }}" alt="">
-</div>
   <!-- LOGIN -->
   <section id="pantallaLogin" class="login-pantalla">
 
@@ -89,96 +86,37 @@
       <nav class="menu">
         <p class="titulo-menu">MENÚ PRINCIPAL</p>
 
-         <a href="#" class="elemento-menu activo" data-vista="dashboard">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="9" rx="1"/>
-              <rect x="14" y="3" width="7" height="5" rx="1"/>
-              <rect x="3" y="16" width="7" height="5" rx="1"/>
-              <rect x="14" y="12" width="7" height="9" rx="1"/>
-            </svg>
-          </span><span>Dashboard</span>
+        <a href="#" class="elemento-menu activo" data-vista="dashboard">
+          <span class="icono">⌂</span><span>Dashboard</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="usuarios">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="7" r="3"/>
-              <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2m6 0v-2a4 4 0 0 0-3-3.9M16 4.2a3 3 0 0 1 0 5.6"/>
-            </svg>
-          </span><span>Usuarios</span>
+          <span class="icono">▣</span><span>Usuarios</span>
         </a>
         <a href="#" class="elemento-menu" data-vista="alimentos">
-           <span class="icono">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                 aria-hidden="true">
-                  <path d="M12 8c-2-3-8-3-9 3-1 5 3 10 6 10 1 0 2-1 3-1s2 1 3 1c3 0 7-5 6-10-1-6-7-6-9-3Zm0 0q0-5 5-5"/>
-                </svg>
-              </span>
-             <span>Alimentos</span>
-           </a>
-         <a href="#" class="elemento-menu" data-vista="platos">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <circle cx="12" cy="12" r="9"/>
-              <circle cx="12" cy="12" r="5"/>
-            </svg>
-          </span><span>Platos</span>
+          <span class="icono">▤</span><span>Alimentos</span>
         </a>
-
+        <a href="#" class="elemento-menu" data-vista="platos">
+          <span class="icono">🍔</span><span>Platos</span>
+        </a>
         <a href="#" class="elemento-menu" data-vista="inventario">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 7l9-4 9 4v10l-9 4-9-4V7Zm0 0 9 4 9-4m-9 4v10M7.5 5l9 4"/>
-            </svg>
-          </span><span>Inventario</span>
+          <span class="icono">◫</span><span>Inventario</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="inversiones">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="m3 17 6-6 4 4 8-9m-6 0h6v6"/>
-            </svg>
-          </span><span>Inversiones</span>
+          <span class="icono">$</span><span>Inversiones</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="ventas">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M2 3h3l3 12h11l3-8H6"/>
-              <circle cx="9" cy="20" r="1"/>
-              <circle cx="19" cy="20" r="1"/>
-            </svg>
-          </span><span>Ventas</span>
+          <span class="icono">$</span><span>Ventas</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="saldos">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6m18 6h-5a2 2 0 0 0 0 4h5M16 14h.01"/>
-            </svg>
-          </span><span>Saldos</span>
+          <span class="icono">🏦</span><span>Saldos</span>
         </a>
-
         <a href="#" class="elemento-menu" data-vista="reportes">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 3v18h18M8 16v-4m5 4V8m5 8V5"/>
-            </svg>
-          </span><span>Reportes</span>
+          <span class="icono">▥</span><span>Reportes</span>
         </a>
 
         <p class="titulo-menu titulo-menu-inferior">SISTEMA</p>
-
         <a href="#" class="elemento-menu" data-vista="configuracion">
-          <span class="icono">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="m10 3-.5 2.5-1.8 1-2.4-.8-2 3.4 1.9 1.7v2.4l-1.9 1.7 2 3.4 2.4-.8 1.8 1 .5 2.5h4l.5-2.5 1.8-1 2.4.8 2-3.4-1.9-1.7v-2.4l1.9-1.7-2-3.4-2.4.8-1.8-1L14 3z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </span><span>Configuración</span>
+          <span class="icono">⚙</span><span>Configuración</span>
         </a>
       </nav>
 
@@ -205,28 +143,12 @@
           <button class="boton-icono notificacion" aria-label="Notificaciones" onclick="mostrarVista('reportes')">
             ♧<span class="punto-notificacion"></span>
           </button>
-         <details class="menu-perfil">
-  <summary class="boton-perfil" id="btnPerfil">
-    <span class="avatar pequeno" id="avatarTop">AD</span>
-    <span id="nombreTop">Administrador</span>
-    <span aria-hidden="true">⌄</span>
-  </summary>
-
-  <div class="menu-perfil-opciones">
-  <button type="button" class="opcion-cerrar-sesion"
-          onclick="this.closest('details').open = false; cerrarSesion()">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="1.8"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M10 4H5v16h5M9 12h12m-4-4 4 4-4 4"/>
-    </svg>
-    <span>Cerrar sesión</span>
-  </button>
-  <button type="button"
-        onclick="this.closest('details').open = false; mostrarVista('configuracion'); cargarDatosCuenta()">
-  Configuración
-</button>
-</div>
+          <button class="boton-perfil" id="btnPerfil">
+            <span class="avatar pequeno" id="avatarTop">AD</span>
+            <span id="nombreTop">Administrador</span>
+            <span>⌄</span>
+          </button>
+        </div>
       </header>
 
       <!-- DASHBOARD -->
@@ -287,19 +209,16 @@
           </div>
 
           <div class="cuadricula-accesos">
-             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('usuarios');return false;"><span class="icono-acceso">▦</span><strong>Gestionar usuarios</strong><small>Registrar, modificar y eliminar usuarios</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('alimentos');return false;"><span class="icono-acceso">▤</span><strong>Gestionar alimentos</strong><small>Registrar, modificar, eliminar y pérdidas</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('platos');return false;"><span class="icono-acceso">◫</span><strong>Gestionar platos</strong><small>Registrar, modificar y eliminar platos</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inventario');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inventario</strong><small>Consultar existencias en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('inversiones');return false;"><span class="icono-acceso">◫</span><strong>Gestionar inversiones</strong><small>Consultar inversiones en tiempo real</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Gestionar ventas </strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
-            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('saldos');return false;"><span class="icono-acceso">$</span><strong>Gestionar saldos </strong><small>consulta saldos en tiempo real</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('usuarios');return false;"><span class="icono-acceso">▦</span><strong>Gestionar proveedores</strong><small>Registrar, modificar y eliminar proveedores</small><span class="flecha">→</span></a>
+            <a href="#" class="tarjeta-acceso" onclick="mostrarVista('ventas');return false;"><span class="icono-acceso">$</span><strong>Movimientos contables</strong><small>Ventas, gastos y operaciones</small><span class="flecha">→</span></a>
             <a href="#" class="tarjeta-acceso" onclick="mostrarVista('reportes');return false;"><span class="icono-acceso">▥</span><strong>Generar reportes</strong><small>Diarios, inventario, pérdidas y consumo</small><span class="flecha">→</span></a>
           </div>
         </section>
       </section>
 
-         <!-- USUARIOS Y PROVEEDORES -->
+      <!-- USUARIOS Y PROVEEDORES -->
       <section id="vista-usuarios" class="vista">
 
         <!-- Bloque solo para Administrador -->
@@ -321,48 +240,20 @@
                 <div id="mensajeUsuario" class="mensaje"></div>
               </form>
             </article>
-
             <article class="panel">
-              <div class="encabezado-panel">
-                <div>
-                  <span class="etiqueta-seccion">2.3</span>
-                  <h3>Usuarios registrados</h3>
-                </div>
-              </div>
-
-              <!-- BUSCADOR -->
-              <div class="buscador-usuarios">
-                <div class="campo">
-                <input type="text" id="buscarUsuario" placeholder="Busca por usuario..." autocomplete="off">
-                <button type="button" class="boton-principal" onclick="buscarUsuarios()">Buscar</button>
-                <button type="button" class="boton-secundario" onclick="cargarUsuarios()">Limpiar</button>
-                </div>
-              </div>
-
-              <div class="tabla-contenedor">
-                <table class="tabla">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Apellido</th>
-                      <th>Usuario</th>
-                      <th>Rol</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tablaUsuarios"></tbody>
-                </table>
-              </div>
+              <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.3</span><h3>Usuarios registrados</h3></div></div>
+              <div class="tabla-contenedor"><table class="tabla"><thead><tr><th>Nombre</th><th>Apellido</th><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tablaUsuarios"></tbody></table></div>
             </article>
           </div>
-
           <article class="panel" style="margin-top:20px;">
             <div class="encabezado-panel"><div><span class="etiqueta-seccion">2.4</span><h3>Informe de usuarios</h3></div><button class="boton-secundario" onclick="generarInformeUsuarios()">Generar informe</button></div>
             <div id="informeUsuarios" class="panel-form"></div>
           </article>
         </div>
 
+       
       </section>
+
       <!-- ALIMENTOS -->
       <section id="vista-alimentos" class="vista">
         <div class="titulo-vista"><span class="etiqueta-seccion">ADMINISTRACIÓN DE ALIMENTOS</span><h2>Registro de alimentos</h2><p>Ingreso, modificación, eliminación y registro de pérdidas.</p></div>
@@ -433,7 +324,7 @@
         <article class="panel" style="margin-top:20px;">
           <div class="encabezado-panel"><div><span class="etiqueta-seccion">REGISTROS</span><h3>Alimentos registrados</h3></div></div>
 
-          <!-- FILTRO DE BÚSQUEDA josep-->
+          <!-- FILTRO DE BÚSQUEDA -->
           <div class="filtros-alimentos">
             <div class="campo campo-buscar">
               <label for="filtroAlimentoTexto">Buscar alimento</label>
@@ -552,36 +443,86 @@
     </div>
 
     <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
-
-      <dialog id="dialogoMesaPedido" aria-labelledby="tituloMesaPedido">
-  <form method="dialog" class="panel panel-form">
-    <h3 id="tituloMesaPedido">Asignar pedido a una mesa</h3>
-
-    <div class="campo">
-      <label for="mesaDestinoPedido">Mesa del cliente</label>
-      <select id="mesaDestinoPedido" required>
-        <option value="">Seleccionar mesa</option>
-        <option value="1">Mesa 1</option>
-        <option value="2">Mesa 2</option>
-        <option value="3">Mesa 3</option>
-        <option value="4">Mesa 4</option>
-      </select>
-    </div>
-
-    <div class="acciones">
-      <button type="submit" value="cancelar" class="boton-secundario" formnovalidate>
-        Cancelar
-      </button>
-      <button type="submit" value="enviar" class="btn-venta">
-        Enviar pedido
-      </button>
-    </div>
-  </form>
-</dialog>
   </article>
 </section>
 
-      
+      <!-- PLATOS -->
+      <section id="vista-platos" class="vista">
+        <div class="titulo-vista">
+          <span class="etiqueta-seccion">MENÚ</span>
+          <h2>Platos</h2>
+          <p>Haz clic sobre un plato para ver sus ingredientes, quitar los que el cliente no quiera y agregarlo al pedido.</p>
+        </div>
+
+        <div class="platos-grid" id="platosGrid">
+
+          <div class="plato-carta" tabindex="0" role="button" data-nombre="MERAKI" data-precio="16000" aria-label="Ver ingredientes de la hamburguesa Meraki">
+            <div class="plato-carta-interior">
+
+              <div class="plato-cara plato-frente">
+                <img src="{{ url_for('static', filename='img/hamburguesa1.jpg') }}" alt="Hamburguesa Meraki">
+                <div class="plato-pie">
+                  <strong>MERAKI</strong>
+                  <span>$16.000</span>
+                </div>
+              </div>
+
+              <div class="plato-cara plato-reverso">
+                <div class="plato-reverso-cab">
+                  <div>
+                    <h3>MERAKI</h3>
+                    <span class="plato-precio">$16.000</span>
+                  </div>
+                  <button type="button" class="plato-volver">↺ Volver</button>
+                </div>
+
+                <p class="plato-subtitulo">Ingredientes</p>
+                <ul class="plato-ingredientes" id="ingredientesMeraki">
+                  <li data-fijo>Pan Brioche</li>
+                  <li>Salsa de ajo</li>
+                  <li>Lechuga</li>
+                  <li>Tomate</li>
+                  <li>Cebolla</li>
+                  <li>Queso mozzarella</li>
+                  <li data-fijo>150 g de carne 100% res</li>
+                  <li>Tocineta</li>
+                  <li>100 g de papas a la francesa</li>
+                </ul>
+                <button type="button" class="btn-agregar plato-agregar">+ Agregar al pedido</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <article class="panel pedido-panel">
+          <div class="encabezado-panel">
+            <div>
+              <span class="etiqueta-seccion">PEDIDO</span>
+              <h3>Platos agregados</h3>
+            </div>
+            <span class="estado-orden" id="pedidoContador">0 platos</span>
+          </div>
+
+          <div class="pedido-lista" id="pedidoLista"></div>
+
+          <div class="orden-footer">
+            <div class="orden-total">
+              <span>Total del pedido</span>
+              <strong id="pedidoTotal">$0</strong>
+            </div>
+
+            <button type="button" id="btnHacerPedido" class="btn-venta">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              Hacer pedido
+            </button>
+          </div>
+
+          <div id="mensajePedido" class="mensaje" style="margin:12px 22px 16px;"></div>
+        </article>
+      </section>
+
       <!-- VENTAS -->
       <section id="vista-ventas" class="vista">
 
@@ -748,20 +689,8 @@
 
         </div>
 
-        <div class="acciones">
-  <button
-    id="btnCerrarTurno"
-    type="button"
-    class="boton-secundario"
-    onclick="cerrarTurnoVentas()"
-    hidden
-  >
-    Cerrar turno
-  </button>
-</div>
-
         <!-- HISTORIAL DE OPERACIONES -->
-        <div class="tabla-ventas historial-saldos">
+        <div class="tabla-ventas">
 
           <div class="tabla-header">
             <div>
@@ -770,26 +699,6 @@
             </div>
           </div>
 
-          <div class="filtro-historial" role="group" aria-label="Filtrar operaciones por fecha">
-  <label>
-    Ver por
-    <select class="historial-periodo">
-      <option value="dia">Día</option>
-      <option value="semana">Semana</option>
-      <option value="mes">Mes</option>
-      <option value="anio">Año</option>
-    </select>
-  </label>
-
-  <label>
-    Fecha de referencia
-    <input class="historial-fecha" type="date">
-  </label>
-
-  <strong class="historial-rango" aria-live="polite"></strong>
-</div>
-
-          
           <div class="tabla-wrapper">
             <table>
               <thead>
@@ -813,58 +722,33 @@
 
       </section>
 
-                 <!-- SALDOS -->
+      <!-- SALDOS -->
       <section id="vista-saldos" class="vista">
 
         <div class="titulo-vista">
           <span class="etiqueta-seccion">FINANZAS</span>
           <h2>Gestión de Saldos y Cuentas</h2>
-          <p>Controla el saldo del administrador, el de cada trabajador y la deuda con cada proveedor.</p>
+          <p>Controla los saldos del administrador, trabajador y las deudas con proveedores.</p>
         </div>
 
         <div class="ventas-resumen">
+
           <div class="resumen-card">
             <span>Saldo Administrador</span>
             <strong id="saldoAdmin">$0</strong>
           </div>
 
           <div class="resumen-card">
-            <span>Saldo Trabajadores (total)</span>
+            <span>Saldo Trabajador</span>
             <strong id="saldoTrabajador">$0</strong>
           </div>
 
           <div class="resumen-card">
-            <span>Deuda Proveedores (total)</span>
+            <span>Deuda Proveedores</span>
             <strong id="saldoProveedores" style="color: #e53935;">$0</strong>
             <small style="font-size: 0.75rem; color: #888;">(Prestado)</small>
           </div>
-        </div>
 
-        <!-- SALDO INDIVIDUAL -->
-        <div class="modulo-grid" style="margin-bottom: 25px;">
-          <article class="panel">
-            <div class="encabezado-panel">
-              <div><span class="etiqueta-seccion">PROVEEDORES</span><h3>Deuda por proveedor</h3></div>
-            </div>
-            <div class="tabla-contenedor">
-              <table class="tabla">
-                <thead><tr><th>Proveedor</th><th>Deuda</th></tr></thead>
-                <tbody id="tablaSaldosProveedores"></tbody>
-              </table>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="encabezado-panel">
-              <div><span class="etiqueta-seccion">TRABAJADORES</span><h3>Saldo por trabajador</h3></div>
-            </div>
-            <div class="tabla-contenedor">
-              <table class="tabla">
-                <thead><tr><th>Trabajador</th><th>Rol</th><th>Saldo</th></tr></thead>
-                <tbody id="tablaSaldosTrabajadores"></tbody>
-              </table>
-            </div>
-          </article>
         </div>
 
         <!-- PANEL 1: COMPRA A CRÉDITO -->
@@ -872,21 +756,14 @@
           <div class="orden-header">
             <div>
               <h3>Pedir Prestado al Proveedor</h3>
-              <span>Aumenta la deuda del proveedor elegido por insumos o productos recibidos.</span>
+              <span>Aumenta la deuda con el proveedor por insumos o productos recibidos.</span>
             </div>
           </div>
 
           <form id="formCompraProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
-            <div class="campo" style="flex: 1; min-width: 200px;">
-              <label for="proveedorCompra">Proveedor</label>
-              <select id="proveedorCompra" required>
-                <option value="">Seleccionar proveedor</option>
-              </select>
-            </div>
-
             <div class="campo" style="flex: 2; min-width: 200px;">
-              <label for="descCompraProveedor">Concepto</label>
-              <input type="text" id="descCompraProveedor" placeholder="Ej: Carne y verduras" required>
+              <label for="descCompraProveedor">Detalle / Proveedor</label>
+              <input type="text" id="descCompraProveedor" placeholder="Escoge tu provedor" required>
             </div>
 
             <div class="campo campo-cantidad" style="flex: 1; min-width: 130px;">
@@ -907,21 +784,16 @@
           <div class="orden-header">
             <div>
               <h3>Pagar a Proveedor</h3>
-              <span>Descuenta del Saldo del Administrador y baja la deuda de ese proveedor.</span>
+              <span>Saca dinero del Saldo del Administrador para abonar o cancelar la deuda.</span>
             </div>
           </div>
 
           <form id="formPagoProveedor" class="orden-form" style="display: flex; gap: 15px; flex-wrap: wrap; padding: 15px;">
-            <div class="campo" style="flex: 2; min-width: 200px;">
-              <label for="proveedorPago">Proveedor</label>
-              <select id="proveedorPago" required>
-                <option value="">Seleccionar proveedor</option>
-              </select>
-            </div>
-
             <div class="campo campo-cantidad" style="flex: 1; min-width: 180px;">
               <label for="montoPagoProveedor">Monto a pagar ($)</label>
               <input type="number" id="montoPagoProveedor" min="1" placeholder="Ej: 50000" required>
+              <label for="descPagoProveedor">Proveedor</label>
+              <input type="text" id="descPagoProveedor" placeholder="Escoge tu provedor" required>
             </div>
 
             <div class="campo" style="display: flex; align-items: flex-end;">
@@ -937,7 +809,7 @@
           <div class="orden-header">
             <div>
               <h3>Ajuste Manual de Saldos</h3>
-              <span>Ingresa o retira dinero del Administrador o de un trabajador en particular.</span>
+              <span>Ingresa o retira dinero directamente del Admin o Trabajador.</span>
             </div>
           </div>
 
@@ -948,13 +820,6 @@
                 <option value="">Seleccionar cuenta</option>
                 <option value="admin">Administrador</option>
                 <option value="trabajador">Trabajador</option>
-              </select>
-            </div>
-
-            <div class="campo" id="cajaTrabajadorAjuste" style="flex: 1; min-width: 180px; display: none;">
-              <label for="trabajadorAjuste">Trabajador</label>
-              <select id="trabajadorAjuste">
-                <option value="">Seleccionar trabajador</option>
               </select>
             </div>
 
@@ -971,11 +836,6 @@
               <input type="number" id="montoAjuste" min="1" placeholder="Ej: 20000" required>
             </div>
 
-            <div class="campo" style="flex: 2; min-width: 200px;">
-              <label for="descAjuste">Concepto (opcional)</label>
-              <input type="text" id="descAjuste" placeholder="Ej: Adelanto de sueldo">
-            </div>
-
             <div class="campo" style="display: flex; align-items: flex-end;">
               <button type="submit" class="btn-agregar" style="height: 42px;">
                 Aplicar Ajuste
@@ -984,68 +844,14 @@
           </form>
         </div>
 
-        <!-- REPORTE DE SALDOS: cómo empezó y cómo terminó el periodo -->
-        <div class="orden-container" style="margin-bottom: 25px;">
-          <div class="orden-header">
-            <div>
-              <h3>Reporte de Saldos</h3>
-              <span>Mira con cuánto empezó y con cuánto terminó cada cuenta en el día, la semana o el mes.</span>
-            </div>
-          </div>
-
-          <div class="orden-form" style="display:flex; gap:15px; flex-wrap:wrap; padding:15px;">
-            <div class="campo" style="flex:1; min-width:150px;">
-              <label for="repPeriodo">Periodo</label>
-              <select id="repPeriodo">
-                <option value="dia">Diario</option>
-                <option value="semana">Semanal</option>
-                <option value="mes">Mensual</option>
-              </select>
-            </div>
-
-            <div class="campo" style="flex:1; min-width:170px;">
-              <label for="repFecha">Fecha de referencia</label>
-              <input type="date" id="repFecha">
-            </div>
-
-            <div class="campo" style="display:flex; align-items:flex-end; gap:10px;">
-              <button type="button" id="btnGenerarRepSaldos" class="btn-agregar" style="height:42px;">
-                Generar reporte
-              </button>
-              <button type="button" id="btnImprimirRepSaldos" class="boton-secundario" style="height:42px;" hidden>
-                Imprimir
-              </button>
-            </div>
-          </div>
-
-          <div id="repSaldosResultado" style="padding:0 15px 15px;" aria-live="polite"></div>
-        </div>
-
-        <div class="tabla-ventas historial-saldos">
+        <div class="tabla-ventas">
           <div class="tabla-header">
             <div>
               <h3>Historial de Movimientos de Saldos</h3>
-              <p>Registro completo de deudas, pagos y ajustes realizados.</p>
+              <p>Registro completo de préstamos, pagos y ajustes realizados.</p>
             </div>
           </div>
-            <div class="filtro-historial" role="group" aria-label="Filtrar movimientos de saldos por fecha">
-            <label>
-            Ver por
-        <select class="historial-periodo">
-          <option value="dia">Día</option>
-          <option value="semana">Semana</option>
-          <option value="mes">Mes</option>
-          <option value="anio">Año</option>
-       </select>
-    </label>
 
-  <label>
-    Fecha de referencia
-    <input class="historial-fecha" type="date">
-  </label>
-
-  <strong class="historial-rango" aria-live="polite"></strong>
-</div>
           <div class="tabla-wrapper">
             <table>
               <thead>
@@ -1066,6 +872,22 @@
           </div>
         </div>
 
+      </section>
+
+      <!-- REPORTES -->
+      <section id="vista-reportes" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">GENERACIÓN DE REPORTES ALIMENTARIOS</span><h2>Reportes del sistema</h2><p>Reportes diarios, inventario general, pérdidas y consumo.</p></div>
+        <article class="panel">
+          <div class="encabezado-panel"><div><span class="etiqueta-seccion">REPORTES</span><h3>Generar informe</h3></div></div>
+          <div class="panel-form">
+            <div class="form-grid">
+              <div class="campo"><label>Tipo de reporte</label><select id="tipoReporte"><option>Reporte diario</option><option>Usuarios</option><option>Alimentos</option><option>Platos</option><option>Inventario general</option><option>Inversiones</option><option>Ventas</option><option>Saldos</option><option>Pérdida de alimentos</option><option>Consumo</option><option>Informe de operaciones contables</option></select></div>
+              <div class="campo"><label>Fecha</label><input id="fechaReporte" type="date"></div>
+            </div>
+            <div class="acciones"><button class="boton-principal" onclick="generarReporte()">Generar reporte</button><button class="boton-secundario" onclick="window.print()">Imprimir</button></div>
+            <div id="resultadoReporte" class="reporte-box"><h4>Resultado</h4><p>Seleccione un tipo de reporte y pulse “Generar reporte”.</p></div>
+          </div>
+        </article>
       </section>
 
       <!-- INVERSIONES -->
@@ -1158,94 +980,37 @@
                 <small>Retorno sobre la inversión</small>
               </div>
             </article>
-          </div>        
-     <div class="reporte-box resumen-financiero">
-  <h4>Resumen financiero</h4>
+          </div>
 
-  <div class="resumen-financiero__datos">
-          <div class="resumen-financiero__dato">
-                 <span>Inversión en insumos</span>
-                       <strong id="dashboardCostoInsumos">$0</strong>
-                          </div>
-
-                              <div class="resumen-financiero__dato">
-                            <span>Otros gastos</span>
-                           <strong id="dashboardGastos">$0</strong>
-                        </div>
-
-                       <div class="resumen-financiero__dato resumen-financiero__resultado">
-                      <span>Resultado del negocio</span>
-                     <strong id="dashboardBalance">$0</strong>
-                    </div>
-                 </div>
+          <div class="reporte-box">
+            <h4>Resumen financiero</h4>
+            <div class="lista-inventario">
+              <div class="elemento-inventario">
+                <span>Inversión en insumos</span>
+                <strong id="dashboardCostoInsumos">$0</strong>
               </div>
+              <div class="elemento-inventario">
+                <span>Otros gastos</span>
+                <strong id="dashboardGastos">$0</strong>
+              </div>
+              <div class="elemento-inventario">
+                <span>Resultado del negocio</span>
+                <strong id="dashboardBalance">$0</strong>
+              </div>
+            </div>
+          </div>
         </section>
       </section>
 
-      <!-- Reportes -->
-
-<section id="vista-reportes" class="vista">
-  <article class="panel panel-form">
-    <h2>Reportes alimentarios</h2>
-
-    <label for="tipoReporte">Tipo de reporte</label>
-    <select id="tipoReporte">
-      <option>Reporte diario</option>
-      <option>Inventario general</option>
-      <option>Pérdida de alimentos</option>
-      <option>Consumo</option>
-    </select>
-
-   <div class="campo campo-fecha-reporte">
-  <label for="fechaReporte">Fecha del reporte diario</label>
-  <input id="fechaReporte" type="date">
-</div>
-
-    <div class="acciones">
-      <button type="button" class="boton-principal" onclick="generarReporte()">
-        Generar reporte
-      </button>
-    </div>
-
-    <div id="resultadoReporte" class="reporte-box" aria-live="polite"></div>
-  </article>
-</section>
-
-
-
       <!-- CONFIGURACIÓN -->
-<section id="vista-configuracion" class="vista">
-  <div class="titulo-vista">
-    <h2>Configuración</h2>
-  </div>
-
-  <article class="panel datos-cuenta" aria-labelledby="tituloMiCuenta">
-    <h3 id="tituloMiCuenta">Mi cuenta</h3>
-
-    <div class="cuenta-perfil">
-      <span class="avatar cuenta-avatar" id="cuentaAvatar" aria-hidden="true">—</span>
-
-      <div class="cuenta-identidad">
-        <strong id="cuentaNombre">—</strong>
-        <span id="cuentaUsuario">—</span>
-        <span id="cuentaRol">—</span>
-      </div>
-    </div>
-
-    <p id="estadoDatosCuenta" role="status"></p>
-
-    <div class="cuenta-acciones">
-      <button type="button" class="cuenta-salir" onclick="cerrarSesion()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M10 4H5v16h5M9 12h12m-4-4 4 4-4 4"/>
-        </svg>
-        Cerrar sesión
-      </button>
-    </div>
-  </article>
-</section>
+      <section id="vista-configuracion" class="vista">
+        <div class="titulo-vista"><span class="etiqueta-seccion">SISTEMA</span><h2>Configuración</h2><p>Opciones generales de la sesión actual.</p></div>
+        <article class="panel panel-form">
+          <h3 style="font-family:var(--font-title);font-size:14px;">Sesión y seguridad</h3>
+          <p style="color:var(--text-secondary);font-size:9px;margin-top:8px;">Puedes cerrar la sesión actual desde aquí. Los datos se guardan en la base de datos PostgreSQL.</p>
+          <div class="acciones"><button class="boton-peligro" onclick="cerrarSesion()">Cerrar sesión</button></div>
+        </article>
+      </section>
 
       <footer>
         <span>© 2026 Meraki · Sistema de Gestión Alimentaria</span>
@@ -1525,10 +1290,8 @@
   <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
   <script src="{{ url_for('static', filename='js/meta.js') }}"></script>
   <script src="{{ url_for('static', filename='js/saldos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/saldos_reporte.js') }}?v=1"></script>
-  <script src="{{ url_for('static', filename='js/historiales.js') }}"></script>
   <script src="{{ url_for('static', filename='js/platos.js') }}?v=12"></script>
-  <script src="{{ url_for('static', filename='js/categorias.js') }}?v=11"></script>
+     <script src="{{ url_for('static', filename='js/categorias.js') }}?v=11"></script>
 
 </body>
 </html>
